@@ -4,7 +4,6 @@ from flask import (Blueprint, render_template, request, redirect,
                    url_for, flash, current_app, jsonify)
 from db import db
 from datetime import date
-import google.generativeai as genai
 
 public_bp = Blueprint('public', __name__)
 
@@ -265,6 +264,7 @@ def api_chat():
         })
         
     try:
+        import google.generativeai as genai
         genai.configure(api_key=api_key)
         # Using the recommended model
         model = genai.GenerativeModel('gemini-flash-latest')

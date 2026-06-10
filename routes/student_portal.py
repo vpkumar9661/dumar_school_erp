@@ -12,8 +12,6 @@ from flask import (Blueprint, render_template, request, redirect,
 from flask_login import login_user, logout_user, login_required, current_user
 from db import db
 
-import google.generativeai as genai
-
 student_portal_bp = Blueprint('student_portal', __name__)
 
 # ── Helpers ────────────────────────────────────────────────────
@@ -947,6 +945,7 @@ def api_chat():
         })
 
     try:
+        import google.generativeai as genai
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('gemini-flash-latest')
 
