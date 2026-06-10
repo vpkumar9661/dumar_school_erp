@@ -1,0 +1,1670 @@
+{
+    "1": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Shapes and Space",
+                    "desc": "Identify shapes like circle, square, rectangle, triangle. Understand words: above/below, inside/outside.",
+                    "formula": ""
+                },
+                {
+                    "title": "Numbers from One to Nine",
+                    "desc": "Count and write how many objects are shown. Compare numbers.",
+                    "formula": ""
+                },
+                {
+                    "title": "Addition",
+                    "desc": "Add two single-digit numbers with pictures or objects.",
+                    "formula": "",
+                    "practice": "Ravi has 6 marbles. His friend gives him 3 more. How many marbles does Ravi have now?"
+                },
+                {
+                    "title": "Subtraction",
+                    "desc": "Take away from a group. Simple sums like 9 - 4.",
+                    "formula": "",
+                    "practice": "There are 8 apples. 3 are eaten. How many are left?"
+                },
+                {
+                    "title": "Numbers from Ten to Twenty",
+                    "desc": "Show tens and ones (e.g., 14 = 1 ten and 4 ones).",
+                    "formula": ""
+                },
+                {
+                    "title": "Time",
+                    "desc": "Read and draw clocks showing full hours (3 o'clock, 5 o'clock).",
+                    "formula": ""
+                },
+                {
+                    "title": "Measurement",
+                    "desc": "Compare lengths, weights, and capacity.",
+                    "formula": ""
+                },
+                {
+                    "title": "Numbers from Twenty-one to Fifty",
+                    "desc": "Recognizing and writing numbers up to 50.",
+                    "formula": ""
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Count objects and mark tally or tick marks.",
+                    "formula": ""
+                },
+                {
+                    "title": "Patterns",
+                    "desc": "Extend simple patterns: ○ ▲ ○ ▲ ○.",
+                    "formula": ""
+                },
+                {
+                    "title": "Numbers up to 99",
+                    "desc": "Place value tens/ones for numbers up to 99.",
+                    "formula": ""
+                },
+                {
+                    "title": "Money",
+                    "desc": "Recognize common Indian coins and notes.",
+                    "formula": "",
+                    "practice": "Which set of coins makes 5 rupees?"
+                },
+                {
+                    "title": "How Many",
+                    "desc": "Counting, estimation, word problems.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Plants and Animals",
+                    "desc": "Photosynthesis and food chains.",
+                    "formula": ""
+                },
+                {
+                    "title": "States of Matter",
+                    "desc": "Solid, Liquid, and Gas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Human Body",
+                    "desc": "Bones, muscles, and organs.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Our Earth",
+                    "desc": "Continents, Oceans, and environment.",
+                    "formula": ""
+                },
+                {
+                    "title": "Indian History basics",
+                    "desc": "Freedom fighters and early independence.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Basics of Computer",
+                    "desc": "Input/Output devices, CPU.",
+                    "formula": ""
+                },
+                {
+                    "title": "Paint & Typing",
+                    "desc": "Using MS Paint, Keyboard typing practice.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "2": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Numbers and Counting",
+                    "desc": "Numbers up to 100, Place value (tens and ones), Comparing numbers.",
+                    "formula": "53 = 50 + 3",
+                    "practice": "Write the number name for 47. What is the place value of 3 in 37?"
+                },
+                {
+                    "title": "Operations",
+                    "desc": "Addition and subtraction of 2-digit numbers. Introduction to multiplication as repeated addition.",
+                    "formula": "3 groups of 4 = 12",
+                    "practice": "There are 37 students in a class. 15 more students join the class. How many students are there now?"
+                },
+                {
+                    "title": "Shapes and Patterns",
+                    "desc": "2D and 3D shapes. Straight, curved, horizontal, vertical lines. Simple patterns.",
+                    "formula": ""
+                },
+                {
+                    "title": "Measurement",
+                    "desc": "Length (longer/shorter), Weight (heavier/lighter), Capacity (more/less).",
+                    "formula": ""
+                },
+                {
+                    "title": "Time and Calendar",
+                    "desc": "Reading clock to o'clock and half past. Days of the week, months, seasons.",
+                    "formula": ""
+                },
+                {
+                    "title": "Money",
+                    "desc": "Indian coins and notes. Counting money.",
+                    "formula": "",
+                    "practice": "Count coins to find the total money. Choose coins to make 15 rupees."
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Simple tables/picture graphs and 'which is more/less'. Basic logical puzzles.",
+                    "formula": "",
+                    "practice": "Look at a picture graph: 'How many children like apples?'"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Plants and Animals",
+                    "desc": "Photosynthesis and food chains.",
+                    "formula": ""
+                },
+                {
+                    "title": "States of Matter",
+                    "desc": "Solid, Liquid, and Gas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Human Body",
+                    "desc": "Bones, muscles, and organs.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Our Earth",
+                    "desc": "Continents, Oceans, and environment.",
+                    "formula": ""
+                },
+                {
+                    "title": "Indian History basics",
+                    "desc": "Freedom fighters and early independence.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Basics of Computer",
+                    "desc": "Input/Output devices, CPU.",
+                    "formula": ""
+                },
+                {
+                    "title": "Paint & Typing",
+                    "desc": "Using MS Paint, Keyboard typing practice.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "3": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Numbers up to 1000",
+                    "desc": "Number names, place value, comparing, ordering. Expanding numbers.",
+                    "formula": "374 = 300 + 70 + 4",
+                    "practice": "Write the expanded form of 649."
+                },
+                {
+                    "title": "Addition and Subtraction",
+                    "desc": "2-digit and 3-digit addition and subtraction with and without carry/borrowing.",
+                    "formula": "a + b = sum, a - b = difference",
+                    "practice": "Solve: 378 + 246 = ? and 500 - 237 = ?"
+                },
+                {
+                    "title": "Multiplication and Division",
+                    "desc": "Multiplication as repeated addition. Division as sharing equally.",
+                    "formula": "6 x 4 = 24, 20 ÷ 5 = 4",
+                    "practice": "Solve: 7 x 8 = ? and 35 ÷ 5 = ?"
+                },
+                {
+                    "title": "Shapes, Designs and Patterns",
+                    "desc": "2D shapes, symmetry, basic angles. Number and shape patterns.",
+                    "formula": "Perimeter of square = 4 x side",
+                    "practice": "Find the perimeter of a square of side 7 cm."
+                },
+                {
+                    "title": "Length, Weight, Capacity",
+                    "desc": "Length (m, cm), Weight (kg, g), Capacity (l, ml).",
+                    "formula": "1 m = 100 cm, 1 kg = 1000 g",
+                    "practice": "How many centimeters are there in 4 meters?"
+                },
+                {
+                    "title": "Time",
+                    "desc": "Days, months, seasons, reading clock, time conversion.",
+                    "formula": "1 hour = 60 minutes",
+                    "practice": "Convert 2 hours 15 minutes into minutes."
+                },
+                {
+                    "title": "Money",
+                    "desc": "Rupees and Paise, coins, notes, addition/subtraction of money.",
+                    "formula": "",
+                    "practice": "If one notebook costs ₹18, what is the cost of 6 notebooks?"
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Tables, picture graphs, simple bar graphs (Smart Charts).",
+                    "formula": "",
+                    "practice": "12 children like chocolate, 8 like vanilla. How many more like chocolate than vanilla?"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Plants and Animals",
+                    "desc": "Photosynthesis and food chains.",
+                    "formula": ""
+                },
+                {
+                    "title": "States of Matter",
+                    "desc": "Solid, Liquid, and Gas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Human Body",
+                    "desc": "Bones, muscles, and organs.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Our Earth",
+                    "desc": "Continents, Oceans, and environment.",
+                    "formula": ""
+                },
+                {
+                    "title": "Indian History basics",
+                    "desc": "Freedom fighters and early independence.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Basics of Computer",
+                    "desc": "Input/Output devices, CPU.",
+                    "formula": ""
+                },
+                {
+                    "title": "Paint & Typing",
+                    "desc": "Using MS Paint, Keyboard typing practice.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "4": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Numbers up to 5 Digits",
+                    "desc": "Place value up to thousands, rounding to nearest 10 and 100, number names.",
+                    "formula": "3572 = 3x1000 + 5x100 + 7x10 + 2",
+                    "practice": "Write the expanded form of 4763. Round 437 to the nearest 10."
+                },
+                {
+                    "title": "Addition and Subtraction",
+                    "desc": "3-digit and 4-digit operations with carry and borrowing. Word problems.",
+                    "formula": "a + b = sum, a - b = difference",
+                    "practice": "2345 + 1876 = ? and 5000 - 2378 = ?"
+                },
+                {
+                    "title": "Multiplication and Division",
+                    "desc": "Multiplying up to 3-digit numbers. Division with remainders. Tables 1-20.",
+                    "formula": "Dividend = (Divisor x Quotient) + Remainder",
+                    "practice": "37 x 6 = ? and 84 / 7 = ?"
+                },
+                {
+                    "title": "Halves and Quarters",
+                    "desc": "Introduction to fractions. Simple addition and subtraction of fractions.",
+                    "formula": "Half of x = x/2, Quarter of x = x/4",
+                    "practice": "Find half of 36."
+                },
+                {
+                    "title": "Measurement (Length, Weight, Capacity)",
+                    "desc": "Km, m, cm; kg and g; L and mL. Conversions and comparisons.",
+                    "formula": "1 km = 1000 m, 1 kg = 1000 g, 1 L = 1000 mL",
+                    "practice": "How many centimeters are there in 5 m 30 cm?"
+                },
+                {
+                    "title": "Time and Calendar",
+                    "desc": "Reading clocks, days, months, years, and identifying leap years.",
+                    "formula": "1 day = 24 hrs, 1 year = 365/366 days",
+                    "practice": "How many minutes are there in 2 hours 15 minutes?"
+                },
+                {
+                    "title": "Perimeter and Area",
+                    "desc": "Calculating perimeter of rectangles and squares. Basic idea of area.",
+                    "formula": "P = 2 x (L + B) for Rectangle, P = 4 x Side for Square",
+                    "practice": "Find the perimeter of a rectangle of length 12 m and breadth 8 m."
+                },
+                {
+                    "title": "Money",
+                    "desc": "Rupees to paise conversion. Adding and subtracting money.",
+                    "formula": "1 Rupee = 100 Paise",
+                    "practice": "Cost of one pen is ₹12.45. What is the cost of 20 such pens?"
+                },
+                {
+                    "title": "Shapes, Views and Patterns",
+                    "desc": "3D objects, top/front/side views, circles (radius/diameter), number/shape patterns.",
+                    "formula": "Diameter = 2 x Radius",
+                    "practice": "Draw the top view of a brick."
+                },
+                {
+                    "title": "Smart Charts",
+                    "desc": "Data handling using tables, pictographs, and bar graphs.",
+                    "formula": "",
+                    "practice": "If 14 children like chocolate and 10 like vanilla, how many more like chocolate?"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Plants and Animals",
+                    "desc": "Photosynthesis and food chains.",
+                    "formula": ""
+                },
+                {
+                    "title": "States of Matter",
+                    "desc": "Solid, Liquid, and Gas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Human Body",
+                    "desc": "Bones, muscles, and organs.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Our Earth",
+                    "desc": "Continents, Oceans, and environment.",
+                    "formula": ""
+                },
+                {
+                    "title": "Indian History basics",
+                    "desc": "Freedom fighters and early independence.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Basics of Computer",
+                    "desc": "Input/Output devices, CPU.",
+                    "formula": ""
+                },
+                {
+                    "title": "Paint & Typing",
+                    "desc": "Using MS Paint, Keyboard typing practice.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "5": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Number System",
+                    "desc": "Understanding numbers, place value, and basic operations (+, -, *, /).",
+                    "formula": ""
+                },
+                {
+                    "title": "Geometry",
+                    "desc": "Basic shapes like Square, Rectangle, Circle.",
+                    "formula": "Area of Rectangle = L × W"
+                },
+                {
+                    "title": "Fractions",
+                    "desc": "Understanding parts of a whole.",
+                    "formula": "Fraction = Numerator / Denominator"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Plants and Animals",
+                    "desc": "Photosynthesis and food chains.",
+                    "formula": ""
+                },
+                {
+                    "title": "States of Matter",
+                    "desc": "Solid, Liquid, and Gas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Human Body",
+                    "desc": "Bones, muscles, and organs.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Our Earth",
+                    "desc": "Continents, Oceans, and environment.",
+                    "formula": ""
+                },
+                {
+                    "title": "Indian History basics",
+                    "desc": "Freedom fighters and early independence.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Basics of Computer",
+                    "desc": "Input/Output devices, CPU.",
+                    "formula": ""
+                },
+                {
+                    "title": "Paint & Typing",
+                    "desc": "Using MS Paint, Keyboard typing practice.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "6": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Algebraic Expressions",
+                    "desc": "Introduction to variables and constants.",
+                    "formula": "(a+b)² = a² + 2ab + b²"
+                },
+                {
+                    "title": "Mensuration",
+                    "desc": "Calculating area and perimeter of complex shapes.",
+                    "formula": "Area of Circle = πr²"
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Mean, Median, Mode, and Bar Graphs.",
+                    "formula": "Mean = Sum of values / Number of values"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Force and Pressure",
+                    "desc": "Push or pull on an object.",
+                    "formula": "Pressure = Force / Area"
+                },
+                {
+                    "title": "Light",
+                    "desc": "Reflection, refraction, and human eye.",
+                    "formula": "Angle of Incidence = Angle of Reflection"
+                },
+                {
+                    "title": "Microorganisms",
+                    "desc": "Friend and Foe (Bacteria, Fungi, Viruses).",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "History",
+                    "desc": "The French Revolution, Nationalism in India.",
+                    "formula": ""
+                },
+                {
+                    "title": "Geography",
+                    "desc": "Resources, Agriculture, Manufacturing Industries.",
+                    "formula": ""
+                },
+                {
+                    "title": "Civics",
+                    "desc": "Power sharing, Federalism, Democracy.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "MS Office",
+                    "desc": "Word, Excel, PowerPoint basics.",
+                    "formula": ""
+                },
+                {
+                    "title": "Intro to Coding",
+                    "desc": "Block-based coding like Scratch or basic HTML.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "7": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Algebraic Expressions",
+                    "desc": "Introduction to variables and constants.",
+                    "formula": "(a+b)² = a² + 2ab + b²"
+                },
+                {
+                    "title": "Mensuration",
+                    "desc": "Calculating area and perimeter of complex shapes.",
+                    "formula": "Area of Circle = πr²"
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Mean, Median, Mode, and Bar Graphs.",
+                    "formula": "Mean = Sum of values / Number of values"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Force and Pressure",
+                    "desc": "Push or pull on an object.",
+                    "formula": "Pressure = Force / Area"
+                },
+                {
+                    "title": "Light",
+                    "desc": "Reflection, refraction, and human eye.",
+                    "formula": "Angle of Incidence = Angle of Reflection"
+                },
+                {
+                    "title": "Microorganisms",
+                    "desc": "Friend and Foe (Bacteria, Fungi, Viruses).",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "History",
+                    "desc": "The French Revolution, Nationalism in India.",
+                    "formula": ""
+                },
+                {
+                    "title": "Geography",
+                    "desc": "Resources, Agriculture, Manufacturing Industries.",
+                    "formula": ""
+                },
+                {
+                    "title": "Civics",
+                    "desc": "Power sharing, Federalism, Democracy.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "MS Office",
+                    "desc": "Word, Excel, PowerPoint basics.",
+                    "formula": ""
+                },
+                {
+                    "title": "Intro to Coding",
+                    "desc": "Block-based coding like Scratch or basic HTML.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "8": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Algebraic Expressions",
+                    "desc": "Introduction to variables and constants.",
+                    "formula": "(a+b)² = a² + 2ab + b²"
+                },
+                {
+                    "title": "Mensuration",
+                    "desc": "Calculating area and perimeter of complex shapes.",
+                    "formula": "Area of Circle = πr²"
+                },
+                {
+                    "title": "Data Handling",
+                    "desc": "Mean, Median, Mode, and Bar Graphs.",
+                    "formula": "Mean = Sum of values / Number of values"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Force and Pressure",
+                    "desc": "Push or pull on an object.",
+                    "formula": "Pressure = Force / Area"
+                },
+                {
+                    "title": "Light",
+                    "desc": "Reflection, refraction, and human eye.",
+                    "formula": "Angle of Incidence = Angle of Reflection"
+                },
+                {
+                    "title": "Microorganisms",
+                    "desc": "Friend and Foe (Bacteria, Fungi, Viruses).",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "History",
+                    "desc": "The French Revolution, Nationalism in India.",
+                    "formula": ""
+                },
+                {
+                    "title": "Geography",
+                    "desc": "Resources, Agriculture, Manufacturing Industries.",
+                    "formula": ""
+                },
+                {
+                    "title": "Civics",
+                    "desc": "Power sharing, Federalism, Democracy.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "MS Office",
+                    "desc": "Word, Excel, PowerPoint basics.",
+                    "formula": ""
+                },
+                {
+                    "title": "Intro to Coding",
+                    "desc": "Block-based coding like Scratch or basic HTML.",
+                    "formula": ""
+                }
+            ]
+        }
+    ],
+    "9": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Quadratic Equations",
+                    "desc": "Solving equations of degree 2.",
+                    "formula": "x = (-b ± √(b² - 4ac)) / 2a"
+                },
+                {
+                    "title": "Trigonometry",
+                    "desc": "Ratios of sides of a right-angled triangle.",
+                    "formula": "sin²θ + cos²θ = 1"
+                },
+                {
+                    "title": "Surface Areas and Volumes",
+                    "desc": "3D shapes like Cylinder, Cone, Sphere.",
+                    "formula": "Volume of Cylinder = πr²h"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Electricity",
+                    "desc": "Electric current, resistance.",
+                    "formula": "V = IR (Ohm's Law)"
+                },
+                {
+                    "title": "Chemical Reactions",
+                    "desc": "Types of chemical equations and balancing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Life Processes",
+                    "desc": "Nutrition, Respiration, Transportation.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "History",
+                    "desc": "The French Revolution, Nationalism in India.",
+                    "formula": ""
+                },
+                {
+                    "title": "Geography",
+                    "desc": "Resources, Agriculture, Manufacturing Industries.",
+                    "formula": ""
+                },
+                {
+                    "title": "Civics",
+                    "desc": "Power sharing, Federalism, Democracy.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Programming Concepts",
+                    "desc": "Python/C++ basics: loops, variables, functions.",
+                    "formula": ""
+                },
+                {
+                    "title": "Database Management",
+                    "desc": "SQL queries and relational databases.",
+                    "formula": "SELECT * FROM TableName;"
+                }
+            ]
+        }
+    ],
+    "10": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Quadratic Equations",
+                    "desc": "Solving equations of degree 2.",
+                    "formula": "x = (-b ± √(b² - 4ac)) / 2a"
+                },
+                {
+                    "title": "Trigonometry",
+                    "desc": "Ratios of sides of a right-angled triangle.",
+                    "formula": "sin²θ + cos²θ = 1"
+                },
+                {
+                    "title": "Surface Areas and Volumes",
+                    "desc": "3D shapes like Cylinder, Cone, Sphere.",
+                    "formula": "Volume of Cylinder = πr²h"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Electricity",
+                    "desc": "Electric current, resistance.",
+                    "formula": "V = IR (Ohm's Law)"
+                },
+                {
+                    "title": "Chemical Reactions",
+                    "desc": "Types of chemical equations and balancing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Life Processes",
+                    "desc": "Nutrition, Respiration, Transportation.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "History",
+                    "desc": "The French Revolution, Nationalism in India.",
+                    "formula": ""
+                },
+                {
+                    "title": "Geography",
+                    "desc": "Resources, Agriculture, Manufacturing Industries.",
+                    "formula": ""
+                },
+                {
+                    "title": "Civics",
+                    "desc": "Power sharing, Federalism, Democracy.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Programming Concepts",
+                    "desc": "Python/C++ basics: loops, variables, functions.",
+                    "formula": ""
+                },
+                {
+                    "title": "Database Management",
+                    "desc": "SQL queries and relational databases.",
+                    "formula": "SELECT * FROM TableName;"
+                }
+            ]
+        }
+    ],
+    "11": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Calculus",
+                    "desc": "Limits, Derivatives, and Integrals.",
+                    "formula": "d/dx (x^n) = n*x^(n-1)"
+                },
+                {
+                    "title": "Vectors & 3D Geometry",
+                    "desc": "Vectors, dot product, cross product.",
+                    "formula": "a·b = |a||b|cosθ"
+                },
+                {
+                    "title": "Probability",
+                    "desc": "Bayes theorem, conditional probability.",
+                    "formula": "P(A|B) = P(A ∩ B) / P(B)"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Electrostatics",
+                    "desc": "Electric charges and fields.",
+                    "formula": "F = 1/(4πε0) * (q1q2/r²)"
+                },
+                {
+                    "title": "Thermodynamics",
+                    "desc": "Laws of thermodynamics, heat engines.",
+                    "formula": "ΔQ = ΔU + ΔW"
+                },
+                {
+                    "title": "Chemical Kinetics",
+                    "desc": "Rate of chemical reactions.",
+                    "formula": "Rate = k[A]^x[B]^y"
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Macroeconomics",
+                    "desc": "National Income, Money and Banking.",
+                    "formula": ""
+                },
+                {
+                    "title": "World History",
+                    "desc": "Industrial revolution, World Wars.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Programming Concepts",
+                    "desc": "Python/C++ basics: loops, variables, functions.",
+                    "formula": ""
+                },
+                {
+                    "title": "Database Management",
+                    "desc": "SQL queries and relational databases.",
+                    "formula": "SELECT * FROM TableName;"
+                }
+            ]
+        }
+    ],
+    "12": [
+        {
+            "name": "Mathematics",
+            "icon": "fas fa-square-root-variable",
+            "color": "#00e5ff",
+            "chapters": [
+                {
+                    "title": "Calculus",
+                    "desc": "Limits, Derivatives, and Integrals.",
+                    "formula": "d/dx (x^n) = n*x^(n-1)"
+                },
+                {
+                    "title": "Vectors & 3D Geometry",
+                    "desc": "Vectors, dot product, cross product.",
+                    "formula": "a·b = |a||b|cosθ"
+                },
+                {
+                    "title": "Probability",
+                    "desc": "Bayes theorem, conditional probability.",
+                    "formula": "P(A|B) = P(A ∩ B) / P(B)"
+                }
+            ]
+        },
+        {
+            "name": "Science",
+            "icon": "fas fa-atom",
+            "color": "#ff1a8c",
+            "chapters": [
+                {
+                    "title": "Electrostatics",
+                    "desc": "Electric charges and fields.",
+                    "formula": "F = 1/(4πε0) * (q1q2/r²)"
+                },
+                {
+                    "title": "Thermodynamics",
+                    "desc": "Laws of thermodynamics, heat engines.",
+                    "formula": "ΔQ = ΔU + ΔW"
+                },
+                {
+                    "title": "Chemical Kinetics",
+                    "desc": "Rate of chemical reactions.",
+                    "formula": "Rate = k[A]^x[B]^y"
+                }
+            ]
+        },
+        {
+            "name": "Social Science",
+            "icon": "fas fa-globe-asia",
+            "color": "#ffaa00",
+            "chapters": [
+                {
+                    "title": "Macroeconomics",
+                    "desc": "National Income, Money and Banking.",
+                    "formula": ""
+                },
+                {
+                    "title": "World History",
+                    "desc": "Industrial revolution, World Wars.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "English",
+            "icon": "fas fa-book-open",
+            "color": "#00ff88",
+            "chapters": [
+                {
+                    "title": "Grammar",
+                    "desc": "Tenses, Active-Passive Voice, Direct-Indirect Speech.",
+                    "formula": ""
+                },
+                {
+                    "title": "Writing Skills",
+                    "desc": "Essays, Letters, Articles, Notice writing.",
+                    "formula": ""
+                },
+                {
+                    "title": "Literature",
+                    "desc": "Prose and Poetry chapters as per NCERT.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Hindi",
+            "icon": "fas fa-om",
+            "color": "#ff5555",
+            "chapters": [
+                {
+                    "title": "Vyakaran (Grammar)",
+                    "desc": "Sangya, Sarvnam, Visheshan, Sandhi, Samas.",
+                    "formula": ""
+                },
+                {
+                    "title": "Lekhan (Writing)",
+                    "desc": "Patra lekhan, Nibandh lekhan.",
+                    "formula": ""
+                },
+                {
+                    "title": "Sahitya (Literature)",
+                    "desc": "Kavita and Kahaniyan.",
+                    "formula": ""
+                }
+            ]
+        },
+        {
+            "name": "Computer",
+            "icon": "fas fa-laptop-code",
+            "color": "#90f50b",
+            "chapters": [
+                {
+                    "title": "Programming Concepts",
+                    "desc": "Python/C++ basics: loops, variables, functions.",
+                    "formula": ""
+                },
+                {
+                    "title": "Database Management",
+                    "desc": "SQL queries and relational databases.",
+                    "formula": "SELECT * FROM TableName;"
+                }
+            ]
+        }
+    ]
+}

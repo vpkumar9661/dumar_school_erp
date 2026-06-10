@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="Downloads — Vivekanand Vidya Mandir Dharampur. Admission forms, calendars, and resources."/>
+<title>Downloads — Vivekanand Vidya Mandir Dharampur</title>
+<link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/public.css') }}?v=5" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet"/>
+<style>
+/* ── DOWNLOADS PAGE SPECIFIC ────────────────────────────────── */
+.dl-hero {
+  position: relative; padding: 140px 0 72px; background: var(--bg); overflow: hidden; text-align: center;
+}
+.dl-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(245,200,66,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(245,200,66,.025) 1px, transparent 1px);
+  background-size: 60px 60px; pointer-events: none;
+}
+.dl-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.22);
+  color: #f5c842; font-size: 11.5px; font-weight: 700;
+  padding: 5px 14px; border-radius: 999px; margin-bottom: 20px;
+  letter-spacing: 1.6px; text-transform: uppercase; position: relative; z-index: 1;
+}
+.dl-title {
+  font-family:'Inter',sans-serif; font-size: clamp(36px, 6vw, 74px); font-weight: 900; line-height: 1.05;
+  letter-spacing: -2px; color: #f4f4f5; margin-bottom: 16px; position: relative; z-index: 1;
+}
+.dl-title span {
+  background: linear-gradient(120deg, #f5c842, #ff9d00, #f54242);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.dl-sub { font-size: 16px; color: #71717a; max-width: 520px; margin: 0 auto 40px; line-height: 1.7; position: relative; z-index: 1; }
+
+.dl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; margin-top: 40px; }
+.dl-card {
+  background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px; padding: 24px; transition: all 0.3s ease; position: relative; overflow: hidden;
+}
+.dl-card:hover {
+  background: rgba(255, 255, 255, 0.04); border-color: rgba(245, 200, 66, 0.3);
+  transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+.dl-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+  background: #f5c842; opacity: 0.5;
+}
+.dl-icon { font-size: 32px; margin-bottom: 16px; color: #f5c842; }
+.dl-name { font-family:'Inter',sans-serif; font-size: 18px; font-weight: 800; color: #f4f4f5; margin-bottom: 8px; }
+.dl-desc { font-size: 14px; color: #a1a1aa; line-height: 1.6; margin-bottom: 20px; }
+.dl-meta { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #71717a; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 16px; }
+.dl-btn {
+  display: inline-flex; align-items: center; gap: 8px; background: #f5c842; color: #000;
+  padding: 8px 16px; border-radius: 8px; font-weight: 700; text-decoration: none; transition: all 0.2s;
+}
+.dl-btn:hover { background: #ffbd00; transform: scale(1.05); }
+
+.dl-no-files { text-align: center; padding: 80px 0; color: #71717a; }
+.dl-no-files i { font-size: 48px; margin-bottom: 20px; opacity: 0.3; }
+</style>
+</head>
+<body>
+
+<!-- ═══ CURSOR GLOW ═══ -->
+<div id="c-glow"></div>
+<canvas id="pcv"></canvas>
+
+<!-- ═══ HEADER ═══ -->
+<header class="main-header">
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="pub-nav" id="pubNav">
+    <div class="wr"><div class="nav-w">
+      <a href="{{ url_for('public.index') }}" class="nav-brand">
+        <div class="nav-logo-wrap">
+          <img src="{{ url_for('static', filename='images/school_logo.png') }}" alt="VVM" class="nav-logo"/>
+        </div>
+        <div class="nav-brand-text">
+          <div class="nb-name">Vivekanand Vidya Mandir</div>
+          <div class="nb-sub">Dharampur, Jharkhand</div>
+        </div>
+      </a>
+      <button class="ham" id="ham" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="{{ url_for('public.index') }}">Home</a></li>
+        <li><a href="{{ url_for('public.gallery') }}">Gallery</a></li>
+        <li><a href="{{ url_for('public.downloads') }}" class="on">Downloads</a></li>
+        <li><a href="{{ url_for('public.index') }}#contact">Contact</a></li>
+        <li class="mobile-cta-wrap"><a href="{{ url_for('auth.login') }}" class="mobile-nav-cta">Staff Login</a></li>
+      </ul>
+      <div class="nav-right">
+        <a href="{{ url_for('auth.login') }}" class="nav-cta">Staff Login</a>
+      </div>
+    </div></div>
+  </nav>
+</header>
+
+<!-- ═══ HERO ═══ -->
+<div class="dl-hero">
+  <div class="wr">
+    <div class="dl-badge"><i class="fas fa-file-download"></i> Resource Center</div>
+    <h1 class="dl-title">School <span>Downloads</span></h1>
+    <p class="dl-sub">Access important forms, academic calendars, fee structures and other school resources.</p>
+  </div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="wr" style="padding-bottom: 80px;">
+  {% if downloads %}
+    <div class="dl-grid">
+      {% for d in downloads %}
+      <div class="dl-card">
+        <div class="dl-icon">
+          {% if 'pdf' in d.filename|lower %}<i class="fas fa-file-pdf"></i>
+          {% elif 'xls' in d.filename|lower %}<i class="fas fa-file-excel"></i>
+          {% elif 'doc' in d.filename|lower %}<i class="fas fa-file-word"></i>
+          {% else %}<i class="fas fa-file-alt"></i>{% endif %}
+        </div>
+        <div class="dl-name">{{ d.title }}</div>
+        <div class="dl-desc">{{ d.description or 'Official school resource for students and parents.' }}</div>
+        <div class="dl-meta">
+          <span><i class="fas fa-tag me-1"></i> {{ d.category }}</span>
+          <a href="{{ url_for('public.download_file', did=d.id) }}" class="dl-btn">
+            <i class="fas fa-download"></i> Download
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="dl-no-files">
+      <i class="fas fa-folder-open"></i>
+      <h3>No files available</h3>
+      <p>Please check back later for updated forms and resources.</p>
+      <a href="{{ url_for('public.index') }}" class="btn-ghost" style="display: inline-flex; margin-top: 20px;">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="wr">
+    <div class="ft-bottom">
+      <span>&copy; {{ now().year }} Vivekanand Vidya Mandir Dharampur</span>
+      <div style="display:flex; gap: 20px;">
+        <a href="{{ url_for('public.index') }}">Home</a>
+        <a href="{{ url_for('public.gallery') }}">Gallery</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Theme & Effects */
+(function(){
+  if(localStorage.getItem('vvmT')==='light') document.body.classList.add('lm');
+  var g=document.getElementById('c-glow');
+  document.addEventListener('mousemove',function(e){
+    if(g){g.style.left=e.clientX+'px'; g.style.top=e.clientY+'px';}
+  },{passive:true});
+})();
+
+/* Scroll-aware Navbar */
+(function () {
+  var nav = document.getElementById('pubNav');
+  if (!nav) return;
+  function upd() { nav.classList.toggle('scrolled', window.scrollY > 60); }
+  window.addEventListener('scroll', upd, { passive: true });
+  upd();
+})();
+
+/* Mobile nav */
+function toggleNav() {
+  var nl = document.getElementById('navLinks');
+  var h = document.getElementById('ham');
+  var isOpen = nl.classList.toggle('open');
+  h.classList.toggle('open', isOpen);
+  if (isOpen) {
+    nl.style.display = 'flex';
+    requestAnimationFrame(function () {
+      nl.style.opacity = '1';
+      nl.style.transform = 'translateY(0) scale(1)';
+    });
+  } else {
+    nl.style.opacity = '0';
+    nl.style.transform = 'translateY(-8px) scale(.97)';
+    setTimeout(function () {
+      if (!nl.classList.contains('open')) nl.style.display = '';
+    }, 260);
+  }
+}
+document.addEventListener('click', function (e) {
+  var nl = document.getElementById('navLinks'), h = document.getElementById('ham');
+  if (nl && h && !nl.contains(e.target) && !h.contains(e.target)) {
+    nl.classList.remove('open'); h.classList.remove('open');
+    nl.style.opacity = '0';
+    nl.style.transform = 'translateY(-8px) scale(.97)';
+    setTimeout(function () {
+      if (!nl.classList.contains('open')) nl.style.display = '';
+    }, 260);
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" {% if current_user.is_authenticated %}data-role-color="{{ current_user.role_color }}"{% endif %}>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}VVM Dharampur ERP{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+  <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet"/>
+  {% block extra_css %}{% endblock %}
+  <style>
+    /* CSS custom properties updated dynamically by JS */
+    .user-theme-avatar {
+      background: var(--role-color-bg, rgba(255, 255, 255, 0.1)) !important;
+      border: 1px solid var(--role-color-border, rgba(255, 255, 255, 0.2)) !important;
+      color: var(--role-color, #ffffff) !important;
+    }
+    .user-theme-chip {
+      border-color: var(--role-color-chip-border, rgba(255, 255, 255, 0.15)) !important;
+      color: var(--role-color, #ffffff) !important;
+    }
+  </style>
+  <script>
+    (function() {
+      var h = document.documentElement;
+      var rc = h.getAttribute('data-role-color');
+      if (rc) {
+        h.style.setProperty('--role-color', rc);
+        h.style.setProperty('--role-color-bg', rc + '20');
+        h.style.setProperty('--role-color-border', rc + '40');
+        h.style.setProperty('--role-color-chip-border', rc + '30');
+      }
+    })();
+  </script>
+</head>
+<body id="appBody" class="theme-dark">
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav id="sidebar">
+  <a href="/" class="sidebar-brand">
+    <div class="logo-wrap">
+      <div class="logo-icon" style="padding:0;overflow:hidden;background:none;border:none;box-shadow:none;"><img src="{{ url_for('static', filename='images/school_logo.png') }}" onerror="this.style.display='none';this.parentElement.textContent='🏫';" alt="VVM Logo" style="width:46px;height:46px;object-fit:contain;border-radius:var(--r-md);"></div>
+      <div>
+        <div class="school-name">Vivekanand Vidya Mandir</div>
+        <div class="school-sub">Dharampur — ERP v2.0</div>
+      </div>
+    </div>
+    <div class="sidebar-badge">
+      <span class="live-pulse"></span> Online
+    </div>
+  </a>
+
+  <ul class="sidebar-menu">
+
+    {% if current_user.role in ('student','parent') %}
+    <!-- Student/Parent Portal -->
+    <li class="sidebar-section">My Portal</li>
+    <li><a href="{{ url_for('portal.index') }}"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+    <li><a href="{{ url_for('portal.fees') }}"><span class="nav-icon"><i class="fas fa-rupee-sign"></i></span> My Fees</a></li>
+    <li><a href="{{ url_for('portal.attendance') }}"><span class="nav-icon"><i class="fas fa-clipboard-check"></i></span> Attendance</a></li>
+    <li><a href="{{ url_for('portal.results') }}"><span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Results</a></li>
+    <li><a href="{{ url_for('noticeboard.index') }}"><span class="nav-icon"><i class="fas fa-bullhorn"></i></span> Notices</a></li>
+
+    {% else %}
+    <!-- Admin / Accountant / Teacher -->
+    <li class="sidebar-section">Overview</li>
+    <li><a href="{{ url_for('dashboard.index') }}">
+      <span class="nav-icon"><i class="fas fa-chart-pie"></i></span> Dashboard
+    </a></li>
+
+    {% if current_user.has_permission('manage_students') or current_user.has_permission('view_students') %}
+    <li class="sidebar-section">Students</li>
+    <li><a href="{{ url_for('students.list') }}">
+      <span class="nav-icon"><i class="fas fa-user-graduate"></i></span> All Students
+    </a></li>
+    {% if current_user.has_permission('manage_students') %}
+    <li><a href="{{ url_for('students.add') }}">
+      <span class="nav-icon"><i class="fas fa-user-plus"></i></span> Add Student
+    </a></li>
+    {% endif %}
+    {% endif %}
+
+    {% if current_user.has_permission('manage_fees') %}
+    <li class="sidebar-section">Finance</li>
+    <li><a href="{{ url_for('fees.collect') }}">
+      <span class="nav-icon"><i class="fas fa-hand-holding-usd"></i></span> Collect Fee
+    </a></li>
+    <li><a href="{{ url_for('fees.history') }}">
+      <span class="nav-icon"><i class="fas fa-receipt"></i></span> Fee History
+    </a></li>
+    <li><a href="{{ url_for('fees.pending') }}">
+      <span class="nav-icon"><i class="fas fa-clock"></i></span> Pending Fee
+    </a></li>
+    <li><a href="{{ url_for('transport.manage') }}">
+      <span class="nav-icon"><i class="fas fa-bus"></i></span> Transport
+    </a></li>
+    {% endif %}
+
+    {% if current_user.has_permission('manage_teachers') or current_user.has_permission('view_teachers') or current_user.has_permission('view_salary') or current_user.has_permission('manage_salary') %}
+    <li class="sidebar-section">Staff</li>
+    {% if current_user.has_permission('manage_teachers') or current_user.has_permission('view_teachers') %}
+    <li><a href="{{ url_for('teachers.teacher_list') }}">
+      <span class="nav-icon"><i class="fas fa-chalkboard-teacher"></i></span> Teachers
+    </a></li>
+    {% endif %}
+    {% if current_user.has_permission('manage_salary') or current_user.has_permission('view_salary') %}
+    <li><a href="{{ url_for('teachers.salary') }}">
+      <span class="nav-icon"><i class="fas fa-money-check-alt"></i></span> Salary
+    </a></li>
+    {% endif %}
+    {% endif %}
+
+    {% if current_user.has_permission('manage_attendance') or current_user.has_permission('manage_exams') %}
+    <li class="sidebar-section">Academic</li>
+    {% if current_user.has_permission('manage_exams') %}
+    <li><a href="{{ url_for('exams.schedule') }}">
+      <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Exam Schedule
+    </a></li>
+    {% endif %}
+    {% if current_user.has_permission('manage_attendance') %}
+    <li><a href="{{ url_for('attendance.students') }}">
+      <span class="nav-icon"><i class="fas fa-clipboard-check"></i></span> Student Attendance
+    </a></li>
+    <li><a href="{{ url_for('attendance.teachers') }}">
+      <span class="nav-icon"><i class="fas fa-user-check"></i></span> Teacher Attendance
+    </a></li>
+    <li><a href="{{ url_for('attendance.report') }}">
+      <span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Attendance Report
+    </a></li>
+    {% endif %}
+    {% endif %}
+
+
+    {% if current_user.role in ('admin','teacher','accountant') %}
+    <li class="sidebar-section">Website</li>
+    <li><a href="{{ url_for('admin_content.gallery_manage') }}" class="{{ 'active' if request.endpoint == 'admin_content.gallery_manage' }}">
+      <span class="nav-icon"><i class="fas fa-images"></i></span>Gallery
+    </a></li>
+    {% if current_user.role == 'admin' %}
+    <li><a href="{{ url_for('admin_content.downloads_manage') }}" class="{{ 'active' if request.endpoint == 'admin_content.downloads_manage' }}">
+      <span class="nav-icon"><i class="fas fa-download"></i></span>Downloads
+    </a></li>
+    <li><a href="{{ url_for('admin_content.enquiries') }}" class="{{ 'active' if request.endpoint == 'admin_content.enquiries' }}">
+      <span class="nav-icon"><i class="fas fa-user-plus"></i></span>Enquiries
+    </a></li>
+    {% endif %}
+    <li><a href="{{ url_for('public.index') }}" target="_blank">
+      <span class="nav-icon"><i class="fas fa-globe"></i></span>Public Site
+    </a></li>
+    {% endif %}
+    <li class="sidebar-section">Tools</li>
+    {% if current_user.has_permission('manage_idcard') %}
+    <li><a href="{{ url_for('idcard.generate') }}">
+      <span class="nav-icon"><i class="fas fa-id-card"></i></span> ID Cards
+    </a></li>
+    {% endif %}
+    {% if current_user.has_permission('manage_reports') %}
+    <li><a href="{{ url_for('reports.index') }}">
+      <span class="nav-icon"><i class="fas fa-file-export"></i></span> Reports
+    </a></li>
+    {% endif %}
+    <li><a href="{{ url_for('noticeboard.index') }}">
+      <span class="nav-icon"><i class="fas fa-bullhorn"></i></span> Notice Board
+    </a></li>
+
+    {% if current_user.has_permission('manage_users') %}
+    <li class="sidebar-section">Admin</li>
+    <li><a href="{{ url_for('users.list') }}">
+      <span class="nav-icon"><i class="fas fa-users-cog"></i></span> User Management
+    </a></li>
+    <li><a href="{{ url_for('users.audit_log') }}">
+      <span class="nav-icon"><i class="fas fa-shield-alt"></i></span> Audit Log
+    </a></li>
+    <li><a href="{{ url_for('settings.index') }}">
+      <span class="nav-icon"><i class="fas fa-cog"></i></span> Settings
+    </a></li>
+    {% endif %}
+    {% endif %}
+
+  </ul>
+
+  <div class="sidebar-footer">
+    <div class="footer-avatar user-theme-avatar">
+      {{ current_user.full_name[0]|upper }}
+    </div>
+    <div style="min-width:0;flex:1;">
+      <div class="footer-name">{{ current_user.full_name }}</div>
+      <div class="footer-role">{{ current_user.role_label }}</div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" title="Logout"
+       style="color:var(--text-muted);text-decoration:none;font-size:16px;padding:4px 6px;">
+      <i class="fas fa-sign-out-alt"></i>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div id="main-content">
+  <div class="topbar">
+    <button class="sidebar-toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h6 class="page-title">{% block page_title %}Dashboard{% endblock %}</h6>
+    <div class="topbar-right">
+      <span class="topbar-chip d-none d-md-flex user-theme-chip">
+        <i class="fas fa-circle" style="font-size:7px;"></i>
+        {{ current_user.role_label }}
+      </span>
+      <div class="topbar-chip d-none d-md-flex">
+        <i class="fas fa-calendar-day" style="color:var(--cyan);font-size:11px;"></i>
+        {{ now().strftime('%d %b %Y') }}
+      </div>
+      {% if current_user.has_permission('manage_fees') %}
+      <a href="{{ url_for('fees.collect') }}" class="topbar-icon-btn" title="Collect Fee">
+        <i class="fas fa-plus"></i>
+      </a>
+      {% endif %}
+      <button class="topbar-icon-btn" onclick="window.print()" title="Print">
+        <i class="fas fa-print"></i>
+      </button>
+      <a href="{{ url_for('auth.logout') }}" class="topbar-icon-btn"
+         title="Logout" style="color:var(--rose);">
+        <i class="fas fa-sign-out-alt"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="welcome-bar">
+    <div class="wb-left">
+      <i class="fas fa-graduation-cap" style="color:var(--cyan);font-size:14px;"></i>
+      <span class="wb-text">
+        Welcome to <strong>Vivekanand Vidya Mandir Dharampur</strong>
+        &nbsp;&mdash;&nbsp;
+        {% if current_user.role == "admin" %}<span class="wb-role"><i class="fas fa-shield-alt" style="font-size:9px;"></i> Administrator Dashboard</span>
+        {% elif current_user.role == "accountant" %}<span class="wb-role"><i class="fas fa-calculator" style="font-size:9px;"></i> Accountant Dashboard</span>
+        {% elif current_user.role == "teacher" %}<span class="wb-role"><i class="fas fa-chalkboard-teacher" style="font-size:9px;"></i> Teacher Dashboard</span>
+        {% elif current_user.role == "student" %}<span class="wb-role"><i class="fas fa-user-graduate" style="font-size:9px;"></i> Student Portal</span>
+        {% elif current_user.role == "parent" %}<span class="wb-role"><i class="fas fa-users" style="font-size:9px;"></i> Parent Portal</span>
+        {% else %}<span class="wb-role">Dashboard</span>{% endif %}
+      </span>
+    </div>
+    <div class="wb-right">
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light/Dark">
+        <i class="fas fa-moon" id="themeIcon"></i>
+        <span id="themeLabel">Dark</span>
+      </button>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div style="padding:0 28px;margin-top:14px;">
+      {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat if cat != 'message' else 'info' }} alert-dismissible fade show">
+        <i class="fas fa-{% if cat=='success' %}check-circle{% elif cat=='warning' %}exclamation-triangle{% elif cat=='danger' %}times-circle{% else %}info-circle{% endif %} me-2"></i>
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="page-content">
+    {% if not supabase_ready and current_user.is_authenticated and current_user.role in ('admin', 'teacher', 'accountant') %}
+    <div class="alert alert-warning alert-dismissible fade show mb-4">
+      <i class="fas fa-exclamation-triangle me-2" style="font-size: 16px;"></i>
+      <div style="flex: 1; padding-right: 15px;">
+        <strong>Cloud Storage Offline:</strong> Supabase credentials are not configured in your environment variables. 
+        Uploaded files (Gallery photos, Student photos, public downloads) will only be saved locally and <strong>will be completely deleted when the application is redeployed or restarted</strong>.
+        Please configure <code>SUPABASE_URL</code> and <code>SUPABASE_SERVICE_ROLE_KEY</code> in your environment variables (e.g. on Render).
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+  {% block modals %}{% endblock %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+
+<script>
+(function(){
+  var t = localStorage.getItem('vvmTheme') || 'dark';
+  var b = document.getElementById('appBody');
+  if(b){ b.classList.remove('theme-dark','theme-light'); b.classList.add('theme-'+t); }
+  if(t==='light'){
+    var ic=document.getElementById('themeIcon'); if(ic) ic.className='fas fa-sun';
+    var lb=document.getElementById('themeLabel'); if(lb) lb.textContent='Light';
+  }
+})();
+function toggleTheme(){
+  var b=document.getElementById('appBody');
+  var next=b.classList.contains('theme-dark')?'light':'dark';
+  b.classList.remove('theme-dark','theme-light'); b.classList.add('theme-'+next);
+  var ic=document.getElementById('themeIcon'); if(ic) ic.className=next==='dark'?'fas fa-moon':'fas fa-sun';
+  var lb=document.getElementById('themeLabel'); if(lb) lb.textContent=next==='dark'?'Dark':'Light';
+  localStorage.setItem('vvmTheme',next);
+}
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

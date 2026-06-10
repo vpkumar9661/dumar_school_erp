@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}Exam Schedule — School ERP{% endblock %}
+{% block page_title %}Exam Schedule{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Exam Schedule</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Exams</li>
+    </ol>
+  </div>
+  <button class="btn btn-purple px-4" data-bs-toggle="modal" data-bs-target="#addExamModal">
+    <i class="fas fa-plus me-2"></i>Add Exam
+  </button>
+</div>
+
+<!-- Class Filter -->
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <select class="form-select" name="class">
+          <option value="">All Classes</option>
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if sel_class == c }}>Class {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-purple">
+          <i class="fas fa-filter me-1"></i> Filter
+        </button>
+        <a href="{{ url_for('exams.schedule') }}" class="btn btn-light ms-2">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-calendar-alt" style="color:var(--purple-600);"></i>
+    <h5>Timetable {% if sel_class %}— Class {{ sel_class }}{% endif %}</h5>
+    <span class="badge badge-pill badge-purple ms-auto">{{ exams|length }} exams</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Exam Name</th>
+            <th>Class</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Max Marks</th>
+            <th>Room</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in exams %}
+          <tr>
+            <td style="font-size:12px;color:#888;">{{ loop.index }}</td>
+            <td><span class="badge badge-pill badge-purple">{{ e.exam_name }}</span></td>
+            <td style="font-weight:600;">Class {{ e.class }}</td>
+            <td style="font-size:13px;">{{ e.subject }}</td>
+            <td style="font-size:13px;font-weight:600;">{{ e.exam_date }}</td>
+            <td style="font-size:12px;color:#888;">
+              {{ e.start_time or '' }}
+              {% if e.start_time and e.end_time %} – {% endif %}
+              {{ e.end_time or '' }}
+            </td>
+            <td style="font-size:13px;">{{ e.max_marks }}</td>
+            <td style="font-size:12px;">{{ e.room_number or '—' }}</td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('exams.edit', eid=e.id) }}" class="btn btn-sm btn-outline-purple">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form method="POST" action="{{ url_for('exams.delete', eid=e.id) }}"
+                      data-confirm="Delete this exam entry?">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center py-5 text-muted">
+              <i class="fas fa-calendar-times fa-2x mb-2 d-block" style="color:var(--purple-100);"></i>
+              No exams scheduled. <button class="btn btn-link p-0" style="color:var(--purple-600);" data-bs-toggle="modal" data-bs-target="#addExamModal">Add now</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Exam Modal -->
+<div class="modal fade" id="addExamModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="border-radius:14px;border:none;">
+      <div class="modal-header" style="background:linear-gradient(135deg,var(--purple-600),var(--purple-800));color:#fff;border-radius:14px 14px 0 0;">
+        <h5 class="modal-title"><i class="fas fa-calendar-plus me-2"></i>Add Exam Schedule</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('exams.add') }}">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Exam Name *</label>
+              <input type="text" class="form-control" name="exam_name"
+                     placeholder="e.g. Unit Test 1, Half Yearly" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Class *</label>
+              <select class="form-select" name="class" required>
+                <option value="">Select Class</option>
+                {% for c in classes %}
+                <option value="{{ c }}">Class {{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Subject *</label>
+              <input type="text" class="form-control" name="subject" placeholder="e.g. Mathematics" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Exam Date *</label>
+              <input type="date" class="form-control" name="exam_date" value="{{ today }}" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Start Time</label>
+              <input type="time" class="form-control" name="start_time">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">End Time</label>
+              <input type="time" class="form-control" name="end_time">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Max Marks</label>
+              <input type="number" class="form-control" name="max_marks" value="100" min="1">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Room Number</label>
+              <input type="text" class="form-control" name="room_number" placeholder="e.g. Room 5">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-purple px-4">
+            <i class="fas fa-save me-2"></i>Add Exam
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

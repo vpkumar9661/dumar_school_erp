@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}Edit Student — School ERP{% endblock %}
+{% block page_title %}Edit Student{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Edit: {{ student.student_name }}</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('students.list') }}">Students</a></li>
+      <li class="breadcrumb-item active">Edit</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('students.view', sid=student.id) }}" class="btn btn-light">
+    <i class="fas fa-arrow-left me-1"></i> Back to Profile
+  </a>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+  <div class="row g-3">
+    <div class="col-12 col-lg-8">
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fas fa-user" style="color:var(--purple-600);"></i>
+          <h5>Basic Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Admission Number</label>
+              <input type="text" class="form-control" value="{{ student.admission_number }}" readonly
+                     style="background:var(--purple-50);">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Student Name *</label>
+              <input type="text" class="form-control" name="student_name"
+                     value="{{ student.student_name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Father's Name *</label>
+              <input type="text" class="form-control" name="father_name"
+                     value="{{ student.father_name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mother's Name *</label>
+              <input type="text" class="form-control" name="mother_name"
+                     value="{{ student.mother_name }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" name="date_of_birth"
+                     value="{{ student.date_of_birth or '' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Gender *</label>
+              <select class="form-select" name="gender" required>
+                {% for g in ['Male','Female','Other'] %}
+                <option value="{{ g }}" {{ 'selected' if student.gender == g }}>{{ g }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Aadhar Number</label>
+              <input type="text" class="form-control" name="aadhar_number"
+                     value="{{ student.aadhar_number or '' }}" maxlength="12">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" class="form-control" name="mobile_number"
+                     value="{{ student.mobile_number }}" maxlength="10" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Address</label>
+              <textarea class="form-control" name="address" rows="2">{{ student.address or '' }}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fas fa-graduation-cap" style="color:var(--purple-600);"></i>
+          <h5>Academic Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Class *</label>
+              <select class="form-select" name="class" required>
+                {% for c in classes %}
+                <option value="{{ c }}" {{ 'selected' if student.class == c }}>Class {{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Section *</label>
+              <select class="form-select" name="section" required>
+                {% for s in sections %}
+                <option value="{{ s }}" {{ 'selected' if student.section == s }}>Section {{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Roll Number</label>
+              <input type="number" class="form-control" name="roll_number"
+                     value="{{ student.roll_number or '' }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Admission Date</label>
+              <input type="date" class="form-control" name="admission_date"
+                     value="{{ student.admission_date or '' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                {% for st in ['Active','Inactive','Transfer'] %}
+                <option value="{{ st }}" {{ 'selected' if student.status == st }}>{{ st }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-rupee-sign" style="color:var(--purple-600);"></i>
+          <h5>Fee Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Monthly Fee (₹)</label>
+              <input type="number" class="form-control" name="monthly_fee"
+                     value="{{ student.monthly_fee }}" min="0" step="0.01">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Transport Distance</label>
+              <select class="form-select" name="transport_distance">
+                {% for t in transport_options %}
+                <option value="{{ t }}" {{ 'selected' if student.transport_distance == t }}>
+                  {{ 'No Transport' if t == 'None' else t ~ ' km' }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Current Transport Fee</label>
+              <input type="text" class="form-control" value="₹{{ student.transport_fee }}"
+                     readonly style="background:var(--purple-50);">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Photo -->
+    <div class="col-12 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-camera" style="color:var(--purple-600);"></i>
+          <h5>Update Photo</h5>
+        </div>
+        <div class="card-body text-center">
+          {% if student.photo and student.photo != 'default_student.jpg' %}
+          <img id="photoImg"
+               src="{{ url_for('static', filename='uploads/students/' ~ student.photo) }}"
+               style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid var(--purple-400);margin-bottom:14px;">
+          {% else %}
+          <div id="photoImg" style="width:150px;height:150px;border-radius:50%;border:3px dashed var(--purple-400);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;background:var(--purple-50);">
+            <i class="fas fa-user-circle fa-4x" style="color:var(--purple-400);"></i>
+          </div>
+          {% endif %}
+          <input type="file" class="form-control" name="photo"
+                 accept="image/*" onchange="previewPhoto(this)">
+          <div class="form-text mt-2">Upload new to replace current photo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-3 mt-3">
+    <button type="submit" class="btn btn-purple px-5">
+      <i class="fas fa-save me-2"></i>Save Changes
+    </button>
+    <a href="{{ url_for('students.view', sid=student.id) }}" class="btn btn-light px-4">Cancel</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('photoImg');
+      if (img.tagName === 'IMG') {
+        img.src = e.target.result;
+      } else {
+        const newImg = document.createElement('img');
+        newImg.id = 'photoImg';
+        newImg.src = e.target.result;
+        newImg.style = 'width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid var(--purple-400);margin-bottom:14px;';
+        img.replaceWith(newImg);
+      }
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+</script>
+{% endblock %}

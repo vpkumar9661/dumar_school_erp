@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block title %}Attendance Report — School ERP{% endblock %}
+{% block page_title %}Attendance Report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Monthly Attendance Report</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Attendance Report</li>
+    </ol>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <select class="form-select" name="class">
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if sel_class == c }}>Class {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select class="form-select" name="month">
+          {% for m in months %}
+          <option value="{{ m }}" {{ 'selected' if sel_month == m|int }}>
+            {{ ['','January','February','March','April','May','June','July','August','September','October','November','December'][m] }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select class="form-select" name="year">
+          {% for y in years %}
+          <option value="{{ y }}" {{ 'selected' if sel_year == y }}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-purple w-100">
+          <i class="fas fa-filter me-1"></i> Generate
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-chart-bar" style="color:var(--purple-600);"></i>
+    <h5>Class {{ sel_class }} — Monthly Attendance</h5>
+    <button onclick="window.print()" class="btn btn-sm btn-light ms-auto">
+      <i class="fas fa-print me-1"></i> Print
+    </button>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>Roll</th>
+            <th>Student Name</th>
+            <th style="color:#27ae60;">Present</th>
+            <th style="color:#e74c3c;">Absent</th>
+            <th style="color:#f39c12;">Late</th>
+            <th>Total Days</th>
+            <th>Attendance %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in report_data %}
+          {% set pct = (r.present_days / r.total_days * 100) if r.total_days > 0 else 0 %}
+          <tr>
+            <td>{{ r.roll_number or '—' }}</td>
+            <td style="font-weight:600;font-size:13px;">{{ r.student_name }}</td>
+            <td><strong style="color:#27ae60;">{{ r.present_days }}</strong></td>
+            <td><strong style="color:#e74c3c;">{{ r.absent_days }}</strong></td>
+            <td><strong style="color:#f39c12;">{{ r.late_days }}</strong></td>
+            <td>{{ r.total_days }}</td>
+            <td>
+              <div style="min-width:100px;">
+                <div class="d-flex justify-content-between">
+                  <span style="font-size:12px;font-weight:600;
+                    color:{% if pct >= 75 %}#27ae60{% elif pct >= 50 %}#f39c12{% else %}#e74c3c{% endif %};">
+                    {{ "%.1f"|format(pct) }}%
+                  </span>
+                </div>
+                <div class="progress mt-1" style="height:4px;border-radius:2px;">
+                  <div class="progress-bar"
+                       style="width:{{ pct }}%;background:{% if pct >= 75 %}#27ae60{% elif pct >= 50 %}#f39c12{% else %}#e74c3c{% endif %};"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="text-center py-4 text-muted">No attendance records found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,750 @@
+{% extends 'base.html' %}
+{% block title %}Collect Fee — VVM Dharampur{% endblock %}
+{% block page_title %}Fee Collection{% endblock %}
+
+{% block extra_css %}
+<style>
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+.mc {
+  border: 1.5px solid var(--border-hover);
+  border-radius: var(--r-md);
+  padding: 8px 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .15s;
+  background: var(--bg-input);
+  user-select: none;
+}
+.mc:hover { border-color: rgba(0,212,255,.4); background: var(--cyan-dim); }
+.mc.sel   { border-color: var(--cyan); background: var(--cyan-dim); box-shadow: 0 0 10px rgba(0,212,255,.14); }
+.mc.paid  { border-color: rgba(16,232,123,.25); background: rgba(16,232,123,.05); cursor: not-allowed; opacity:.65; }
+.mc-name  { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.mc-year  { font-size: 10px; color: var(--text-muted); margin-top:1px; }
+.mc.sel .mc-name { color: var(--cyan); }
+.mc.paid .mc-name{ color: var(--green); }
+.mc.paid::after  { content:'✓'; position:absolute; top:3px; right:5px; font-size:10px; color:var(--green); }
+.mc { position:relative; }
+
+.fee-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.fee-row:last-child { border-bottom: none; }
+.fee-label {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.fee-label span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  display: block;
+  margin-top:1px;
+}
+.fee-input {
+  width: 130px !important;
+  text-align: right;
+  font-family:'Inter',sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  color: var(--cyan) !important;
+}
+.fee-input:focus { color: var(--cyan) !important; }
+.fee-auto-tag {
+  font-size: 10px; font-weight: 700;
+  color: var(--green);
+  background: rgba(16,232,123,.08);
+  border: 1px solid rgba(16,232,123,.2);
+  padding: 2px 8px; border-radius: 99px;
+  white-space: nowrap;
+}
+.fee-manual-tag {
+  font-size: 10px; font-weight: 700;
+  color: var(--text-muted);
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  padding: 2px 8px; border-radius: 99px;
+  white-space: nowrap;
+}
+
+.total-bar {
+  background: linear-gradient(135deg, var(--bg-card2), var(--bg-card));
+  border: 1.5px solid var(--border-cyan);
+  border-radius: var(--r-xl);
+  padding: 18px 22px;
+  position: relative; overflow: hidden;
+}
+.total-bar::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 70% 60% at 100% 50%, rgba(0,212,255,.06), transparent 70%);
+  pointer-events: none;
+}
+.total-main { font-family:'Inter',sans-serif; font-size:36px; font-weight:800; color:var(--cyan); letter-spacing:-.5px; }
+.total-sub  { font-size:12.5px; color:var(--text-muted); }
+
+.si-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 13px 16px; margin-bottom: 14px;
+}
+.si-name { font-family:'Inter',sans-serif; font-size:17px; font-weight:800; }
+.si-meta { font-size:12.5px; color:var(--text-muted); margin-top:2px; }
+
+.due-warn {
+  background: rgba(255,77,109,.06);
+  border: 1px solid rgba(255,77,109,.22);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  font-size: 13px; color: var(--rose);
+  margin-top: 10px;
+}
+
+.qs-btn {
+  font-size:11.5px; font-weight:600; cursor:pointer;
+  padding:4px 11px; border-radius:99px; border:1px solid;
+  transition:all .15s;
+}
+.qs-btn.cyan   { color:var(--cyan); border-color:rgba(0,212,255,.28); background:var(--cyan-dim); }
+.qs-btn.cyan:hover { background:rgba(0,212,255,.18); }
+.qs-btn.rose   { color:var(--rose); border-color:rgba(255,77,109,.28); background:var(--rose-dim); }
+.qs-btn.rose:hover { background:rgba(255,77,109,.18); }
+
+.filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(0,212,255,.25);
+  color: var(--cyan);
+  background: rgba(0,212,255,.06);
+  white-space: nowrap;
+}
+.filter-badge i {
+  font-size: 9px;
+  opacity: .7;
+}
+.filter-badge-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1;
+  transition: all .15s;
+  margin-left: 2px;
+}
+.filter-badge-close:hover {
+  background: rgba(255,77,109,.15);
+  color: var(--rose);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Fee Collection</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Collect Fee</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('fees.history') }}" class="btn btn-light btn-sm px-3">
+    <i class="fas fa-history me-1"></i> History
+  </a>
+</div>
+
+<div class="row g-3">
+
+  <!-- ── LEFT: Student Search & Filters ── -->
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-search"></i></div>
+        <h5>Find Student</h5>
+      </div>
+      <div class="card-body">
+        <form method="GET" id="filterForm" class="mb-3">
+
+          <!-- Class Filter -->
+          <div class="mb-2">
+            <label class="form-label" style="font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">
+              <i class="fas fa-graduation-cap me-1" style="font-size:10px;"></i> Filter by Class
+            </label>
+            <select class="form-select" name="class" id="classFilter" onchange="document.getElementById('filterForm').submit()">
+              <option value="">— All Classes —</option>
+              {% for cls in classes %}
+              <option value="{{ cls }}" {% if sel_class == cls %}selected{% endif %}>{{ cls }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Month / Year Fee Due Filter -->
+          <div class="row g-2 mb-2">
+            <div class="col-7">
+              <label class="form-label" style="font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">
+                <i class="fas fa-calendar-alt me-1" style="font-size:10px;"></i> Fee Due Month
+              </label>
+              <select class="form-select" name="month" id="monthFilter">
+                <option value="">— Any Month —</option>
+                {% for m in months %}
+                <option value="{{ m }}" {% if sel_month == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-5">
+              <label class="form-label" style="font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">
+                Year
+              </label>
+              <select class="form-select" name="year" id="yearFilter">
+                <option value="">Year</option>
+                {% for y in years %}
+                <option value="{{ y }}" {% if sel_year == y|string %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Name / Admission Number Search -->
+          <div class="search-box mb-2">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control" name="search"
+                   placeholder="Name ya Admission No..."
+                   value="{{ search }}">
+          </div>
+
+          <button type="submit" class="btn btn-purple w-100">
+            <i class="fas fa-filter me-1"></i> Apply Filters
+          </button>
+        </form>
+
+        <!-- Active Filters Badges -->
+        {% if sel_class or sel_month or search %}
+        <div class="active-filters mb-2" style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
+          <span style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Active:</span>
+          {% if sel_class %}
+          <span class="filter-badge">
+            <i class="fas fa-graduation-cap"></i> Class {{ sel_class }}
+            <a href="{{ url_for('fees.collect', search=search, month=sel_month, year=sel_year) }}" class="filter-badge-close">&times;</a>
+          </span>
+          {% endif %}
+          {% if sel_month and sel_year %}
+          <span class="filter-badge" style="border-color:rgba(245,200,66,.3);color:var(--gold);background:rgba(245,200,66,.06);">
+            <i class="fas fa-calendar-alt"></i> {{ sel_month }} {{ sel_year }} Due
+            <a href="{{ url_for('fees.collect', search=search) }}&class={{ sel_class }}" class="filter-badge-close" style="color:var(--gold);">&times;</a>
+          </span>
+          {% elif sel_month %}
+          <span class="filter-badge" style="border-color:rgba(245,200,66,.3);color:var(--gold);background:rgba(245,200,66,.06);">
+            <i class="fas fa-calendar-alt"></i> {{ sel_month }}
+            <a href="{{ url_for('fees.collect', search=search) }}&class={{ sel_class }}" class="filter-badge-close" style="color:var(--gold);">&times;</a>
+          </span>
+          {% endif %}
+          {% if search %}
+          <span class="filter-badge" style="border-color:rgba(124,111,239,.3);color:var(--violet);background:rgba(124,111,239,.06);">
+            <i class="fas fa-search"></i> "{{ search }}"
+            <a href="{{ url_for('fees.collect') }}?class={{ sel_class }}&month={{ sel_month }}&year={{ sel_year }}" class="filter-badge-close" style="color:var(--violet);">&times;</a>
+          </span>
+          {% endif %}
+          <a href="{{ url_for('fees.collect') }}" style="font-size:10.5px;color:var(--rose);font-weight:600;text-decoration:none;margin-left:4px;">
+            <i class="fas fa-times-circle"></i> Clear All
+          </a>
+        </div>
+        {% endif %}
+
+        {% if students %}
+        <!-- Student Count -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:6px 10px;background:var(--bg-card2);border-radius:var(--r-md);border:1px solid var(--border);">
+          <span style="font-size:12px;color:var(--text-muted);">
+            <i class="fas fa-users me-1"></i> Students Found
+          </span>
+          <span style="font-size:13px;font-weight:800;color:var(--cyan);font-family:'Inter',sans-serif;">{{ students|length }}</span>
+        </div>
+        <div style="max-height:420px;overflow-y:auto;">
+          {% for s in students %}
+          <div onclick="loadStudent({{ s.id }})"
+               class="student-list-item"
+               style="padding:10px 12px;border-radius:var(--r-md);border:1px solid var(--border);background:var(--bg-card2);margin-bottom:6px;cursor:pointer;transition:all .15s;"
+               onmouseover="this.style.borderColor='rgba(0,212,255,.35)'"
+               onmouseout="this.style.borderColor='var(--border)'">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-weight:700;font-size:14px;">{{ s.student_name }}</div>
+              <span class="badge badge-pill" style="background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);font-size:10.5px;">{{ s.class }}-{{ s.section }}</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--text-muted);">
+              {{ s.admission_number }} &bull;
+              F: {{ s.father_name }}
+            </div>
+            <div style="margin-top:5px;">
+              <span class="badge badge-pill badge-purple">₹{{ "%.0f"|format(s.monthly_fee) }}/mo</span>
+              {% if s.transport_fee > 0 %}
+              <span class="badge badge-pill" style="background:var(--violet-dim);color:var(--violet);border:1px solid rgba(124,111,239,.2);">+₹{{ "%.0f"|format(s.transport_fee) }} transport</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% elif search or sel_class %}
+        <div class="text-center py-4" style="color:var(--text-muted);font-size:13px;">
+          <i class="fas fa-user-slash" style="font-size:26px;display:block;margin-bottom:8px;color:var(--border);"></i>
+          {% if sel_month and sel_year and sel_class %}
+            No students in Class {{ sel_class }} with pending fee for {{ sel_month }} {{ sel_year }}
+          {% elif sel_class %}
+            No students found in Class {{ sel_class }}
+          {% else %}
+            No results found for "{{ search }}"
+          {% endif %}
+        </div>
+        {% else %}
+        <div class="text-center py-4" style="color:var(--text-muted);font-size:13px;">
+          <i class="fas fa-search" style="font-size:26px;display:block;margin-bottom:8px;color:var(--border);"></i>
+          Search for a student or select a class
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: Fee Form ── -->
+  <div class="col-12 col-lg-8">
+    <form method="POST" id="feeForm" onsubmit="return prepareSubmit()">
+      <input type="hidden" name="student_id"      id="studentId">
+      <input type="hidden" name="selected_months" id="selectedMonthsInput">
+
+      <!-- Student Info (hidden until selected) -->
+      <div id="mainForm" style="display:none;">
+
+        <div class="si-card" id="siCard">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="si-name" id="siName">—</div>
+              <div class="si-meta" id="siMeta">—</div>
+            </div>
+            <span id="dueCountBadge" class="badge badge-pill" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.22);font-size:12px;display:none;">
+              <i class="fas fa-exclamation-circle me-1" style="font-size:10px;"></i>
+              <span id="dueCountText">0</span> months due
+            </span>
+          </div>
+        </div>
+
+        <!-- Month Selection -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--violet-dim);color:var(--violet);border:1px solid rgba(124,111,239,.2);"><i class="fas fa-calendar-alt"></i></div>
+            <h5>Select Payment Months</h5>
+            <div class="d-flex gap-2 ms-auto">
+              <span class="qs-btn cyan" onclick="selectAllDue()">Select All Due</span>
+              <span class="qs-btn rose" onclick="clearSel()">Clear</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="month-grid" id="monthGrid">
+              <!-- Built by JS -->
+            </div>
+            <div id="selSummary" class="mt-2" style="font-size:12.5px;color:var(--text-muted);display:none;">
+              Selected: <span id="selSummaryText" style="color:var(--cyan);font-weight:700;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fee Details -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="card-icon" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);"><i class="fas fa-rupee-sign"></i></div>
+            <h5>Fee Details</h5>
+          </div>
+          <div class="card-body">
+
+            <!-- Tuition Fee (auto) -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Tuition Fee
+                <span>Monthly fee × selected months (auto)</span>
+              </div>
+              <span class="fee-auto-tag">Auto</span>
+              <input type="text" class="form-control fee-input" id="tuitionDisplay"
+                     value="₹0" readonly
+                     style="background:rgba(16,232,123,.05);border-color:rgba(16,232,123,.2)!important;">
+            </div>
+
+            <!-- Transport Fee (auto) -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Transport Fee
+                <span>Per month × selected months (auto)</span>
+              </div>
+              <span class="fee-auto-tag">Auto</span>
+              <input type="text" class="form-control fee-input" id="transportDisplay"
+                     value="₹0" readonly
+                     style="background:rgba(16,232,123,.05);border-color:rgba(16,232,123,.2)!important;">
+            </div>
+
+            <!-- Admission Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Admission Fee
+                <span>One-time charge — collected at the time of admission</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="admission_fee"
+                     id="admissionFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Development Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Development Fee
+                <span>Annual development charges</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="development_fee"
+                     id="developmentFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Computer Lab Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Computer Lab Fee
+                <span>Computer laboratory charges</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="computer_lab_fee"
+                     id="computerLabFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Science Lab Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Science Lab Fee
+                <span>Science laboratory charges</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="science_lab_fee"
+                     id="scienceLabFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Library Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Library Fee
+                <span>Library membership charges</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="library_fee"
+                     id="libraryFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Exam Fee -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Exam Fee
+                <span>Examination charges</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="exam_fee"
+                     id="examFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()">
+            </div>
+
+            <!-- Late Fine — MANUAL -->
+            <div class="fee-row">
+              <div class="fee-label">
+                Late Fine
+                <span>Enter manually — defaults to 0 if left blank</span>
+              </div>
+              <span class="fee-manual-tag">Manual</span>
+              <input type="number" class="form-control fee-input" name="late_fine"
+                     id="lateFine" value="0" min="0" step="0.01"
+                     oninput="calcTotal()"
+                     style="border-color:rgba(255,77,109,.25)!important;color:var(--rose)!important;">
+            </div>
+
+            <!-- Others Fee -->
+            <div class="fee-row" style="flex-wrap:wrap;gap:6px;">
+              <div class="fee-label" style="flex:none;width:100%;margin-bottom:4px;">
+                Others Fee
+                <span>Any other charge — specify name below</span>
+              </div>
+              <input type="text" class="form-control" name="other_fee_remark"
+                     placeholder="Fee description (e.g. Sports Fee, Lab Fee)"
+                     style="flex:1;min-width:160px;font-size:13px;">
+              <input type="number" class="form-control fee-input" name="other_fee"
+                     id="otherFee" value="0" min="0" step="0.01"
+                     oninput="calcTotal()" style="width:130px!important;flex:none;">
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="card-icon" style="background:rgba(124,111,239,.1);color:var(--violet);border:1px solid rgba(124,111,239,.2);"><i class="fas fa-credit-card"></i></div>
+            <h5>Payment Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Payment Date</label>
+                <input type="date" class="form-control" name="payment_date"
+                       value="{{ today }}">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Payment Mode</label>
+                <select class="form-select" name="payment_mode">
+                  <option>Cash</option>
+                  <option>UPI</option>
+                  <option>Online</option>
+                  <option>Cheque</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Remarks</label>
+                <input type="text" class="form-control" name="remarks"
+                       placeholder="Optional note">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total + Submit -->
+        <div class="total-bar">
+          <div class="row align-items-center g-3">
+            <div class="col">
+              <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Total Payable Amount</div>
+              <div class="total-main" id="grandTotal">₹0</div>
+              <div class="total-sub" id="grandTotalSub">0 months — 0 fee types</div>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-purple px-5 py-3" id="payBtn" disabled
+                      style="font-size:16px;font-weight:800;">
+                <i class="fas fa-check me-2"></i>Collect Fee
+              </button>
+            </div>
+          </div>
+          <!-- Mini breakdown -->
+          <div id="miniBreakdown" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:none;">
+            <div id="miniBreakdownContent" style="font-size:12.5px;color:var(--text-secondary);display:flex;flex-wrap:wrap;gap:8px 20px;"></div>
+          </div>
+        </div>
+
+        <!-- Due Warning -->
+        <div id="dueWarning" class="due-warn" style="display:none;">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>Still Due:</strong> ₹<span id="dueAmtText">0</span> —
+          <span id="dueMonthsText">0 months</span> pending as of the current month
+        </div>
+
+      </div>
+
+      <!-- Prompt before student selected -->
+      <div id="noStudentPrompt" class="card">
+        <div class="card-body text-center py-5" style="color:var(--text-muted);">
+          <i class="fas fa-user-circle" style="font-size:44px;color:var(--border);display:block;margin-bottom:14px;"></i>
+          <div style="font-size:15px;font-weight:600;">Select a student from the list on the left to begin</div>
+          <div style="font-size:13px;margin-top:6px;">Search by name → Click on the student card to proceed</div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let studentData  = null;
+let selectedMons = [];   // [{month, year}, ...]
+
+function loadStudent(sid) {
+  fetch('/fees/student_info/' + sid)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { alert('Error!'); return; }
+      studentData  = data;
+      selectedMons = [];
+
+      document.getElementById('noStudentPrompt').style.display = 'none';
+      document.getElementById('mainForm').style.display = 'block';
+      document.getElementById('studentId').value = data.id;
+
+      // Student info card
+      document.getElementById('siName').textContent = data.student_name;
+      document.getElementById('siMeta').textContent =
+        data.admission_number + ' · ' + data.class + '-' + data.section +
+        ' · Father: ' + data.father_name;
+
+      const dcb = document.getElementById('dueCountBadge');
+      if (data.due_count > 0) {
+        dcb.style.display = 'inline-flex';
+        document.getElementById('dueCountText').textContent = data.due_count;
+      } else {
+        dcb.style.display = 'none';
+      }
+
+      buildGrid(data.due_months);
+      calcTotal();
+    });
+}
+
+function buildGrid(dueMonths) {
+  const grid = document.getElementById('monthGrid');
+  grid.innerHTML = '';
+  if (!dueMonths || dueMonths.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--green);font-size:13.5px;"><i class="fas fa-check-circle me-2"></i>All months are paid. No dues pending up to the current month.</div>';
+    return;
+  }
+  dueMonths.forEach(m => {
+    const chip = document.createElement('div');
+    chip.className = 'mc';
+    chip.dataset.month = m.month;
+    chip.dataset.year  = m.year;
+    chip.innerHTML = `<div class="mc-name">${m.month.substring(0,3)}</div><div class="mc-year">${m.year}</div>`;
+    chip.onclick = () => toggleMon(chip, m.month, m.year);
+    grid.appendChild(chip);
+  });
+}
+
+function toggleMon(chip, month, year) {
+  const idx = selectedMons.findIndex(m => m.month === month && m.year == year);
+  if (idx >= 0) {
+    selectedMons.splice(idx, 1);
+    chip.classList.remove('sel');
+  } else {
+    selectedMons.push({ month, year: parseInt(year) });
+    chip.classList.add('sel');
+  }
+  calcTotal();
+}
+
+function selectAllDue() {
+  selectedMons = [];
+  document.querySelectorAll('.mc:not(.paid)').forEach(c => {
+    c.classList.add('sel');
+    selectedMons.push({ month: c.dataset.month, year: parseInt(c.dataset.year) });
+  });
+  calcTotal();
+}
+
+function clearSel() {
+  selectedMons = [];
+  document.querySelectorAll('.mc.sel').forEach(c => c.classList.remove('sel'));
+  calcTotal();
+}
+
+function fv(id) { return parseFloat(document.getElementById(id)?.value || 0) || 0; }
+
+function calcTotal() {
+  const n = selectedMons.length;
+  if (!studentData) return;
+
+  const tuition   = studentData.monthly_fee * n;
+  const transport = studentData.transport_fee * n;
+  const admission = fv('admissionFee');
+  const develop   = fv('developmentFee');
+  const complab   = fv('computerLabFee');
+  const scilab    = fv('scienceLabFee');
+  const library   = fv('libraryFee');
+  const exam      = fv('examFee');
+  const latefine  = fv('lateFine');
+  const other     = fv('otherFee');
+  const grand     = tuition + transport + admission + develop +
+                    complab + scilab + library + exam + latefine + other;
+
+  // Update tuition/transport displays
+  document.getElementById('tuitionDisplay').value   = '₹' + tuition.toFixed(0);
+  document.getElementById('transportDisplay').value = '₹' + transport.toFixed(0);
+
+  // Grand total
+  document.getElementById('grandTotal').textContent = '₹' + grand.toFixed(0);
+
+  // Count extra fees
+  const extras = [admission,develop,complab,scilab,library,exam,latefine,other].filter(v=>v>0).length;
+  document.getElementById('grandTotalSub').textContent =
+    n + ' month' + (n!==1?'s':'') +
+    (extras>0 ? ' + ' + extras + ' extra fee type' + (extras!==1?'s':'') : '');
+
+  // Mini breakdown
+  const lines = [];
+  if (tuition   > 0) lines.push(`Tuition: ₹${tuition.toFixed(0)}`);
+  if (transport > 0) lines.push(`Transport: ₹${transport.toFixed(0)}`);
+  if (admission > 0) lines.push(`Admission: ₹${admission.toFixed(0)}`);
+  if (develop   > 0) lines.push(`Development: ₹${develop.toFixed(0)}`);
+  if (complab   > 0) lines.push(`Computer Lab: ₹${complab.toFixed(0)}`);
+  if (scilab    > 0) lines.push(`Science Lab: ₹${scilab.toFixed(0)}`);
+  if (library   > 0) lines.push(`Library: ₹${library.toFixed(0)}`);
+  if (exam      > 0) lines.push(`Exam: ₹${exam.toFixed(0)}`);
+  if (latefine  > 0) lines.push(`Late Fine: ₹${latefine.toFixed(0)}`);
+  if (other     > 0) lines.push(`Others: ₹${other.toFixed(0)}`);
+
+  const mb  = document.getElementById('miniBreakdown');
+  const mbc = document.getElementById('miniBreakdownContent');
+  if (lines.length > 0 && n > 0) {
+    mbc.innerHTML = lines.map(l => `<span style="white-space:nowrap;">${l}</span>`).join('<span style="color:var(--border);">|</span>');
+    mb.style.display = 'block';
+  } else {
+    mb.style.display = 'none';
+  }
+
+  // Selected months summary
+  const ss = document.getElementById('selSummary');
+  const st = document.getElementById('selSummaryText');
+  if (n > 0) {
+    ss.style.display = 'block';
+    const first = selectedMons[0], last = selectedMons[n-1];
+    st.textContent = n === 1
+      ? `${first.month} ${first.year}`
+      : `${first.month} ${first.year} → ${last.month} ${last.year} (${n} months)`;
+  } else {
+    ss.style.display = 'none';
+  }
+
+  // Pay button
+  const btn = document.getElementById('payBtn');
+  btn.disabled = n === 0;
+  btn.innerHTML = n > 0
+    ? `<i class="fas fa-check me-2"></i>Collect ₹${grand.toFixed(0)}`
+    : `<i class="fas fa-check me-2"></i>Collect Fee`;
+
+  // Due warning
+  const selSet = new Set(selectedMons.map(m => m.month + '_' + m.year));
+  const stillDue = studentData.due_months.filter(m => !selSet.has(m.month + '_' + m.year));
+  const dw = document.getElementById('dueWarning');
+  if (stillDue.length > 0 && n > 0) {
+    const dueAmt = stillDue.length * (studentData.monthly_fee + studentData.transport_fee);
+    document.getElementById('dueAmtText').textContent    = dueAmt.toFixed(0);
+    document.getElementById('dueMonthsText').textContent = stillDue.length + ' month' + (stillDue.length>1?'s':'');
+    dw.style.display = 'block';
+  } else {
+    dw.style.display = 'none';
+  }
+}
+
+function prepareSubmit() {
+  if (!selectedMons.length) { alert('Please select at least one month before proceeding.'); return false; }
+  document.getElementById('selectedMonthsInput').value = JSON.stringify(selectedMons);
+  return true;
+}
+</script>
+{% endblock %}

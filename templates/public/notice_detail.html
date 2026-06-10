@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>{{ notice.title }} — VVM Dharampur</title>
+<link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/public.css') }}" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet"/>
+<style>
+.nd-card {
+  max-width: 720px; margin: 40px auto;
+  background: var(--bg-card); border: 1px solid var(--border-h);
+  border-radius: var(--r-xl); overflow: hidden;
+  box-shadow: var(--glow);
+}
+.nd-header {
+  background: linear-gradient(135deg, var(--amber-gg), transparent);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 32px;
+}
+.nd-body { padding: 28px 32px; }
+.nd-title { font-family:'Inter',sans-serif; font-size:24px; font-weight:900; color:var(--text); margin-bottom:12px; }
+.nd-content { font-size:15.5px; color:var(--text-2); line-height:1.85; white-space:pre-wrap; }
+.nd-meta { font-size:13px; color:var(--text-3); display:flex; flex-wrap:wrap; gap:16px; }
+</style>
+</head>
+<body>
+<!-- Mini navbar -->
+<nav style="background:var(--bg-2);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);">
+  <div class="c" style="display:flex;align-items:center;justify-content:space-between;">
+    <a href="{{ url_for('public.index') }}" style="display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;color:var(--text);">
+      <i class="fas fa-arrow-left" style="color:var(--amber);"></i> VVM Dharampur
+    </a>
+    <a href="{{ url_for('public.index') }}#notices" class="btn-s" style="font-size:13px;padding:7px 16px;">
+      <i class="fas fa-bell"></i> All Notices
+    </a>
+  </div>
+</nav>
+
+<div class="c" style="padding-top:30px;padding-bottom:60px;">
+  <div class="nd-card">
+    <div class="nd-header">
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+        <span class="n-badge nb-{{ notice.priority|lower if notice.priority else 'n' }}">
+          {% if notice.priority == 'Urgent' %}🔴{% elif notice.priority == 'Important' %}🟡{% else %}🟢{% endif %}
+          {{ notice.priority or 'Notice' }}
+        </span>
+        {% if notice.category %}
+        <span style="background:var(--glass);border:1px solid var(--border-h);color:var(--text-2);font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;">{{ notice.category }}</span>
+        {% endif %}
+      </div>
+      <div class="nd-title">{{ notice.title }}</div>
+      <div class="nd-meta">
+        <span><i class="fas fa-calendar-alt" style="color:var(--amber);margin-right:5px;"></i>{{ notice.created_at.strftime('%d %B %Y, %I:%M %p') if notice.created_at }}</span>
+        {% if notice.expires_at %}
+        <span><i class="fas fa-calendar-times" style="color:var(--rose);margin-right:5px;"></i>Expires: {{ notice.expires_at }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="nd-body">
+      <div class="nd-content">{{ notice.content }}</div>
+      <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="{{ url_for('public.index') }}#notices" class="btn-s" style="display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:14px;">
+          <i class="fas fa-arrow-left"></i> Back to Notices
+        </a>
+        <a href="{{ url_for('public.index') }}" class="btn-s" style="display:inline-flex;align-items:center;gap:7px;padding:10px 20px;font-size:14px;">
+          <i class="fas fa-home"></i> Homepage
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var t=localStorage.getItem('vvmT')||'dark';
+  if(t==='light') document.body.classList.add('lm');
+})();
+</script>
+</body>
+</html>

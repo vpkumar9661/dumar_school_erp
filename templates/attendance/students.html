@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Student Attendance — School ERP{% endblock %}
+{% block page_title %}Student Attendance{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Student Attendance</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Student Attendance</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('attendance.report') }}" class="btn btn-light btn-sm px-3">
+    <i class="fas fa-chart-bar me-1"></i> Monthly Report
+  </a>
+</div>
+
+<!-- Filter -->
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-6 col-md-3">
+        <label class="form-label">Class</label>
+        <select class="form-select" name="class">
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if sel_class == c }}>Class {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" name="date" value="{{ sel_date }}">
+      </div>
+      <div class="col-12 col-md-2">
+        <button type="submit" class="btn btn-purple w-100">
+          <i class="fas fa-filter me-1"></i> Load
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if students %}
+<!-- Stats Row -->
+<div class="row g-2 mb-3">
+  <div class="col-3">
+    <div class="card text-center py-2">
+      <div style="font-size:22px;font-weight:700;color:#27ae60;">{{ stats.get('Present',0) }}</div>
+      <div style="font-size:11px;color:#888;">Present</div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="card text-center py-2">
+      <div style="font-size:22px;font-weight:700;color:#e74c3c;">{{ stats.get('Absent',0) }}</div>
+      <div style="font-size:11px;color:#888;">Absent</div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="card text-center py-2">
+      <div style="font-size:22px;font-weight:700;color:#f39c12;">{{ stats.get('Late',0) }}</div>
+      <div style="font-size:11px;color:#888;">Late</div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="card text-center py-2">
+      <div style="font-size:22px;font-weight:700;color:var(--purple-600);">{{ students|length }}</div>
+      <div style="font-size:11px;color:#888;">Total</div>
+    </div>
+  </div>
+</div>
+
+<form method="POST">
+  <input type="hidden" name="attendance_date" value="{{ sel_date }}">
+  <input type="hidden" name="class" value="{{ sel_class }}">
+  {% for s in students %}
+    <input type="hidden" name="student_ids" value="{{ s.id }}">
+  {% endfor %}
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-clipboard-check" style="color:var(--purple-600);"></i>
+      <h5>Class {{ sel_class }} — {{ sel_date }}</h5>
+      <!-- Mark All Buttons -->
+      <div class="ms-auto d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-success" onclick="markAll('Present')">All Present</button>
+        <button type="button" class="btn btn-sm btn-outline-danger"  onclick="markAll('Absent')">All Absent</button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Roll</th>
+              <th>Student Name</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td style="font-size:12px;color:#888;">{{ loop.index }}</td>
+              <td style="font-weight:600;">{{ s.roll_number or '—' }}</td>
+              <td style="font-size:13px;font-weight:500;">{{ s.student_name }}</td>
+              <td>
+                <div class="d-flex gap-1">
+                  {% for status in ['Present','Absent','Late','Leave'] %}
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input att-radio"
+                           type="radio"
+                           name="status_{{ s.id }}"
+                           value="{{ status }}"
+                           data-status="{{ status }}"
+                           {{ 'checked' if s.att_status == status or (not s.att_status and status == 'Present') }}>
+                    <label class="form-check-label" style="font-size:12px;
+                      color:{% if status == 'Present' %}#27ae60{% elif status == 'Absent' %}#e74c3c{% elif status == 'Late' %}#f39c12{% else %}#888{% endif %};">
+                      {{ status }}
+                    </label>
+                  </div>
+                  {% endfor %}
+                </div>
+              </td>
+              <td>
+                <input type="text" class="form-control form-control-sm"
+                       name="remarks_{{ s.id }}"
+                       value="{{ s.att_remarks or '' }}"
+                       style="width:130px;" placeholder="Optional">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button type="submit" class="btn btn-purple px-5">
+        <i class="fas fa-save me-2"></i>Save Attendance
+      </button>
+    </div>
+  </div>
+</form>
+{% else %}
+<div class="card">
+  <div class="card-body text-center py-5 text-muted">
+    <i class="fas fa-clipboard-check fa-2x mb-2 d-block" style="color:var(--purple-100);"></i>
+    Select a class and date to mark attendance.
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function markAll(status) {
+  document.querySelectorAll(`.att-radio[data-status="${status}"]`).forEach(r => r.checked = true);
+}
+</script>
+{% endblock %}

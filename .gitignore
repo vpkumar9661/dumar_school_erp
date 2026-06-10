@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# Database
+database/instance/
+*.sqlite
+*.db
+
+# Environment variables
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Uploads (usually handled by cloud storage in production)
+static/uploads/

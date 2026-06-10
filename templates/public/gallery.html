@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="Gallery — Vivekanand Vidya Mandir Dharampur. Campus life, events, sports and more."/>
+<title>Gallery — Vivekanand Vidya Mandir Dharampur</title>
+<link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/public.css') }}?v=5" rel="stylesheet"/>
+<link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet"/>
+<style>
+/* ══ GALLERY PAGE SPECIFIC ══════════════════════════════════════ */
+
+/* ── Page hero ────────────────────────────────────────────────── */
+.gp-hero{
+  position:relative;
+  padding:140px 0 72px;
+  background:var(--bg);
+  overflow:hidden;
+  text-align:center;
+}
+.gp-hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(144,245,11,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(144,245,11,.025) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+.gp-orb1{
+  position:absolute;top:-120px;left:-100px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(144,245,11,.09) 0%,transparent 68%);
+  filter:blur(60px);pointer-events:none;
+}
+.gp-orb2{
+  position:absolute;bottom:-80px;right:-80px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,26,140,.07) 0%,transparent 68%);
+  filter:blur(60px);pointer-events:none;
+}
+.gp-orb3{
+  position:absolute;top:30%;right:15%;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,229,255,.06) 0%,transparent 68%);
+  filter:blur(50px);pointer-events:none;
+}
+.gp-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(144,245,11,.08);border:1px solid rgba(144,245,11,.22);
+  color:#90f50b;font-size:11.5px;font-weight:700;
+  padding:5px 14px;border-radius:999px;margin-bottom:20px;
+  letter-spacing:1.6px;text-transform:uppercase;
+  position:relative;z-index:1;
+}
+.gp-title{
+  font-family:'Inter',sans-serif;
+  font-size:clamp(36px,6vw,74px);
+  font-weight:900;line-height:1.05;
+  letter-spacing:-2px;color:#f4f4f5;
+  margin-bottom:16px;position:relative;z-index:1;
+}
+.gp-title span{
+  background:linear-gradient(120deg,#90f50b,#dff500,#00e5ff);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.gp-sub{
+  font-size:16px;color:#71717a;max-width:480px;
+  margin:0 auto 40px;line-height:1.7;
+  position:relative;z-index:1;
+}
+/* Breadcrumb */
+.gp-crumb{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;color:#52525b;
+  position:relative;z-index:1;
+}
+.gp-crumb a{color:#71717a;transition:color .15s;}
+.gp-crumb a:hover{color:#90f50b;}
+.gp-crumb i{font-size:10px;color:#3f3f46;}
+
+/* ── Category filter bar ─────────────────────────────────────── */
+.gf-bar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(9,9,11,.8);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:14px 0;
+}
+.gf-inner{
+  display:flex;align-items:center;gap:8px;
+  overflow-x:auto;padding-bottom:2px;
+  scrollbar-width:none;
+}
+.gf-inner::-webkit-scrollbar{display:none;}
+/* Count chip */
+.gf-count{
+  font-size:12px;color:#52525b;font-weight:600;
+  white-space:nowrap;flex-shrink:0;margin-right:4px;
+}
+/* Filter pills */
+.gf-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 16px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:#71717a;
+  font-size:12.5px;font-weight:500;
+  cursor:pointer;white-space:nowrap;flex-shrink:0;
+  transition:all .2s ease;
+  font-family:'Inter',sans-serif;
+}
+.gf-pill:hover{
+  border-color:rgba(255,255,255,.2);
+  color:#f4f4f5;background:rgba(255,255,255,.05);
+  transform:translateY(-1px);
+}
+.gf-pill.active{
+  border-color:rgba(144,245,11,.55);
+  color:#000;
+  background:linear-gradient(120deg,#90f50b,#dff500);
+  font-weight:700;
+  box-shadow:0 0 16px rgba(144,245,11,.2);
+}
+.gf-pill .pill-n{
+  background:rgba(255,255,255,.12);color:inherit;
+  font-size:10px;font-weight:700;
+  padding:1px 6px;border-radius:999px;
+  min-width:18px;text-align:center;
+}
+.gf-pill.active .pill-n{background:rgba(0,0,0,.18);color:#000;}
+
+/* ── Gallery grid ────────────────────────────────────────────── */
+.gp-section{padding:56px 0;}
+
+.gcat-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px;flex-wrap:wrap;gap:12px;
+}
+.gcat-label{
+  display:inline-flex;align-items:center;gap:8px;
+}
+.gcat-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+}
+.gcat-name{
+  font-family:'Inter',sans-serif;
+  font-size:20px;font-weight:800;color:#f4f4f5;
+}
+.gcat-count{
+  font-size:12px;color:#52525b;font-weight:600;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  padding:2px 10px;border-radius:999px;
+}
+.gcat-line{
+  flex:1;height:1px;
+  background:linear-gradient(90deg,var(--cat-color,rgba(144,245,11,.25)),transparent);
+  margin-left:16px;
+  min-width:40px;
+}
+
+/* Masonry-style CSS grid */
+.gal-masonry{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:60px;
+}
+/* Make some items span 2 cols/rows for masonry feel */
+.gal-masonry .gal-item:nth-child(5n+1){grid-column:span 2;aspect-ratio:16/10;}
+.gal-masonry .gal-item:nth-child(7n+3){grid-row:span 2;}
+.gal-masonry .gal-item:nth-child(7n+3) img{height:100%;}
+
+/* Gallery item */
+.gal-item{
+  position:relative;border-radius:14px;
+  overflow:hidden;aspect-ratio:4/3;
+  border:1px solid rgba(255,255,255,.07);
+  cursor:pointer;
+  transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+}
+.gal-item img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .5s ease,filter .3s ease;
+}
+.gal-item:hover{
+  transform:translateY(-4px) scale(1.01);
+  border-color:rgba(255,255,255,.18);
+}
+.gal-item:hover img{transform:scale(1.08);filter:brightness(1.05);}
+
+/* Overlay on hover */
+.gal-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.88) 0%,transparent 55%);
+  opacity:0;transition:opacity .3s ease;
+  display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:flex-end;
+  padding:16px;
+}
+.gal-item:hover .gal-ov{opacity:1;}
+.gal-cap{
+  color:#fff;font-size:13px;font-weight:600;
+  line-height:1.4;margin-bottom:6px;
+}
+.gal-zoom{
+  display:inline-flex;align-items:center;justify-content:center;
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(.7);
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(8px);
+  color:#fff;font-size:16px;
+  opacity:0;transition:all .3s ease;
+}
+.gal-item:hover .gal-zoom{opacity:1;transform:translate(-50%,-50%) scale(1);}
+
+/* Colour accent per category — top shine */
+.gal-item::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--cat-accent,#90f50b);
+  opacity:0;transition:opacity .3s;z-index:2;
+}
+.gal-item:hover::before{opacity:.8;}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.gal-empty{
+  grid-column:1/-1;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:72px 24px;
+  background:rgba(255,255,255,.02);
+  border:1px dashed rgba(255,255,255,.1);
+  border-radius:16px;text-align:center;color:#52525b;
+}
+.gal-empty i{font-size:40px;margin-bottom:14px;color:#3f3f46;}
+.gal-empty-t{font-size:16px;font-weight:700;color:#71717a;margin-bottom:6px;}
+.gal-empty-s{font-size:14px;}
+
+/* ── Full-page empty (no photos at all) ─────────────────────── */
+.gal-no-photos{
+  padding:96px 24px;text-align:center;
+}
+.gal-no-photos i{
+  font-size:56px;color:#3f3f46;
+  display:block;margin-bottom:20px;
+}
+.gal-no-photos h3{
+  font-family:'Inter',sans-serif;font-size:24px;font-weight:800;
+  color:#71717a;margin-bottom:10px;
+}
+.gal-no-photos p{font-size:15px;color:#52525b;}
+
+/* ── Lightbox ────────────────────────────────────────────────── */
+.lb{
+  position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.94);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+}
+.lb.open{display:flex;}
+.lb-inner{
+  position:relative;
+  max-width:min(1000px,90vw);
+  max-height:90vh;
+  width:100%;
+  display:flex;flex-direction:column;
+  animation:lb-in .25s ease;
+}
+@keyframes lb-in{
+  from{opacity:0;transform:scale(.94);}
+  to{opacity:1;transform:scale(1);}
+}
+.lb-img-wrap{
+  position:relative;border-radius:16px;overflow:hidden;
+  flex:1;max-height:80vh;
+  border:1px solid rgba(255,255,255,.1);
+}
+.lb-img{
+  width:100%;height:100%;
+  object-fit:contain;max-height:75vh;
+  display:block;background:#0a0a0c;
+}
+.lb-close{
+  position:absolute;top:-44px;right:0;
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  color:#fff;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.lb-close:hover{background:rgba(255,26,140,.3);border-color:rgba(255,26,140,.5);}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  color:#fff;font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;z-index:2;
+}
+.lb-nav:hover{background:rgba(144,245,11,.2);border-color:rgba(144,245,11,.4);color:#90f50b;}
+.lb-prev{left:-56px;}
+.lb-next{right:-56px;}
+.lb-info{
+  padding:12px 4px 0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.lb-cap{font-size:14px;font-weight:600;color:#a1a1aa;}
+.lb-counter{font-size:12px;color:#52525b;font-weight:600;}
+/* Category badge inside lightbox */
+.lb-cat{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;
+  padding:3px 10px;border-radius:999px;
+  border:1px solid rgba(144,245,11,.3);color:#90f50b;
+  background:rgba(144,245,11,.08);
+}
+
+/* ── Stats bar at bottom ─────────────────────────────────────── */
+.gp-stats{
+  background:rgba(255,255,255,.03);
+  border-top:1px solid rgba(255,255,255,.06);
+  padding:28px 0;
+}
+.gp-stats-g{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:rgba(255,255,255,.06);
+  border-radius:12px;overflow:hidden;
+}
+.gps-item{
+  padding:20px;text-align:center;
+  background:var(--bg);
+  transition:background .2s;
+}
+.gps-item:hover{background:rgba(255,255,255,.03);}
+.gps-n{
+  font-family:'Inter',sans-serif;
+  font-size:28px;font-weight:900;line-height:1;
+  margin-bottom:5px;
+}
+.gps-l{font-size:11px;color:#52525b;font-weight:600;text-transform:uppercase;letter-spacing:.8px;}
+
+/* ── Mobile responsive ───────────────────────────────────────── */
+@media(max-width:900px){
+  .gal-masonry{grid-template-columns:repeat(3,1fr);}
+  .gal-masonry .gal-item:nth-child(5n+1){grid-column:span 2;}
+  .gal-masonry .gal-item:nth-child(7n+3){grid-row:auto;}
+  .lb-prev{left:-4px;}
+  .lb-next{right:-4px;}
+  .gp-stats-g{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .gal-masonry{grid-template-columns:repeat(2,1fr);}
+  .gal-masonry .gal-item:nth-child(5n+1){grid-column:span 2;}
+  .gal-masonry .gal-item:nth-child(7n+3){grid-row:auto;}
+  .gf-inner{flex-wrap:nowrap;}
+  .gp-stats-g{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ CURSOR GLOW ═══ -->
+<div id="c-glow"></div>
+<canvas id="pcv"></canvas>
+
+<!-- ═══ HEADER ═══ -->
+<header class="main-header">
+  <!-- ═══ TOP TICKER ═══ -->
+  <div class="top-ticker">
+    <div class="wr"><div class="tt-inner">
+      <div class="tt-track"><div class="tt-belt">
+        <span>📸 Campus Gallery — Vivekanand Vidya Mandir Dharampur</span>
+        <span>🎓 Admissions Open · Session {{ cfg.get('admission_session','2026-27') }}</span>
+        <span>✅ CBSE Affiliated · Aff. No. {{ cfg.get('school_affiliation','3430608') }}</span>
+        <span>📞 Enquiry: {{ cfg.get('admission_enquiry_phone','7070373801') }}</span>
+        <span>📸 Campus Gallery — Vivekanand Vidya Mandir Dharampur</span>
+        <span>🎓 Admissions Open · Session {{ cfg.get('admission_session','2026-27') }}</span>
+        <span>✅ CBSE Affiliated · Aff. No. {{ cfg.get('school_affiliation','3430608') }}</span>
+        <span>📞 Enquiry: {{ cfg.get('admission_enquiry_phone','7070373801') }}</span>
+      </div></div>
+      <div class="tt-right">
+        <i class="fas fa-phone"></i>&nbsp;{{ cfg.get('school_phone2','8084558842') }}
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="pub-nav" id="pubNav">
+    <div class="wr"><div class="nav-w">
+      <a href="{{ url_for('public.index') }}" class="nav-brand">
+        <div class="nav-logo-wrap">
+          <img src="{{ url_for('static', filename='images/school_logo.png') }}"
+               onerror="this.style.display='none'" alt="VVM" class="nav-logo"/>
+        </div>
+        <div class="nav-brand-text">
+          <div class="nb-name">Vivekanand Vidya Mandir</div>
+          <div class="nb-sub">Dharampur, Jharkhand</div>
+        </div>
+      </a>
+
+      <button class="ham" id="ham" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="{{ url_for('public.index') }}#home">Home</a></li>
+        <li><a href="{{ url_for('public.index') }}#about">About</a></li>
+        <li><a href="{{ url_for('public.index') }}#principal">Principal</a></li>
+        <li><a href="{{ url_for('public.index') }}#facilities">Facilities</a></li>
+        <li><a href="{{ url_for('public.index') }}#notices">Notices</a></li>
+        <li><a href="{{ url_for('public.gallery') }}" class="on">Gallery</a></li>
+        <li><a href="{{ url_for('public.index') }}#admission">Admission</a></li>
+     
+        <li><a href="{{ url_for('public.index') }}#contact">Contact</a></li>
+        <li class="mobile-cta-wrap"><a href="{{ url_for('auth.login') }}" class="mobile-nav-cta">Staff Login</a></li>
+      </ul>
+
+      <div class="nav-right">
+        <button class="theme-btn" id="tBtn" onclick="toggleTheme()" title="Toggle theme">
+          <i class="fas fa-moon" id="tIcon"></i>
+        </button>
+        <a href="{{ url_for('auth.login') }}" class="nav-cta">
+          Staff Login &nbsp;→
+        </a>
+      </div>
+    </div></div>
+  </nav>
+</header>
+
+<!-- ═══ PAGE HERO ═══ -->
+<div class="gp-hero">
+  <div class="gp-orb1"></div>
+  <div class="gp-orb2"></div>
+  <div class="gp-orb3"></div>
+  <div class="wr">
+    <div class="gp-badge">
+      <i class="fas fa-images"></i> Campus Life
+    </div>
+    <h1 class="gp-title">School <span>Gallery</span></h1>
+    <p class="gp-sub">
+      Glimpses of vibrant academic, cultural, sporting and everyday life at
+      Vivekanand Vidya Mandir Dharampur.
+    </p>
+    <div class="gp-crumb">
+      <a href="{{ url_for('public.index') }}"><i class="fas fa-home"></i> Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <span style="color:#90f50b;">Gallery</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CATEGORY FILTER BAR ═══ -->
+{% set all_count = photos|length if photos else 0 %}
+<div class="gf-bar" id="gfBar">
+  <div class="wr">
+    <div class="gf-inner">
+      <span class="gf-count">{{ all_count }} photo{{ 's' if all_count != 1 else '' }}</span>
+      <button class="gf-pill active js-gf-pill" data-category-slug="all">
+        <i class="fas fa-th"></i> All
+        <span class="pill-n">{{ all_count }}</span>
+      </button>
+      {% if categories %}
+        {% for cat in categories %}
+          {% set cat_count = photos|selectattr('category','equalto',cat)|list|length if photos else 0 %}
+          <button class="gf-pill js-gf-pill" data-category-slug="{{ cat|replace(' ','-')|lower }}">
+            {{ cat }}
+            <span class="pill-n">{{ cat_count }}</span>
+          </button>
+        {% endfor %}
+      {% else %}
+        <!-- Fallback categories if not provided by route -->
+        <button class="gf-pill js-gf-pill" data-category-slug="events">
+          <i class="fas fa-star"></i> Events <span class="pill-n">0</span>
+        </button>
+        <button class="gf-pill js-gf-pill" data-category-slug="sports">
+          <i class="fas fa-futbol"></i> Sports <span class="pill-n">0</span>
+        </button>
+        <button class="gf-pill js-gf-pill" data-category-slug="academic">
+          <i class="fas fa-book"></i> Academic <span class="pill-n">0</span>
+        </button>
+        <button class="gf-pill js-gf-pill" data-category-slug="campus">
+          <i class="fas fa-school"></i> Campus <span class="pill-n">0</span>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GALLERY CONTENT ═══ -->
+<div class="gp-section">
+  <div class="wr">
+
+    {% if photos %}
+
+      {# ── Category-wise grouped display ── #}
+      {% if categories %}
+        {# Colour palette cycling per category #}
+        {% set cat_colours = ['#90f50b','#00e5ff','#ff1a8c','#bf00ff','#ff6b1a','#dff500','#00ffc8','#4d9fff'] %}
+
+        {% for cat in categories %}
+          {% set cat_photos = photos|selectattr('category','equalto',cat)|list %}
+          {% if cat_photos %}
+            {% set cidx = loop.index0 % cat_colours|length %}
+            {% set ccolour = cat_colours[cidx] %}
+
+            <div class="gcat-wrap" data-cat="{{ cat|replace(' ','-')|lower }}">
+              <div class="gcat-header">
+                <div class="gcat-label">
+                  <div class="gcat-dot js-gcat-dot" data-color="{{ ccolour }}"></div>
+                  <span class="gcat-name">{{ cat }}</span>
+                  <span class="gcat-count">{{ cat_photos|length }} photo{{ 's' if cat_photos|length != 1 else '' }}</span>
+                </div>
+                <div class="gcat-line js-gcat-line" data-color="{{ ccolour }}"></div>
+              </div>
+
+              <div class="gal-masonry">
+                {% for p in cat_photos %}
+                <div class="gal-item js-gal-item"
+                     data-color="{{ ccolour }}"
+                     data-index="{{ loop.index0 }}"
+                     data-category-slug="{{ cat|replace(' ','-')|lower }}"
+                     data-caption="{{ p.caption or '' }}">
+                  <img src="{{ get_url('gallery', p.filename) }}"
+                       alt="{{ p.caption or cat }}"
+                       loading="lazy"/>
+                  <div class="gal-ov">
+                    {% if p.caption %}
+                    <div class="gal-cap">{{ p.caption }}</div>
+                    {% endif %}
+                    <div class="lb-cat">{{ cat }}</div>
+                  </div>
+                  <div class="gal-zoom"><i class="fas fa-expand-alt"></i></div>
+                </div>
+                {% endfor %}
+              </div>
+
+            </div>
+          {% endif %}
+        {% endfor %}
+
+      {% else %}
+        {# ── No categories — flat grid ── #}
+        <div class="gal-masonry" id="flatGrid">
+          {% for p in photos %}
+          <div class="gal-item js-gal-item-flat"
+               data-index="{{ loop.index0 }}"
+               data-caption="{{ p.caption or '' }}"
+               data-category-slug="general"
+               style="--cat-accent:#90f50b;">
+            <img src="{{ get_url('gallery', p.filename) }}"
+                 alt="{{ p.caption or 'Gallery' }}" loading="lazy"/>
+            <div class="gal-ov">
+              {% if p.caption %}
+              <div class="gal-cap">{{ p.caption }}</div>
+              {% endif %}
+            </div>
+            <div class="gal-zoom"><i class="fas fa-expand-alt"></i></div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- ── No photos uploaded yet ── -->
+      <div class="gal-no-photos">
+        <i class="fas fa-camera-retro"></i>
+        <h3>Gallery Coming Soon</h3>
+        <p>Photos of campus life, events and activities will appear here.<br>
+        Check back soon!</p>
+        <a href="{{ url_for('public.index') }}" class="btn-amber" style="display:inline-flex;margin-top:28px;">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+      </div>
+    {% endif %}
+
+    <!-- ── Back to home button ── -->
+    {% if photos %}
+    <div style="text-align:center;padding:20px 0 40px;">
+      <a href="{{ url_for('public.index') }}#gallery" class="btn-ghost" style="display:inline-flex;">
+        <i class="fas fa-arrow-left"></i> Back to Homepage
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ═══ STATS BAR ═══ -->
+{% if photos %}
+<div class="gp-stats">
+  <div class="wr">
+    <div class="gp-stats-g">
+      <div class="gps-item">
+        <div class="gps-n" style="color:#90f50b;text-shadow:0 0 20px rgba(144,245,11,.3);">
+          {{ photos|length }}
+        </div>
+        <div class="gps-l">Total Photos</div>
+      </div>
+      <div class="gps-item">
+        <div class="gps-n" style="color:#00e5ff;text-shadow:0 0 20px rgba(0,229,255,.3);">
+          {{ categories|length if categories else 1 }}
+        </div>
+        <div class="gps-l">Categories</div>
+      </div>
+      <div class="gps-item">
+        <div class="gps-n" style="color:#ff1a8c;text-shadow:0 0 20px rgba(255,26,140,.3);">
+          {{ now().year - 2009 }}+
+        </div>
+        <div class="gps-l">Years of Memories</div>
+      </div>
+      <div class="gps-item">
+        <div class="gps-n" style="color:#dff500;text-shadow:0 0 20px rgba(223,255,0,.3);">
+          {{ cfg.get('total_students','965') }}+
+        </div>
+        <div class="gps-l">Students</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="wr">
+    <div class="ft-g">
+      <div>
+        <img src="{{ url_for('static',filename='images/school_logo.png') }}"
+             onerror="this.style.display='none'" alt="VVM"
+             style="width:44px;height:44px;object-fit:contain;border-radius:9px;"/>
+        <div class="ft-bname">Vivekanand Vidya Mandir</div>
+        <p class="ft-desc">A CBSE-affiliated English medium school in Hazaribag, Jharkhand.
+        Managed by Swami Vivekanand Seva Trust, Reg. No. 4141/128.</p>
+        <div class="ft-tag">"Empowering Minds, Building Futures"</div>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul class="ft-links">
+          <li><a href="{{ url_for('public.index') }}#home">Home</a></li>
+          <li><a href="{{ url_for('public.index') }}#about">About School</a></li>
+          <li><a href="{{ url_for('public.index') }}#principal">Principal</a></li>
+          <li><a href="{{ url_for('public.index') }}#facilities">Facilities</a></li>
+          <li><a href="{{ url_for('public.index') }}#notices">Notice Board</a></li>
+          <li><a href="{{ url_for('public.downloads') }}">Downloads</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Gallery</h4>
+        <ul class="ft-links">
+          {% if categories %}
+            {% for cat in categories %}
+            <li><a href="#" class="js-footer-cat" data-category-slug="{{ cat|replace(' ','-')|lower }}">
+              {{ cat }}</a></li>
+            {% endfor %}
+          {% else %}
+          <li><a href="{{ url_for('public.gallery') }}">All Photos</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <div class="ft-cr"><i class="fas fa-map-marker-alt"></i>
+        <span>At-Mandpa, Tatijhariya, Hazaribag, JH 825313</span></div>
+        <div class="ft-cr"><i class="fas fa-phone"></i>
+        <a href="tel:8084558842">8084558842</a></div>
+        <div class="ft-cr"><i class="fas fa-phone"></i>
+        <a href="tel:7070373801">7070373801 (Admission)</a></div>
+        <div class="ft-cr"><i class="fas fa-envelope"></i>
+        <a href="mailto:info@vvmdharampur.edu.in">info@vvmdharampur.edu.in</a></div>
+        <a href="{{ url_for('auth.login') }}" class="ft-portal-btn">
+          <i class="fas fa-sign-in-alt"></i> Staff Login Portal
+        </a>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span>&copy; {{ now().year }} Vivekanand Vidya Mandir Dharampur ·
+      Aff. No. {{ cfg.get('school_affiliation','3430608') }} ·
+      Code {{ cfg.get('school_code','66688') }}</span>
+      <a href="{{ url_for('auth.login') }}">Staff Portal</a>
+    </div>
+  </div>
+</footer>
+
+<a href="#" class="btt" id="btt"><i class="fas fa-chevron-up"></i></a>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div class="lb" id="lb" onclick="closeLBBg(event)">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLB()">
+      <i class="fas fa-times"></i>
+    </button>
+    <button class="lb-nav lb-prev" onclick="lbNav(-1)">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="lb-nav lb-next" onclick="lbNav(1)">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <div class="lb-img-wrap">
+      <img src="" alt="" class="lb-img" id="lbImg"/>
+    </div>
+    <div class="lb-info">
+      <div>
+        <span class="lb-cat" id="lbCat"></span>
+        <div class="lb-cap" id="lbCap" style="margin-top:6px;"></div>
+      </div>
+      <span class="lb-counter" id="lbCounter"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script>
+/* ── Data from Jinja ─────────────────────────────────────────── */
+var PHOTOS = [];
+(function(){
+  // Initialize dynamic styles for category indicators
+  document.querySelectorAll('.js-gcat-dot').forEach(function(el) {
+    var c = el.getAttribute('data-color');
+    if (c) {
+      el.style.background = c;
+      el.style.boxShadow = '0 0 8px ' + c + '55';
+    }
+  });
+  document.querySelectorAll('.js-gcat-line').forEach(function(el) {
+    var c = el.getAttribute('data-color');
+    if (c) {
+      el.style.setProperty('--cat-color', c + '44');
+    }
+  });
+  document.querySelectorAll('.js-gal-item').forEach(function(el) {
+    var c = el.getAttribute('data-color');
+    if (c) {
+      el.style.setProperty('--cat-accent', c);
+    }
+  });
+
+  // Build PHOTOS array dynamically from DOM
+  document.querySelectorAll('.gal-item').forEach(function(el) {
+    var img = el.querySelector('img');
+    if (img) {
+      PHOTOS.push({
+        src: img.getAttribute('src'),
+        cap: el.getAttribute('data-caption') || '',
+        cat: el.getAttribute('data-category-slug') || 'general'
+      });
+    }
+  });
+
+  // Attach click event listeners dynamically for category filters
+  document.querySelectorAll('.js-gf-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var cat = this.getAttribute('data-category-slug') || 'all';
+      filterCat(pill, cat);
+    });
+  });
+
+  // Attach click event listeners dynamically for footer category filters
+  document.querySelectorAll('.js-footer-cat').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      var cat = this.getAttribute('data-category-slug');
+      filterCat(null, cat);
+    });
+  });
+
+  // Attach click event listeners dynamically for gallery items
+  document.addEventListener('click', function(e) {
+    var item = e.target.closest('.js-gal-item');
+    if (item) {
+      var idx = parseInt(item.getAttribute('data-index'), 10);
+      var cat = item.getAttribute('data-category-slug');
+      openLB(idx, cat);
+      return;
+    }
+    
+    var itemFlat = e.target.closest('.js-gal-item-flat');
+    if (itemFlat) {
+      var idxFlat = parseInt(itemFlat.getAttribute('data-index'), 10);
+      openLBFlat(idxFlat);
+    }
+  });
+})();
+
+/* ── Theme ───────────────────────────────────────────────────── */
+(function(){
+  if(localStorage.getItem('vvmT')==='light'){
+    document.body.classList.add('lm');
+    document.getElementById('tIcon').className='fas fa-sun';
+  }
+})();
+function toggleTheme(){
+  var l=document.body.classList.toggle('lm');
+  document.getElementById('tIcon').className=l?'fas fa-sun':'fas fa-moon';
+  localStorage.setItem('vvmT',l?'light':'dark');
+}
+
+/* ── Cursor glow ─────────────────────────────────────────────── */
+(function(){
+  var g=document.getElementById('c-glow');
+  if(!g)return;
+  document.addEventListener('mousemove',function(e){
+    g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';
+  },{passive:true});
+})();
+
+/* ── Particles ───────────────────────────────────────────────── */
+(function(){
+  var cv=document.getElementById('pcv');if(!cv)return;
+  var ctx=cv.getContext('2d');var W,H;
+  function sz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  sz();window.addEventListener('resize',sz,{passive:true});
+  var N=50,pts=[];
+  for(var i=0;i<N;i++) pts.push({
+    x:Math.random()*2e3,y:Math.random()*1200,
+    vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,
+    r:Math.random()*1.5+.3,o:Math.random()
+  });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var dark=!document.body.classList.contains('lm');
+    pts.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=dark?'rgba(144,245,11,'+(.08+p.o*.15)+')'
+        :'rgba(100,160,10,'+(.03+p.o*.06)+')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Scroll navbar ───────────────────────────────────────────── */
+(function(){
+  var nav=document.getElementById('pubNav');
+  if(!nav)return;
+  function upd(){nav.classList.toggle('scrolled',window.scrollY>60);}
+  window.addEventListener('scroll',upd,{passive:true});upd();
+})();
+
+/* ── Back to top ─────────────────────────────────────────────── */
+var btt=document.getElementById('btt');
+window.addEventListener('scroll',function(){
+  btt.classList.toggle('show',scrollY>500);
+},{passive:true});
+
+/* ── Mobile nav ──────────────────────────────────────────────── */
+function toggleNav(){
+  var nl=document.getElementById('navLinks'),h=document.getElementById('ham');
+  var o=nl.classList.toggle('open');h.classList.toggle('open',o);
+  if(o){
+    nl.style.display='flex';
+    requestAnimationFrame(function(){
+      nl.style.opacity='1';nl.style.transform='translateY(0) scale(1)';
+    });
+  } else {
+    nl.style.opacity='0';nl.style.transform='translateY(-8px) scale(.97)';
+    setTimeout(function(){if(!nl.classList.contains('open'))nl.style.display='';},260);
+  }
+}
+document.addEventListener('click',function(e){
+  var nl=document.getElementById('navLinks'),h=document.getElementById('ham');
+  if(nl&&h&&!nl.contains(e.target)&&!h.contains(e.target)){
+    nl.classList.remove('open');h.classList.remove('open');
+    nl.style.opacity='0';nl.style.transform='translateY(-8px) scale(.97)';
+    setTimeout(function(){if(!nl.classList.contains('open'))nl.style.display='';},260);
+  }
+});
+
+/* ── Category filter ─────────────────────────────────────────── */
+function filterCat(btn, cat){
+  // Update pill active state
+  if (!btn && cat) {
+    btn = document.querySelector('.js-gf-pill[data-category-slug="' + cat + '"]');
+  }
+  document.querySelectorAll('.gf-pill').forEach(function(p){p.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+
+  // Show/hide category sections
+  document.querySelectorAll('.gcat-wrap').forEach(function(w){
+    if(cat==='all' || w.dataset.cat===cat){
+      w.style.display='';
+      w.style.animation='fadeUp .4s ease both';
+    } else {
+      w.style.display='none';
+    }
+  });
+
+  // Flat grid items
+  document.querySelectorAll('#flatGrid .gal-item').forEach(function(it){
+    if(cat==='all' || it.dataset.cat===cat){
+      it.style.display='';
+    } else {
+      it.style.display='none';
+    }
+  });
+
+  // Scroll to gallery start smoothly
+  var gp=document.querySelector('.gp-section');
+  if(gp) gp.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── Lightbox ────────────────────────────────────────────────── */
+var lbCurrentCat='all';
+var lbCurrentIdx=0;
+var lbItems=[];
+
+function openLB(idx, cat){
+  lbCurrentCat=cat;
+  // Get items in this category
+  lbItems=PHOTOS.filter(function(p){return p.cat===cat;});
+  lbCurrentIdx=idx;
+  showLB();
+}
+function openLBFlat(idx){
+  lbItems=PHOTOS;
+  lbCurrentIdx=idx;
+  showLB();
+}
+function showLB(){
+  var p=lbItems[lbCurrentIdx];
+  if(!p) return;
+  document.getElementById('lbImg').src=p.src;
+  document.getElementById('lbImg').alt=p.cap||'Gallery';
+  document.getElementById('lbCap').textContent=p.cap||'';
+  document.getElementById('lbCat').textContent=p.cat.replace(/-/g,' ');
+  document.getElementById('lbCounter').textContent=
+    (lbCurrentIdx+1)+' / '+lbItems.length;
+  document.getElementById('lb').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLB(){
+  document.getElementById('lb').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeLBBg(e){
+  if(e.target.id==='lb') closeLB();
+}
+function lbNav(dir){
+  lbCurrentIdx=(lbCurrentIdx+dir+lbItems.length)%lbItems.length;
+  showLB();
+}
+// Keyboard navigation
+document.addEventListener('keydown',function(e){
+  if(!document.getElementById('lb').classList.contains('open')) return;
+  if(e.key==='ArrowLeft') lbNav(-1);
+  if(e.key==='ArrowRight') lbNav(1);
+  if(e.key==='Escape') closeLB();
+});
+
+/* Mobile nav */
+function toggleNav() {
+  var nl = document.getElementById('navLinks');
+  var h = document.getElementById('ham');
+  var isOpen = nl.classList.toggle('open');
+  h.classList.toggle('open', isOpen);
+  if (isOpen) {
+    nl.style.display = 'flex';
+    requestAnimationFrame(function () {
+      nl.style.opacity = '1';
+      nl.style.transform = 'translateY(0) scale(1)';
+    });
+  } else {
+    nl.style.opacity = '0';
+    nl.style.transform = 'translateY(-8px) scale(.97)';
+    setTimeout(function () {
+      if (!nl.classList.contains('open')) nl.style.display = '';
+    }, 260);
+  }
+}
+document.addEventListener('click', function (e) {
+  var nl = document.getElementById('navLinks'), h = document.getElementById('ham');
+  if (nl && h && !nl.contains(e.target) && !h.contains(e.target)) {
+    nl.classList.remove('open'); h.classList.remove('open');
+    nl.style.opacity = '0';
+    nl.style.transform = 'translateY(-8px) scale(.97)';
+    setTimeout(function () {
+      if (!nl.classList.contains('open')) nl.style.display = '';
+    }, 260);
+  }
+});
+
+/* ── Scroll reveal ───────────────────────────────────────────── */
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+  });
+},{threshold:.06});
+document.querySelectorAll('.anim').forEach(function(el){io.observe(el);});
+
+/* ── Smooth scroll ───────────────────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id=this.getAttribute('href');
+    if(id==='#') return;
+    var el=document.querySelector(id);
+    if(el){e.preventDefault();el.scrollIntoView({behavior:'smooth'});}
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% block title %}Pay Salary — {{ teacher.teacher_name }}{% endblock %}
+{% block page_title %}Pay Salary{% endblock %}
+
+{% block extra_css %}
+<style>
+.pay-card {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* Teacher Info Banner */
+.teacher-banner {
+  background: linear-gradient(135deg, rgba(0,212,255,.1) 0%, rgba(124,111,239,.08) 100%);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--r-xl);
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.teacher-avatar {
+  width: 56px; height: 56px;
+  border-radius: var(--r-lg);
+  background: var(--cyan-dim);
+  border: 2px solid var(--border-cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-family:'Inter',sans-serif; font-weight: 800;
+  font-size: 22px; color: var(--cyan); flex-shrink: 0;
+}
+.teacher-info-name {
+  font-family:'Inter',sans-serif;
+  font-size: 20px; font-weight: 800;
+  color: var(--text-primary); line-height: 1.2;
+}
+.teacher-info-meta {
+  font-size: 13px; color: var(--text-muted); margin-top: 4px;
+}
+.salary-badge {
+  margin-left: auto;
+  text-align: right;
+}
+.salary-badge-label {
+  font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--text-muted);
+}
+.salary-badge-amount {
+  font-family:'Inter',sans-serif;
+  font-size: 26px; font-weight: 800; color: var(--cyan);
+  line-height: 1.1;
+}
+
+/* Net pay display box */
+.net-display {
+  background: linear-gradient(135deg, rgba(16,232,123,.1), rgba(16,232,123,.04));
+  border: 1.5px solid rgba(16,232,123,.3);
+  border-radius: var(--r-lg);
+  padding: 18px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.net-display-label {
+  font-size: 14px; color: var(--text-secondary); font-weight: 600;
+}
+.net-display-amount {
+  font-family:'Inter',sans-serif;
+  font-size: 34px; font-weight: 800; color: var(--green);
+  transition: color .2s, transform .15s;
+}
+
+/* Deduction section */
+.ded-section {
+  background: rgba(255,77,109,.05);
+  border: 1px solid rgba(255,77,109,.18);
+  border-radius: var(--r-lg);
+  padding: 16px 20px;
+  margin-top: 4px;
+}
+
+/* Payment mode cards */
+.pm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+}
+@media (max-width:576px) { .pm-grid { grid-template-columns: repeat(2, 1fr); } }
+.pm-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 11px 12px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  transition: all .15s;
+  background: var(--bg-card2);
+}
+.pm-card:hover { border-color: var(--border-cyan); background: var(--bg-hover); }
+.pm-card.selected {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  box-shadow: 0 0 14px rgba(0,212,255,.1);
+}
+.pm-card-icon { font-size: 20px; flex-shrink: 0; }
+.pm-card-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.pm-card-desc { font-size: 10.5px; color: var(--text-muted); }
+.pm-card input[type=radio] { display: none; }
+
+/* Section divider */
+.form-section-title {
+  font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--text-muted); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.form-section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* Light theme adjustments */
+body.theme-light .teacher-banner { background: linear-gradient(135deg, rgba(0,145,220,.08), rgba(124,111,239,.05)); border-color: rgba(0,145,220,.3); }
+body.theme-light .teacher-avatar  { background: rgba(0,145,220,.1); border-color: rgba(0,145,220,.3); color: #0091DC; }
+body.theme-light .teacher-info-name { color: #1A2535; }
+body.theme-light .pm-card  { background: #F5F7FA; border-color: rgba(0,0,0,.12); }
+body.theme-light .pm-card.selected { background: rgba(0,145,220,.08); border-color: #0091DC; }
+body.theme-light .net-display { background: rgba(5,150,105,.08); border-color: rgba(5,150,105,.3); }
+body.theme-light .net-display-amount { color: #059669; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4><i class="fas fa-rupee-sign me-2" style="color:var(--green);"></i>Pay Salary</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.salary', month=month, year=year) }}">Salary</a></li>
+      <li class="breadcrumb-item active">Pay — {{ teacher.teacher_name }}</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('teachers.salary', month=month, year=year) }}"
+     class="btn btn-light px-4">
+    <i class="fas fa-arrow-left me-2"></i>Back
+  </a>
+</div>
+
+<div class="pay-card">
+
+  <!-- Teacher Banner -->
+  <div class="teacher-banner">
+    <div class="teacher-avatar">{{ teacher.teacher_name[0]|upper }}</div>
+    <div>
+      <div class="teacher-info-name">{{ teacher.teacher_name }}</div>
+      <div class="teacher-info-meta">
+        <i class="fas fa-book me-1" style="color:var(--cyan);font-size:11px;"></i>{{ teacher.subject or 'N/A' }}
+        {% if teacher.mobile_number %}
+        &nbsp;&nbsp;<i class="fas fa-phone me-1" style="font-size:11px;"></i>{{ teacher.mobile_number }}
+        {% endif %}
+      </div>
+    </div>
+    <div class="salary-badge">
+      <div class="salary-badge-label">Fixed Monthly Salary</div>
+      <div class="salary-badge-amount">&#8377;{{ "%.0f"|format(teacher.salary) }}</div>
+    </div>
+  </div>
+
+  <!-- Payment Form -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(16,232,123,.2);">
+        <i class="fas fa-money-check-alt"></i>
+      </div>
+      <h5>Salary Payment — {{ month }} {{ year }}</h5>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('teachers.process_pay') }}" id="frmPay">
+        <input type="hidden" name="teacher_id" value="{{ teacher.id }}">
+        <input type="hidden" name="month"       value="{{ month }}">
+        <input type="hidden" name="year"        value="{{ year }}">
+        <input type="hidden" name="payment_mode" id="hdnPayMode" value="Cash">
+
+        <div class="row g-4">
+          <!-- ── Salary Details ── -->
+          <div class="col-12">
+            <div class="form-section-title">
+              <i class="fas fa-rupee-sign" style="color:var(--cyan);font-size:11px;"></i> Salary Details
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Gross Amount (&#8377;) *</label>
+                <input type="number" class="form-control" name="amount"
+                       id="inpAmount" value="{{ "%.0f"|format(teacher.salary) }}"
+                       min="1" step="1" required oninput="recalc()">
+                <div class="form-text">Pre-filled with fixed salary — edit if needed</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Payment Date *</label>
+                <input type="date" class="form-control" name="payment_date"
+                       value="{{ today }}" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Deduction (optional) ── -->
+          <div class="col-12">
+            <div class="form-section-title">
+              <i class="fas fa-minus-circle" style="color:var(--rose);font-size:11px;"></i>
+              Deduction (Optional)
+              <button type="button" class="btn btn-sm ms-auto"
+                      id="btnToggleDed" onclick="toggleDed()"
+                      style="font-size:11.5px;padding:2px 12px;background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.25);border-radius:99px;">
+                <i class="fas fa-plus me-1"></i>Add Deduction
+              </button>
+            </div>
+            <div id="dedSection" style="display:none;">
+              <div class="ded-section">
+                <div class="row g-3">
+                  <div class="col-md-5">
+                    <label class="form-label">Deduction Amount (&#8377;)</label>
+                    <input type="number" class="form-control" name="deductions"
+                           id="inpDed" value="0" min="0" step="1" oninput="recalc()">
+                  </div>
+                  <div class="col-md-7">
+                    <label class="form-label">Reason for Deduction</label>
+                    <input type="text" class="form-control" name="deduction_reason"
+                           id="inpDedReason"
+                           placeholder="e.g. Leave without pay, Advance recovery...">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Net Amount Display ── -->
+          <div class="col-12">
+            <div class="net-display">
+              <div>
+                <div class="net-display-label">Net Payable Amount</div>
+                <div id="netFormula" style="font-size:11.5px;color:var(--text-muted);margin-top:2px;"></div>
+              </div>
+              <div class="net-display-amount" id="dispNet">
+                &#8377;{{ "%.0f"|format(teacher.salary) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Payment Mode ── -->
+          <div class="col-12">
+            <div class="form-section-title">
+              <i class="fas fa-credit-card" style="color:var(--violet);font-size:11px;"></i> Payment Mode
+            </div>
+            <div class="pm-grid">
+              {% set modes = [
+                ('Cash',   '💵', 'Physical cash'),
+                ('UPI',    '📱', 'GPay, PhonePe, Paytm'),
+                ('NEFT',   '🏦', 'Net banking transfer'),
+                ('RTGS',   '🏛️', 'Real-time transfer'),
+                ('Cheque', '📄', 'Bank cheque'),
+                ('Online', '🌐', 'Online transfer')
+              ] %}
+              {% for val, icon, desc in modes %}
+              <label class="pm-card {% if val == 'Cash' %}selected{% endif %}"
+                     id="pmc_{{ val }}" onclick="selectMode('{{ val }}')">
+                <input type="radio" name="_pm" value="{{ val }}" {% if val == 'Cash' %}checked{% endif %}>
+                <div class="pm-card-icon">{{ icon }}</div>
+                <div>
+                  <div class="pm-card-name">{{ val }}</div>
+                  <div class="pm-card-desc">{{ desc }}</div>
+                </div>
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Reference Number (shown for non-Cash) -->
+          <div class="col-md-6" id="refRow" style="display:none;">
+            <label class="form-label" id="refLabel">Transaction / UTR Reference</label>
+            <input type="text" class="form-control" name="payment_reference"
+                   id="inpRef" placeholder="Enter reference number">
+          </div>
+
+          <!-- ── Remarks ── -->
+          <div class="col-12">
+            <label class="form-label">Remarks (Optional)</label>
+            <input type="text" class="form-control" name="remarks"
+                   placeholder="e.g. {{ month }} {{ year }} full salary — no deductions">
+          </div>
+
+          <!-- ── Submit ── -->
+          <div class="col-12 d-flex gap-3">
+            <button type="submit" class="btn btn-success px-5" id="btnPay"
+                    style="font-size:15px;padding:12px 32px;">
+              <i class="fas fa-check me-2"></i>Confirm Payment
+            </button>
+            <a href="{{ url_for('teachers.salary', month=month, year=year) }}"
+               class="btn btn-light px-4" style="font-size:15px;padding:12px 24px;">
+              <i class="fas fa-times me-2"></i>Cancel
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+var SALARY = {{ teacher.salary|float }};
+
+/* ── Net calculator ─────────────────────────── */
+function recalc() {
+  var amt = parseFloat(document.getElementById('inpAmount').value || 0);
+  var ded = document.getElementById('dedSection').style.display !== 'none'
+            ? parseFloat(document.getElementById('inpDed').value || 0) : 0;
+  var net = Math.max(0, amt - ded);
+
+  var el = document.getElementById('dispNet');
+  el.textContent = '\u20B9' + net.toLocaleString('en-IN', {maximumFractionDigits:0});
+
+  var formula = document.getElementById('netFormula');
+  if (ded > 0) {
+    formula.textContent = '\u20B9' + amt.toLocaleString('en-IN') +
+      ' \u2212 \u20B9' + ded.toLocaleString('en-IN') + ' deduction';
+    el.style.color = ded >= amt ? 'var(--rose)' : 'var(--gold)';
+  } else {
+    formula.textContent = '';
+    el.style.color = 'var(--green)';
+  }
+}
+
+/* ── Deduction toggle ───────────────────────── */
+function toggleDed() {
+  var sec = document.getElementById('dedSection');
+  var btn = document.getElementById('btnToggleDed');
+  var open = sec.style.display === 'none';
+  sec.style.display = open ? '' : 'none';
+  if (open) {
+    btn.innerHTML = '<i class="fas fa-minus me-1"></i>Remove Deduction';
+  } else {
+    btn.innerHTML = '<i class="fas fa-plus me-1"></i>Add Deduction';
+    document.getElementById('inpDed').value = 0;
+    document.getElementById('inpDedReason').value = '';
+  }
+  recalc();
+}
+
+/* ── Payment mode selection ─────────────────── */
+function selectMode(val) {
+  /* Update hidden input */
+  document.getElementById('hdnPayMode').value = val;
+
+  /* Highlight selected card */
+  document.querySelectorAll('.pm-card').forEach(function(c) {
+    c.classList.remove('selected');
+  });
+  var card = document.getElementById('pmc_' + val);
+  if (card) card.classList.add('selected');
+
+  /* Show/hide reference field */
+  var refRow = document.getElementById('refRow');
+  var refLabel = document.getElementById('refLabel');
+  if (val === 'Cheque') {
+    refRow.style.display = '';
+    refLabel.textContent = 'Cheque Number';
+    document.getElementById('inpRef').placeholder = 'Enter cheque number';
+  } else if (['UPI','NEFT','RTGS','Online'].indexOf(val) !== -1) {
+    refRow.style.display = '';
+    refLabel.textContent = 'Transaction / UTR Reference';
+    document.getElementById('inpRef').placeholder = 'UTR / Transaction ID';
+  } else {
+    refRow.style.display = 'none';
+  }
+}
+
+/* ── Form submit ────────────────────────────── */
+document.getElementById('frmPay').addEventListener('submit', function() {
+  var btn = document.getElementById('btnPay');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+  btn.style.opacity = '0.8';
+});
+
+/* Init */
+recalc();
+</script>
+{% endblock %}

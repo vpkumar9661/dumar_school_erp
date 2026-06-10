@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Add Teacher — VVM ERP{% endblock %}
+{% block page_title %}Add Teacher{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Add New Teacher</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.teacher_list') }}">Teachers</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('teachers.teacher_list') }}" class="btn btn-light">
+    <i class="fas fa-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card" style="max-width:700px;margin:0 auto;">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(16,232,123,.2);">
+      <i class="fas fa-user-plus"></i>
+    </div>
+    <h5>Teacher Details</h5>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('teachers.add') }}">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Teacher Name *</label>
+          <input type="text" class="form-control" name="teacher_name" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-control" name="subject" placeholder="e.g. Mathematics">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Mobile Number</label>
+          <input type="tel" class="form-control" name="mobile_number" maxlength="10">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" name="email">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Monthly Salary (₹) *</label>
+          <input type="number" class="form-control" name="salary" min="0" step="1" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Joining Date</label>
+          <input type="date" class="form-control" name="joining_date" value="{{ today }}">
+        </div>
+        <div class="col-12 d-flex gap-3 mt-2">
+          <button type="submit" class="btn btn-purple px-5">
+            <i class="fas fa-save me-2"></i>Save Teacher
+          </button>
+          <a href="{{ url_for('teachers.teacher_list') }}" class="btn btn-light px-4">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

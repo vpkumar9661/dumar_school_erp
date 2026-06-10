@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Audit Log — VVM ERP{% endblock %}
+{% block page_title %}Security Audit Log{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h4>🛡️ Login Audit Log</h4><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{{ url_for('users.list') }}">Users</a></li><li class="breadcrumb-item active">Audit Log</li></ol></div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.2);"><i class="fas fa-shield-alt"></i></div>
+    <h5>Last 200 Login Attempts</h5>
+    <span class="badge badge-pill ms-auto" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.2);">
+      {{ logs|selectattr('status','eq','failed')|list|length }} failed
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr><th>Time</th><th>Username</th><th>Role</th><th>IP Address</th><th>Status</th><th>Browser</th></tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td style="font-size:13px;white-space:nowrap;">{{ log.created_at.strftime('%d %b %y %H:%M') }}</td>
+            <td style="font-weight:600;font-size:13px;">{{ log.username }}</td>
+            <td style="font-size:12px;color:var(--text-muted);">{{ log.role or '—' }}</td>
+            <td style="font-size:13px;font-family:monospace;color:var(--text-secondary);">{{ log.ip_address }}</td>
+            <td>
+              <span class="badge badge-pill {{ 'badge-active' if log.status=='success' else 'badge-inactive' if log.status=='failed' else 'badge-due' }}">
+                {% if log.status=='success' %}✓ Success{% elif log.status=='failed' %}✗ Failed{% else %}🔒 Locked{% endif %}
+              </span>
+            </td>
+            <td style="font-size:11px;color:var(--text-muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ log.user_agent[:50] if log.user_agent else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% block title %}Add Student — School ERP{% endblock %}
+{% block page_title %}Add New Student{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Add New Student</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('students.list') }}">Students</a></li>
+      <li class="breadcrumb-item active">Add</li>
+    </ol>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data">
+  <div class="row g-3">
+
+    <!-- Left Column -->
+    <div class="col-12 col-lg-8">
+
+      <!-- Basic Info -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fas fa-user" style="color:var(--purple-600);"></i>
+          <h5>Basic Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Admission Number *</label>
+              <input type="text" class="form-control" name="admission_number"
+                     value="{{ suggested_adm }}" required>
+              <div class="form-text">Auto-generated. Change if needed.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Student Name *</label>
+              <input type="text" class="form-control" name="student_name"
+                     placeholder="Full name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Father's Name *</label>
+              <input type="text" class="form-control" name="father_name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mother's Name *</label>
+              <input type="text" class="form-control" name="mother_name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Date of Birth</label>
+              <input type="date" class="form-control" name="date_of_birth">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Gender *</label>
+              <select class="form-select" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Aadhar Card Number</label>
+              <input type="text" class="form-control" name="aadhar_number"
+                     maxlength="12" placeholder="12 digit Aadhar number">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" class="form-control" name="mobile_number"
+                     maxlength="10" placeholder="10 digit mobile" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Address</label>
+              <textarea class="form-control" name="address" rows="2"
+                        placeholder="Full address"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Academic Info -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fas fa-graduation-cap" style="color:var(--purple-600);"></i>
+          <h5>Academic Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Class *</label>
+              <select class="form-select" name="class" required>
+                <option value="">Select Class</option>
+                {% for c in classes %}
+                <option value="{{ c }}">Class {{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Section *</label>
+              <select class="form-select" name="section" required>
+                <option value="">Select Section</option>
+                {% for s in sections %}
+                <option value="{{ s }}">Section {{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Roll Number</label>
+              <input type="number" class="form-control" name="roll_number"
+                     min="1" placeholder="e.g. 12">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Admission Date *</label>
+              <input type="date" class="form-control" name="admission_date"
+                     value="{{ today }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Transfer">Transfer</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fee Info -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-rupee-sign" style="color:var(--purple-600);"></i>
+          <h5>Fee Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Monthly Fee (₹) *</label>
+              <input type="number" class="form-control" name="monthly_fee"
+                     value="500" min="0" step="0.01" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Transport Distance</label>
+              <select class="form-select" name="transport_distance" id="transportSlab">
+                {% for t in transport_options %}
+                <option value="{{ t }}">
+                  {{ 'No Transport' if t == 'None' else t ~ ' km' }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Transport Fee (₹)</label>
+              <input type="text" class="form-control" id="transportFeeDisplay"
+                     value="0" readonly
+                     style="background:var(--purple-50);font-weight:600;color:var(--purple-800);">
+              <div class="form-text">Auto-filled from slab settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column — Photo -->
+    <div class="col-12 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-camera" style="color:var(--purple-600);"></i>
+          <h5>Student Photo</h5>
+        </div>
+        <div class="card-body text-center">
+          <div id="photoPreview" style="
+            width:150px;height:150px;border-radius:50%;
+            border:3px dashed var(--purple-400);
+            display:flex;align-items:center;justify-content:center;
+            margin:0 auto 16px;
+            overflow:hidden;background:var(--purple-50);
+          ">
+            <div id="photoPlaceholder" style="text-align:center;color:var(--purple-400);">
+              <i class="fas fa-user-circle fa-4x"></i>
+              <p style="font-size:11px;margin-top:6px;">No photo</p>
+            </div>
+            <img id="photoImg" src="" alt=""
+                 style="display:none;width:100%;height:100%;object-fit:cover;">
+          </div>
+          <input type="file" class="form-control" name="photo"
+                 id="photoInput" accept="image/*"
+                 onchange="previewPhoto(this)">
+          <div class="form-text mt-2">JPG, PNG, WEBP — Max 16MB</div>
+        </div>
+      </div>
+
+      <!-- Quick Summary -->
+      <div class="card mt-3" style="background:var(--purple-50);border:1px solid var(--purple-100)!important;">
+        <div class="card-body">
+          <h6 style="color:var(--purple-800);font-weight:600;font-size:13px;">
+            <i class="fas fa-info-circle me-1"></i> Quick Note
+          </h6>
+          <ul style="font-size:12px;color:#555;padding-left:16px;margin:0;">
+            <li>Admission number is auto-generated</li>
+            <li>Transport fee is set from slab settings</li>
+            <li>Late fine is calculated automatically</li>
+            <li>Monthly fee can be changed anytime</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Submit Buttons -->
+  <div class="d-flex gap-3 mt-3">
+    <button type="submit" class="btn btn-purple px-5">
+      <i class="fas fa-save me-2"></i>Add Student
+    </button>
+    <a href="{{ url_for('students.list') }}" class="btn btn-light px-4">
+      <i class="fas fa-times me-2"></i>Cancel
+    </a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Photo preview
+function previewPhoto(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('photoImg').src = e.target.result;
+      document.getElementById('photoImg').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Transport fee auto-fill from server
+const transportSlabs = {
+  'None': 0,
+  '0-2': 300,
+  '2-5': 500,
+  '5-10': 800,
+  '10+': 1200
+};
+
+document.getElementById('transportSlab').addEventListener('change', function() {
+  const fee = transportSlabs[this.value] || 0;
+  document.getElementById('transportFeeDisplay').value = '₹' + fee;
+});
+</script>
+{% endblock %}

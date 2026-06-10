@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% block title %}Notice Board — VVM ERP{% endblock %}
+{% block page_title %}Notice Board{% endblock %}
+
+{% block extra_css %}
+<style>
+.notice-card-inner {
+  border-left: 3px solid var(--border);
+  transition: border-color .2s;
+}
+.notice-card-inner.priority-Urgent   { border-left-color: var(--rose); }
+.notice-card-inner.priority-Important{ border-left-color: var(--gold); }
+.notice-card-inner.priority-Normal   { border-left-color: var(--cyan); }
+
+.pub-badge-on  { background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.25); }
+.pub-badge-off { background:var(--bg-card2);color:var(--text-muted);border:1px solid var(--border); }
+
+.toggle-pub-btn {
+  font-size:11.5px;padding:3px 11px;border-radius:99px;
+  font-weight:700;cursor:pointer;border:none;transition:all .15s;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Notice Board</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Notice Board</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('public.index') }}#notices" target="_blank" class="btn btn-light px-3">
+      <i class="fas fa-globe me-2"></i>View Public
+    </a>
+    {% if current_user.has_permission('manage_noticeboard') %}
+    <button class="btn btn-purple px-4" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
+      <i class="fas fa-plus me-2"></i>Add Notice
+    </button>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Info Banner -->
+<div class="card mb-3" style="background:var(--cyan-dim);border-color:rgba(0,212,255,.18);">
+  <div class="card-body" style="padding:12px 16px;">
+    <div style="font-size:13.5px;color:var(--cyan);display:flex;align-items:center;gap:8px;">
+      <i class="fas fa-info-circle"></i>
+      <span>
+        Notices marked <strong>Public</strong>
+        <span class="badge pub-badge-on ms-1 me-1">🌐 Public</span>
+        automatically appear on the school's public homepage notice board.
+        Toggle visibility using the <i class="fas fa-globe"></i> button on each notice.
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  <a href="{{ url_for('noticeboard.index') }}"
+     class="btn btn-sm {{ 'btn-purple' if not sel_category else 'btn-light' }}">All</a>
+  {% for cat in categories %}
+  <a href="{{ url_for('noticeboard.index', category=cat) }}"
+     class="btn btn-sm {{ 'btn-purple' if sel_category == cat else 'btn-light' }}">{{ cat }}</a>
+  {% endfor %}
+</div>
+
+<!-- Notices -->
+<div class="row g-3">
+  {% for n in notices %}
+  <div class="col-12 col-md-6">
+    <div class="card h-100 notice-card-inner priority-{{ n.priority }}">
+      <div class="card-body">
+
+        <!-- Header row -->
+        <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+          <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center;">
+            <span class="badge badge-pill
+              {% if n.priority=='Urgent' %}badge-inactive{% elif n.priority=='Important' %}badge-pill badge-purple{% else %}badge-active{% endif %}">
+              {% if n.priority=='Urgent' %}🔴{% elif n.priority=='Important' %}🟡{% else %}🟢{% endif %}
+              {{ n.priority }}
+            </span>
+            <span class="badge badge-pill badge-purple">{{ n.category }}</span>
+
+            {# Public/Private badge #}
+            {% if n.is_public %}
+            <span class="badge pub-badge-on">
+              <i class="fas fa-globe" style="font-size:9px;"></i> Public
+            </span>
+            {% else %}
+            <span class="badge pub-badge-off">
+              <i class="fas fa-lock" style="font-size:9px;"></i> Private
+            </span>
+            {% endif %}
+          </div>
+
+          <!-- Actions -->
+          {% if current_user.has_permission('manage_noticeboard') %}
+          <div class="d-flex gap-1 flex-shrink-0">
+            <!-- Toggle public/private -->
+            <form method="POST" action="{{ url_for('noticeboard.toggle_public', nid=n.id) }}" style="display:inline;">
+              <button type="submit"
+                      class="btn btn-sm btn-icon toggle-pub-btn {{ 'btn-success' if n.is_public else 'btn-light' }}"
+                      title="{{ 'Make Private' if n.is_public else 'Make Public (show on homepage)' }}">
+                <i class="fas {{ 'fa-globe' if n.is_public else 'fa-lock' }}"></i>
+              </button>
+            </form>
+            <!-- Delete -->
+            <form method="POST" action="{{ url_for('noticeboard.delete', nid=n.id) }}"
+                  data-confirm="Delete this notice permanently?">
+              <button type="submit" class="btn btn-sm btn-danger btn-icon" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Content -->
+        <h6 style="font-weight:700;font-size:14px;color:var(--text-primary);margin-bottom:8px;">{{ n.title }}</h6>
+        <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6;">
+          {{ n.content[:200] }}{% if n.content|length > 200 %}...{% endif %}
+        </p>
+
+        <!-- Meta -->
+        <div style="font-size:11.5px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <span><i class="fas fa-clock me-1"></i>{{ n.created_at.strftime('%d %b %Y, %I:%M %p') if n.created_at }}</span>
+          {% if n.expires_at %}
+          <span><i class="fas fa-calendar-times me-1"></i>Expires: {{ n.expires_at }}</span>
+          {% endif %}
+          {% if n.author %}
+          <span><i class="fas fa-user me-1"></i>{{ n.author }}</span>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="fas fa-bullhorn" style="font-size:42px;color:var(--border);display:block;margin-bottom:14px;"></i>
+        <div style="color:var(--text-muted);font-size:15px;margin-bottom:14px;">No notices yet.</div>
+        {% if current_user.has_permission('manage_noticeboard') %}
+        <button class="btn btn-purple px-5" data-bs-toggle="modal" data-bs-target="#addNoticeModal">
+          <i class="fas fa-plus me-2"></i>Add First Notice
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+
+{% block modals %}
+{% if current_user.has_permission('manage_noticeboard') %}
+<div class="modal fade" id="addNoticeModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="font-family:'Inter',sans-serif;font-weight:800;">
+          <i class="fas fa-bell me-2" style="color:var(--cyan);"></i>Add New Notice
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) opacity(.45);"></button>
+      </div>
+      <form method="POST" action="{{ url_for('noticeboard.add') }}">
+        <div class="modal-body">
+
+          <div style="background:var(--green-dim);border:1px solid rgba(16,232,123,.2);border-radius:var(--r-md);padding:11px 14px;margin-bottom:18px;font-size:13px;color:var(--green);">
+            <i class="fas fa-info-circle me-2"></i>
+            Check <strong>"Show on Public Homepage"</strong> below to make this notice visible to parents, students and visitors on the school website.
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Notice Title *</label>
+              <input type="text" class="form-control" name="title" placeholder="e.g. School Closed on 15th August" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Content *</label>
+              <textarea class="form-control" name="content" rows="4" required
+                        placeholder="Write the full notice content here..."></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Category</label>
+              <select class="form-select" name="category">
+                {% for c in categories %}
+                <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Priority</label>
+              <select class="form-select" name="priority">
+                {% for p in priorities %}
+                <option value="{{ p }}">{{ p }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Target Audience</label>
+              <select class="form-select" name="target_role">
+                <option value="all">Everyone</option>
+                <option value="admin">Admin</option>
+                <option value="teacher">Teachers</option>
+                <option value="student">Students</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Expiry Date (Optional)</label>
+              <input type="date" class="form-control" name="expires_at" min="{{ today }}">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <div class="form-check" style="padding:12px 16px;background:var(--green-dim);border:1px solid rgba(16,232,123,.2);border-radius:var(--r-md);width:100%;">
+                <input class="form-check-input" type="checkbox" name="is_public" id="chkPublic" checked>
+                <label class="form-check-label" for="chkPublic" style="font-weight:700;color:var(--green);font-size:14px;cursor:pointer;">
+                  <i class="fas fa-globe me-1"></i>
+                  Show on Public Homepage
+                </label>
+                <div style="font-size:11.5px;color:var(--text-muted);margin-top:3px;">
+                  Visible to parents, students & visitors
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-purple px-5">
+            <i class="fas fa-paper-plane me-2"></i>Publish Notice
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

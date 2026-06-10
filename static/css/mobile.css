@@ -1,0 +1,1043 @@
+/* ════════════════════════════════════════════════════════════════
+   VVM Dharampur — Mobile Responsive Patch v1.0
+   Covers: Admin Panel (style.css) + Public Site (public.css)
+   Breakpoints:
+     991px  — Tablet landscape / small laptop
+     768px  — Tablet portrait
+     576px  — Large phone / small tablet
+     480px  — Phone landscape
+     360px  — Small phone
+   ════════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════════
+   ██████╗  █████╗ ██████╗ ████████╗   ██╗
+   ██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝  ███║
+   ██████╔╝███████║██████╔╝   ██║      ██║
+   ██╔═══╝ ██╔══██║██╔══██╗   ██║      ██║
+   ██║     ██║  ██║██║  ██║   ██║      ██║
+   ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝      ╚═╝
+   ADMIN PANEL RESPONSIVE FIXES (style.css supplements)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── ALL tables inside cards → scroll on mobile ─────────────── */
+@media (max-width: 991px) {
+  .card-body .table,
+  .card .table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Topbar — tighter on tablet ─────────────────────────────── */
+  .topbar {
+    gap: 8px;
+  }
+  .topbar-right {
+    gap: 6px;
+  }
+
+  /* ── Welcome bar — wrap nicely ──────────────────────────────── */
+  .welcome-bar {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  .wb-text strong {
+    display: none; /* Hide long school name on small screens */
+  }
+
+  /* ── Page content — reduce padding ──────────────────────────── */
+  .page-content {
+    padding: 14px 12px;
+  }
+
+  /* ── Page header — stack buttons below title ─────────────────── */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .page-header h4 {
+    font-size: 20px;
+  }
+
+  /* ── Card headers — wrap on small screens ───────────────────── */
+  .card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── Stat cards — 2 column grid via Bootstrap overrides ─────── */
+  .row .col-md-3,
+  .row .col-lg-3 {
+    width: 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  /* ── Dashboard forms — single column ───────────────────────── */
+  .row .col-md-6 + .col-md-6,
+  .row .col-lg-6 + .col-lg-6 {
+    margin-top: 4px;
+  }
+
+  /* ── Modals — fit screen ────────────────────────────────────── */
+  .modal-dialog {
+    margin: 8px;
+    max-width: calc(100vw - 16px) !important;
+  }
+  .modal-content {
+    border-radius: 16px !important;
+  }
+  .modal-body {
+    padding: 16px !important;
+  }
+  .modal-header {
+    padding: 14px 18px !important;
+  }
+
+  /* ── Attendance table — smaller font ────────────────────────── */
+  .table th, .table td {
+    font-size: 13px;
+    padding: 8px 10px !important;
+  }
+
+  /* ── Button groups — wrap ───────────────────────────────────── */
+  .btn-group {
+    flex-wrap: wrap;
+  }
+  .d-flex.gap-2 {
+    flex-wrap: wrap;
+  }
+
+}
+
+/* ── 576px — Large phone ─────────────────────────────────────── */
+@media (max-width: 576px) {
+
+  /* ── Sidebar toggle button — always visible ──────────────────── */
+  .sidebar-toggle-btn {
+    display: inline-flex !important;
+  }
+
+  /* ── Topbar — hide less important items ──────────────────────── */
+  .topbar-chip {
+    display: none !important;
+  }
+  .page-title {
+    font-size: 13.5px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  /* ── Welcome bar — single line ───────────────────────────────── */
+  .welcome-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+  .wb-left {
+    font-size: 11.5px;
+  }
+
+  /* ── Stat cards — 2 per row ──────────────────────────────────── */
+  .stat-card {
+    min-height: 110px;
+    padding: 16px;
+  }
+  .stat-card .stat-value {
+    font-size: 24px !important;
+  }
+  .stat-card .stat-label {
+    font-size: 9.5px;
+  }
+
+  /* ── All Bootstrap columns — full width on phone ─────────────── */
+  .row .col-md-3,
+  .row .col-lg-3,
+  .row .col-md-4,
+  .row .col-lg-4 {
+    width: 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  /* ── Card body — compact ─────────────────────────────────────── */
+  .card-body {
+    padding: 14px !important;
+  }
+  .card-header {
+    padding: 12px 16px !important;
+  }
+  .card-header h5 {
+    font-size: 14px !important;
+  }
+
+  /* ── Tables — even smaller font ─────────────────────────────── */
+  .table th, .table td {
+    font-size: 12px;
+    padding: 7px 8px !important;
+    white-space: nowrap;
+  }
+
+  /* ── Form controls — full width ─────────────────────────────── */
+  .form-control, .form-select {
+    font-size: 14px;
+  }
+
+  /* ── Page content ────────────────────────────────────────────── */
+  .page-content {
+    padding: 10px 8px;
+  }
+
+  /* ── Dashboard chart cards — full height on small ────────────── */
+  .chart-card canvas {
+    max-height: 220px !important;
+  }
+
+  /* ── Stat card grid — 2 columns even on smallest ─────────────── */
+  .row > [class*="col-"] {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .row {
+    margin-left: -6px;
+    margin-right: -6px;
+  }
+
+  /* ── ID card — scale down ────────────────────────────────────── */
+  .id-card-wrap {
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+
+  /* ── Print button — smaller ──────────────────────────────────── */
+  .topbar-icon-btn {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+  }
+
+  /* ── Alert messages ──────────────────────────────────────────── */
+  .alert {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
+  /* ── Fee collection form — fix on mobile ────────────────────── */
+  .fee-table th, .fee-table td {
+    font-size: 12px;
+    padding: 6px 8px !important;
+  }
+
+  /* ── Buttons — full width on mobile forms ────────────────────── */
+  .page-header .btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+
+/* ── 360px — Very small phone ───────────────────────────────── */
+@media (max-width: 360px) {
+  .stat-card .stat-value {
+    font-size: 20px !important;
+  }
+  .topbar {
+    padding: 0 8px !important;
+  }
+  .modal-dialog {
+    margin: 4px;
+    max-width: calc(100vw - 8px) !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   ██████╗  █████╗ ██████╗ ████████╗    ██████╗
+   ██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝    ╚════██╗
+   ██████╔╝███████║██████╔╝   ██║         ███╔╝
+   ██╔═══╝ ██╔══██║██╔══██╗   ██║        ██╔══╝
+   ██║     ██║  ██║██║  ██║   ██║        ███████╗
+   ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝        ╚══════╝
+   PUBLIC SITE RESPONSIVE FIXES (public.css supplements)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1024px — Tablet landscape ──────────────────────────────── */
+@media (max-width: 1024px) {
+
+  /* ── Wrapper — add side padding ─────────────────────────────── */
+  .wr {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  /* ── Sections — less vertical padding ───────────────────────── */
+  .sec {
+    padding: 72px 0;
+  }
+
+  /* ── About image — smaller height ───────────────────────────── */
+  .about-img {
+    height: 300px;
+  }
+
+  /* ── About badge — reset overflow ────────────────────────────── */
+  .about-badge {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  /* ── Footer — 2-column grid ─────────────────────────────────── */
+  .ft-g {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  /* ── Gallery — 3 column ─────────────────────────────────────── */
+  .gal-g {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── 768px — Tablet portrait ─────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* ── Wrapper padding ─────────────────────────────────────────── */
+  .wr {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+
+  /* ── Nav wrapper ─────────────────────────────────────────────── */
+  .nav-w {
+    padding: 0 4px;
+  }
+
+  /* ── Hero — reduce padding top so content is visible ─────────── */
+  .hero-body {
+    padding: 120px 0 140px !important;
+  }
+  .ai-badge-container {
+    margin-top: -35px !important;
+    margin-bottom: 24px !important;
+  }
+  .hero-content {
+    max-width: 100%;
+  }
+
+  /* ── Hero title ──────────────────────────────────────────────── */
+  .h-title {
+    font-size: clamp(28px, 8vw, 42px) !important;
+    letter-spacing: -1.5px;
+    margin-bottom: 14px;
+  }
+
+  /* ── Hero subtitle ───────────────────────────────────────────── */
+  .h-sub {
+    font-size: 14.5px;
+    margin-bottom: 26px;
+  }
+
+  /* ── Hero buttons — full width on small ─────────────────────── */
+  .hero-btns {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+  }
+  .btn-amber, .btn-ghost {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+
+  /* ── Stats strip — 2x2 grid ─────────────────────────────────── */
+  .h-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .hs-item {
+    padding: 14px 10px;
+  }
+  .hs-num {
+    font-size: 24px !important;
+  }
+  .hs-lbl {
+    font-size: 11px;
+  }
+  /* Remove right border on 2nd item (new row starts after) */
+  .h-stats-grid .hs-item:nth-child(2) {
+    border-right: none;
+  }
+  .h-stats-grid .hs-item:nth-child(3) {
+    border-top: 1px solid var(--bdr);
+  }
+  .h-stats-grid .hs-item:nth-child(4) {
+    border-top: 1px solid var(--bdr);
+    border-right: none;
+  }
+
+  /* ── Feature grid — 2 columns ───────────────────────────────── */
+  .feat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    margin-top: 32px;
+  }
+  .feat-cell {
+    padding: 22px 18px;
+  }
+
+  /* ── Section heading ─────────────────────────────────────────── */
+  .s-h2 {
+    font-size: clamp(22px, 6vw, 38px);
+  }
+  .s-sub {
+    font-size: 14px;
+  }
+  .sec {
+    padding: 60px 0;
+  }
+
+  /* ── About — image fix ───────────────────────────────────────── */
+  .about-img {
+    height: 240px;
+    border-radius: 16px;
+  }
+  .about-badge {
+    bottom: -12px;
+    right: 0;
+  }
+  .info-g {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* ── Principal card — centered ───────────────────────────────── */
+  .prin-card {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .prin-text {
+    font-size: 14.5px;
+  }
+
+  /* ── Facilities — 3 columns ─────────────────────────────────── */
+  .fac-g {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px;
+    margin-top: 32px;
+  }
+  .fac-card {
+    padding: 20px 14px;
+  }
+
+  /* ── Notices — 1 column ─────────────────────────────────────── */
+  .notices-g {
+    grid-template-columns: 1fr !important;
+    margin-top: 32px;
+  }
+
+  /* ── Gallery — 2 columns ─────────────────────────────────────── */
+  .gal-g {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  /* ── Admission form — single column ─────────────────────────── */
+  .f-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px;
+  }
+  .adm-form-card {
+    padding: 20px 16px;
+  }
+
+  /* ── Contact — compact ───────────────────────────────────────── */
+  .map-w {
+    height: 260px;
+    border-radius: 16px;
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────── */
+  .footer {
+    padding: 48px 0 0;
+  }
+  .ft-g {
+    grid-template-columns: 1fr !important;
+    gap: 28px;
+    padding-bottom: 36px;
+  }
+  .ft-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  /* ── Admission bar ───────────────────────────────────────────── */
+  .adm-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 14px;
+  }
+  .adm-go {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* ── Top ticker — shorter ────────────────────────────────────── */
+  .top-ticker {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+  .tt-right {
+    display: none !important;
+  }
+
+  /* ── Admission section panel ─────────────────────────────────── */
+  .adm-info-panel {
+    border-radius: 16px;
+  }
+  .aip-body {
+    padding: 18px 20px;
+  }
+}
+
+/* ── 576px — Large phone ─────────────────────────────────────── */
+@media (max-width: 576px) {
+
+  /* ── Wrapper ──────────────────────────────────────────────────── */
+  .wr {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  .hero-body {
+    padding: 100px 0 130px !important;
+  }
+  .ai-badge-container {
+    margin-top: -20px !important;
+    margin-bottom: 20px !important;
+  }
+  .h-title {
+    font-size: clamp(24px, 9vw, 36px) !important;
+    letter-spacing: -1px;
+  }
+  .h-sub {
+    font-size: 13.5px;
+    line-height: 1.7;
+    margin-bottom: 22px;
+  }
+  .h-badge {
+    font-size: 11px;
+    padding: 5px 11px;
+    margin-bottom: 16px;
+  }
+  .btn-amber, .btn-ghost {
+    max-width: 100%;
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+
+  /* ── Stats strip ─────────────────────────────────────────────── */
+  .hs-item {
+    padding: 12px 8px;
+  }
+  .hs-num {
+    font-size: 20px !important;
+  }
+  .hs-lbl {
+    font-size: 10px;
+  }
+
+  /* ── Sections ─────────────────────────────────────────────────── */
+  .sec {
+    padding: 48px 0;
+  }
+  .s-badge {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+  }
+
+  /* ── Feature grid — 1 column ─────────────────────────────────── */
+  .feat-grid {
+    grid-template-columns: 1fr !important;
+    margin-top: 24px;
+  }
+
+  /* ── About ────────────────────────────────────────────────────── */
+  .about-img {
+    height: 200px;
+  }
+  .info-g {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* ── Facilities — 2 columns ─────────────────────────────────── */
+  .fac-g {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .fac-card {
+    padding: 16px 12px;
+  }
+  .fac-ico {
+    width: 46px;
+    height: 46px;
+    font-size: 18px;
+    border-radius: 11px;
+    margin-bottom: 10px;
+  }
+  .fac-t {
+    font-size: 12.5px;
+  }
+  .fac-d {
+    font-size: 11.5px;
+    display: none; /* Hide description on smallest screens for space */
+  }
+
+  /* ── Gallery — 2 columns ─────────────────────────────────────── */
+  .gal-g {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px;
+  }
+
+  /* ── Principal ───────────────────────────────────────────────── */
+  .prin-card {
+    max-width: 100%;
+    padding: 22px 18px;
+  }
+  .prin-text {
+    font-size: 14px;
+    padding-left: 14px;
+  }
+  .quote-icon {
+    font-size: 56px;
+  }
+
+  /* ── Contact ─────────────────────────────────────────────────── */
+  .ct-row {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .ct-ic {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+  .map-w {
+    height: 220px;
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────── */
+  .ft-g {
+    gap: 20px;
+  }
+
+  /* ── Notice cards ───────────────────────────────────────────── */
+  .n-card {
+    padding: 16px 16px;
+  }
+  .n-title {
+    font-size: 14px;
+  }
+  .n-text {
+    font-size: 13px;
+  }
+
+  /* ── Admission form ──────────────────────────────────────────── */
+  .afc-title {
+    font-size: 17px;
+  }
+  .fg input, .fg select, .fg textarea {
+    font-size: 15px; /* Prevent auto-zoom on iOS */
+  }
+
+  /* ── Navbar ──────────────────────────────────────────────────── */
+  .pub-nav .wr {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* ── Back to top button — don't overlap content ─────────────── */
+  .btt {
+    bottom: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+}
+
+/* ── 480px — Phone landscape / small phone ──────────────────── */
+@media (max-width: 480px) {
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  .hero {
+    border-radius: 0 0 24px 24px !important;
+    margin-top: -50px !important;
+  }
+  .hero-body {
+    padding: 90px 0 120px !important;
+  }
+  .ai-badge-container {
+    margin-top: -15px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* ── Stats strip on phone — small numbers ───────────────────── */
+  .h-stats-grid .hs-item {
+    padding: 10px 6px;
+  }
+
+  /* ── Nav bar items — smaller ─────────────────────────────────── */
+  .nav-logo-text {
+    font-size: 14px;
+  }
+
+  /* ── Gallery — 1 column fallback for old phones ─────────────── */
+  .gal-g {
+    gap: 6px;
+  }
+
+  /* ── Feat grid — 1 col ───────────────────────────────────────── */
+  .feat-grid {
+    border-radius: 14px !important;
+  }
+  .feat-cell {
+    padding: 18px 14px;
+    gap: 10px;
+  }
+  .fc-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .fc-t {
+    font-size: 15px;
+  }
+  .fc-d {
+    font-size: 13px;
+  }
+
+  /* ── Admission section — tighter ────────────────────────────── */
+  .adm-steps li {
+    font-size: 13.5px;
+  }
+  .ahl-n {
+    font-size: 20px;
+  }
+}
+
+/* ── 360px — Very small phone ───────────────────────────────── */
+@media (max-width: 360px) {
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  .h-title {
+    font-size: 22px !important;
+    letter-spacing: -.5px;
+    line-height: 1.15;
+  }
+  .h-sub {
+    font-size: 13px;
+  }
+
+  /* ── Stats strip — minimal ───────────────────────────────────── */
+  .hs-num {
+    font-size: 18px !important;
+  }
+  .hs-lbl {
+    font-size: 9.5px;
+  }
+
+  /* ── Section heading ─────────────────────────────────────────── */
+  .s-h2 {
+    font-size: 20px !important;
+    letter-spacing: -.3px;
+  }
+
+  /* ── Facilities — 2 columns still, but tighter ───────────────── */
+  .fac-g {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px;
+  }
+  .fac-card {
+    padding: 12px 8px;
+  }
+  .fac-ico {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    border-radius: 9px;
+    margin-bottom: 8px;
+  }
+
+  /* ── Gallery — compact ───────────────────────────────────────── */
+  .gal-g {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 5px;
+  }
+
+  /* ── Form controls — full width buttons ─────────────────────── */
+  .btn-amber, .btn-ghost {
+    padding: 11px 16px;
+    font-size: 13.5px;
+  }
+
+  /* ── Nav logo — compact ──────────────────────────────────────── */
+  .pub-nav .wr {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   SHARED UTILITIES — both admin + public
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Prevent horizontal scroll globally ─────────────────────── */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── All images responsive by default ───────────────────────── */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Touch-friendly tap targets ─────────────────────────────── */
+@media (max-width: 768px) {
+  a, button, .btn, [role="button"] {
+    min-height: 36px;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* Prevent iOS zoom on focus */
+  }
+}
+
+/* ── Smooth table scroll indicator ──────────────────────────── */
+@media (max-width: 768px) {
+  .table {
+    position: relative;
+  }
+  .card-body {
+    position: relative;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   GALLERY PAGE (templates/public/gallery.html)
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .pub-gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+  .gallery-hero-section {
+    padding: 80px 0 40px;
+  }
+}
+@media (max-width: 480px) {
+  .pub-gallery-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   NOTICE DETAIL PAGE
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 576px) {
+  .notice-detail-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   LOGIN PAGE (templates/auth/login.html)
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 576px) {
+  .login-card,
+  .auth-card {
+    margin: 16px;
+    border-radius: 18px !important;
+    padding: 28px 20px !important;
+  }
+  .login-logo {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   FEE RECEIPT / ID CARD (print-preview pages)
+   These are often viewed on mobile before printing
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 576px) {
+  .receipt-wrap,
+  .fee-receipt {
+    padding: 12px !important;
+    font-size: 12px !important;
+  }
+  .receipt-wrap table th,
+  .receipt-wrap table td {
+    font-size: 11px;
+    padding: 5px 7px !important;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   DASHBOARD.HTML — Stat cards and charts
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Charts — reduce height on mobile */
+  canvas {
+    max-height: 250px;
+  }
+
+  /* Stat cards — ensure 2-column layout */
+  .row.g-3 > .col-sm-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  canvas {
+    max-height: 200px;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   TEACHERS / STUDENTS LIST — Card view on mobile
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 576px) {
+  /* Make action buttons wrap */
+  .d-flex.align-items-center.gap-2 {
+    flex-wrap: wrap;
+  }
+
+  /* Profile images in tables — smaller */
+  .student-photo,
+  .teacher-photo,
+  img[style*="border-radius:50%"] {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  /* Filter form — full width selects ─────────────── */
+  .filter-bar .form-select,
+  .filter-bar .form-control {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PUBLIC SITE MOBILE NAVIGATION & HERO ACCENTS OVERRIDES
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  /* Hide the desktop Staff Login button */
+  .nav-cta {
+    display: none !important;
+  }
+
+  /* Scale down brand fonts to prevent clipping and wrapping */
+  .nb-name {
+    font-size: 13.5px !important;
+  }
+  .nb-sub {
+    font-size: 9px !important;
+  }
+  
+  /* Shrink brand logo size */
+  .nav-logo, .nav-logo-wrap {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  /* Mobile Staff Login button inside drawer */
+  .mobile-cta-wrap {
+    display: block !important;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .mobile-nav-cta {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: var(--a) !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    border-color: rgba(144, 245, 11, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(144, 245, 11, 0.2);
+  }
+  .mobile-nav-cta:hover {
+    background: var(--al) !important;
+    color: #000 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Gallery Column Stack Fix */
+  .pub-gallery-grid {
+    grid-template-columns: 1fr !important; /* Stack images vertically on small mobile viewports */
+    gap: 12px;
+  }
+
+  /* Hero Section tweaks for better mobile visibility */
+  .h-title {
+    font-size: clamp(24px, 8vw, 36px) !important;
+  }
+  .h-sub {
+    font-size: 13px !important;
+    margin-bottom: 24px;
+  }
+  .hs-lbl {
+    color: var(--t2) !important; /* Increase contrast of stats labels */
+  }
+}
+
+/* Hide mobile CTA wrap on desktop */
+@media (min-width: 1025px) {
+  .mobile-cta-wrap {
+    display: none !important;
+  }
+}
+
+/* Spacing fix for Developer links / footer bottom */
+.footer {
+  padding-bottom: 24px !important;
+}
+
+/* --- Social Connect Mobile Responsiveness --- */
+
+/* Phone Viewport (480px and down) */
+@media (max-width: 480px) {
+  .social-grid {
+    gap: 16px !important;
+  }
+  .social-btn {
+    width: 52px !important;
+    height: 52px !important;
+  }
+  .social-icon {
+    font-size: 20px !important;
+  }
+}
+

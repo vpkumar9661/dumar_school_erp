@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Create User — VVM ERP{% endblock %}
+{% block page_title %}Create User{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Create New User</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('users.list') }}">Users</a></li>
+      <li class="breadcrumb-item active">Create</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('users.list') }}" class="btn btn-light">
+    <i class="fas fa-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card" style="max-width:700px;margin:0 auto;">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-user-plus"></i></div>
+    <h5>New User Account</h5>
+  </div>
+  <div class="card-body">
+    <div style="background:var(--gold-dim);border:1px solid rgba(245,200,66,.2);border-radius:var(--r-md);padding:12px 14px;margin-bottom:18px;font-size:13px;color:var(--gold);">
+      <i class="fas fa-shield-alt me-2"></i>
+      Password: min 8 chars, 1 Capital, 1 small, 1 number required.
+    </div>
+    <form method="POST" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-control" name="full_name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Username * <span style="font-size:10px;color:var(--text-muted);">(lowercase, no spaces)</span></label>
+        <input type="text" class="form-control" name="username" required pattern="[a-z0-9_]{3,50}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Password *</label>
+        <input type="password" class="form-control" name="password" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" name="email">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Role *</label>
+        <select class="form-select" name="role" id="roleSelect" onchange="showLinks()">
+          {% for role_key, role_info in roles.items() %}
+          <option value="{{ role_key }}">{{ role_info.label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4" id="studentLink" style="display:none;">
+        <label class="form-label">Link to Student</label>
+        <select class="form-select" name="student_id">
+          <option value="">— Select Student —</option>
+          {% for s in students %}
+          <option value="{{ s.id }}">{{ s.student_name }} ({{ s.admission_number }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4" id="teacherLink" style="display:none;">
+        <label class="form-label">Link to Teacher</label>
+        <select class="form-select" name="teacher_id">
+          <option value="">— Select Teacher —</option>
+          {% for t in teachers %}
+          <option value="{{ t.id }}">{{ t.teacher_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 d-flex gap-3">
+        <button type="submit" class="btn btn-purple px-5">
+          <i class="fas fa-save me-2"></i>Create User
+        </button>
+        <a href="{{ url_for('users.list') }}" class="btn btn-light px-4">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function showLinks() {
+  const r = document.getElementById('roleSelect').value;
+  document.getElementById('studentLink').style.display = (r==='student'||r==='parent') ? 'block' : 'none';
+  document.getElementById('teacherLink').style.display = r==='teacher' ? 'block' : 'none';
+}
+showLinks();
+</script>
+{% endblock %}

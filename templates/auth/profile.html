@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — VVM ERP{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h4>My Profile</h4></div>
+  <a href="{{ url_for('auth.change_password') }}" class="btn btn-purple btn-sm px-3">
+    <i class="fas fa-lock me-1"></i> Change Password
+  </a>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-md-4">
+    <div class="card text-center py-4">
+      <div style="width:80px;height:80px;border-radius:var(--r-xl);background:{{ current_user.role_color }}18;border:2px solid {{ current_user.role_color }}40;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:32px;color:{{ current_user.role_color }};margin:0 auto 14px;">
+        {{ current_user.full_name[0]|upper }}
+      </div>
+      <h5 style="font-family:'Inter',sans-serif;font-weight:800;">{{ current_user.full_name }}</h5>
+      <div style="margin-top:8px;">
+        <span class="badge badge-pill" style="background:{{ current_user.role_color }}15;color:{{ current_user.role_color }};border:1px solid {{ current_user.role_color }}30;font-size:13px;padding:5px 14px;">
+          {{ current_user.role_label }}
+        </span>
+      </div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:10px;">@{{ current_user.username }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-history"></i></div>
+        <h5>Login History (Last 10)</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>Time</th><th>IP Address</th><th>Status</th><th>Browser</th></tr></thead>
+            <tbody>
+              {% for log in login_history %}
+              <tr>
+                <td style="font-size:13px;">{{ log.created_at.strftime('%d %b %Y %I:%M %p') }}</td>
+                <td style="font-size:13px;color:var(--text-muted);">{{ log.ip_address }}</td>
+                <td>
+                  <span class="badge badge-pill {{ 'badge-active' if log.status=='success' else 'badge-inactive' }}">
+                    {{ log.status|capitalize }}
+                  </span>
+                </td>
+                <td style="font-size:11px;color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ log.user_agent[:60] if log.user_agent else '—' }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center py-3 text-muted">No login history</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

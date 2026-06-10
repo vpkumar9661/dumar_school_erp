@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Marks Entry — VVM ERP{% endblock %}
+{% block page_title %}Marks Entry{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><h4>Marks Entry: {{ exam.exam_name }}</h4><p style="color:var(--text-muted);font-size:13.5px;margin:0;">Class {{ exam.class }} | {{ exam.subject }} | Max Marks: {{ exam.max_marks }}</p></div>
+  <a href="{{ url_for('exams.schedule') }}" class="btn btn-light"><i class="fas fa-arrow-left me-1"></i>Back</a>
+</div>
+<form method="POST">
+  <div class="card">
+    <div class="card-header"><div class="card-icon" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);"><i class="fas fa-pen"></i></div><h5>Enter Marks</h5></div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>Roll</th><th>Student Name</th><th>Marks (out of {{ exam.max_marks }})</th><th>Grade</th></tr></thead>
+          <tbody>
+            {% for s in students %}
+            <tr>
+              <td style="font-weight:600;">{{ s.roll_number or '—' }}</td>
+              <td style="font-weight:600;">{{ s.student_name }}</td>
+              <td><input type="number" class="form-control" style="width:100px;" name="marks_{{ s.id }}" min="0" max="{{ exam.max_marks }}" step="0.5" value="{{ s.marks_obtained or '' }}" onchange="calcGrade(this, {{ exam.max_marks }})"></td>
+              <td><span id="grade_{{ s.id }}" class="badge badge-pill badge-purple">{{ s.grade or '—' }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer"><button type="submit" class="btn btn-purple px-5"><i class="fas fa-save me-2"></i>Save Marks</button></div>
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function calcGrade(input, max) {
+  const pct = (parseFloat(input.value)/max)*100;
+  const grade = pct>=90?'A+':pct>=80?'A':pct>=70?'B+':pct>=60?'B':pct>=50?'C':pct>=40?'D':'F';
+  const sid = input.name.replace('marks_','');
+  document.getElementById('grade_'+sid).textContent = grade;
+}
+</script>
+{% endblock %}

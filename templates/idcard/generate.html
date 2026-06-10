@@ -1,0 +1,609 @@
+{% extends 'base.html' %}
+{% block title %}ID Card Generator — School ERP{% endblock %}
+{% block page_title %}ID Card Generator{% endblock %}
+
+{% block extra_css %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+/* Card Container Grid */
+.id-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+  margin-top: 15px;
+}
+
+/* Premium ID Card styling */
+.id-card {
+  position: relative;
+  width: 290px;
+  height: 460px;
+  border: 2px solid #086b35;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.id-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+
+/* Header style matching reference */
+.id-card-header {
+  background: #086b35;
+  color: white;
+  padding: 10px 12px 8px 58px; /* Left padding to prevent overlap with top-left logo */
+  text-align: left; /* Left align to view all words clearly */
+  position: relative;
+  border-bottom: 3px solid #df2027; /* Red divider line */
+}
+
+.id-card-header .school-title {
+  font-family:'Inter',sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.id-card-header .id-badge-text {
+  font-size: 8px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1.5px;
+  margin-top: 4px;
+  opacity: 0.95;
+  text-transform: uppercase;
+  text-align: center; /* Perfect center alignment */
+  margin-left: -58px; /* Negate parent left padding */
+  margin-right: -12px; /* Negate parent right padding */
+  display: block;
+}
+
+/* Sub-header tagline and skewed session */
+.id-card-sub-header {
+  background: #1a1a1a;
+  color: white;
+  font-size: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.id-card-sub-header .id-tagline {
+  font-size: 8px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.id-card-sub-header .id-session-skew {
+  background: #df2027;
+  color: white;
+  padding: 2px 12px;
+  font-weight: 800;
+  font-size: 8.5px;
+  letter-spacing: 0.3px;
+  transform: skewX(-20deg);
+  margin-right: -14px;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+/* Logo badge */
+.id-logo-badge {
+  position: absolute;
+  top: 5px;
+  left: 8px; /* Top left corner of header */
+  width: 44px; /* Larger size to beautifully cover/fit the green section */
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #f29e19;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+/* Photo style with outer green frame and inner bold red border */
+.id-photo-box {
+  margin: 16px auto 10px auto;
+  width: 85px;
+  height: 105px;
+  border: 2px solid #086b35; /* Green outer border */
+  padding: 3px; /* White space */
+  background: white;
+  box-sizing: border-box;
+}
+
+.id-photo-img {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #df2027; /* Inner red border */
+  object-fit: cover;
+  display: block;
+}
+
+.id-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #df2027;
+  background: #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #868e96;
+}
+
+/* Student name stylized */
+.id-student-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #df2027; /* Red uppercase styled */
+  text-align: center;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Class details row */
+.id-class-row {
+  display: flex;
+  justify-content: space-around;
+  background: #f0faf4;
+  border: 1px solid #c3edd3;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: 0 15px 8px 15px;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.id-class-row span {
+  color: #333333;
+}
+
+.id-class-row .val-red {
+  color: #df2027;
+  font-weight: 800;
+}
+
+/* Key details table */
+.id-details-table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.id-details-table td {
+  padding: 2.5px 0;
+  vertical-align: top;
+  color: #333333;
+}
+
+.id-details-label {
+  font-weight: 600;
+  color: #555555;
+  width: 75px;
+}
+
+.id-details-colon {
+  width: 8px;
+  color: #555555;
+}
+
+.id-details-value {
+  font-weight: 700;
+  color: #000000;
+  word-break: break-word;
+}
+
+/* Principal signature line */
+.id-signature-area {
+  position: absolute;
+  bottom: 38px; /* Fixed right above the green footer so it never overflows or gets covered */
+  right: 18px;
+  font-family: 'Great Vibes', 'Brush Script MT', 'Georgia', serif;
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  z-index: 5;
+}
+
+/* Footer layout */
+.id-card-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #086b35;
+  color: white;
+  text-align: center;
+  padding: 6px 6px 4px 6px;
+  border-top: 2px solid #df2027;
+  font-size: 7.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+.id-footer-phone-badge {
+  display: inline-flex;
+  align-items: center;
+  background: white;
+  color: #086b35;
+  border-radius: 12px;
+  padding: 1.5px 8px;
+  font-size: 8px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  border: 1px solid #df2027;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.id-footer-phone-badge span {
+  color: #df2027;
+  font-size: 7px;
+  margin-right: 3px;
+}
+
+/* Checkbox overlay styling */
+.id-card-checkbox-container {
+  position: absolute;
+  top: 8px;
+  right: 8px; /* Moved checkbox back to top-right on-screen to avoid top-left logo */
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 5px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.id-card-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #df2027;
+}
+
+/* Selection highlight styling */
+.id-card:not(.selected) {
+  opacity: 0.55;
+  border-color: #ced4da;
+  filter: grayscale(30%);
+}
+
+.bg-purple-dim {
+  background: rgba(191,0,255,.12);
+  color: #bf00ff;
+}
+
+/* Print Specific Rules override */
+@media print {
+  #sidebar, .topbar, .page-header, .filter-card, .action-bar, .no-print, .id-card-checkbox-container { 
+    display: none !important; 
+  }
+  #main-content { 
+    margin-left: 0 !important; 
+    padding: 0 !important; 
+  }
+  .page-content { 
+    padding: 0 !important; 
+  }
+  .id-cards-grid { 
+    display: flex !important; 
+    flex-wrap: wrap !important; 
+    gap: 15px !important; 
+    justify-content: center !important; 
+    background: transparent !important;
+  }
+  .id-card { 
+    break-inside: avoid !important; 
+    page-break-inside: avoid !important; 
+    box-shadow: none !important; 
+    margin-bottom: 15px;
+    border: 2px solid #086b35 !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  .id-card:not(.selected) { 
+    display: none !important; 
+  }
+}
+
+@page {
+  size: A4;
+  margin: 15mm 10mm 15mm 10mm;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header no-print">
+  <div>
+    <h4>ID Card Generator</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">ID Cards</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3 filter-card no-print">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Class</label>
+        <select class="form-select" name="class">
+          <option value="">All Classes</option>
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if sel_class == c }}>Class {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-purple px-4">
+          <i class="fas fa-filter me-1"></i> Load
+        </button>
+        <a href="{{ url_for('idcard.generate') }}" class="btn btn-light">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Dynamic Action Bar -->
+{% if students %}
+<div class="card mb-3 action-bar no-print" style="background: rgba(255,255,255,0.05); border: 1px solid var(--bdr); border-radius: var(--r-md);">
+  <div class="card-body py-3 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <!-- Select All Switch -->
+      <div class="form-check form-switch mb-0 d-flex align-items-center">
+        <input class="form-check-input" type="checkbox" id="selectAllCards" checked style="cursor:pointer; width: 40px; height: 20px;">
+        <label class="form-check-label text-white fw-semibold mb-0" for="selectAllCards" style="cursor:pointer; margin-left: 8px; font-size: 14px; user-select: none;">Select All</label>
+      </div>
+      <div class="vr" style="background-color: var(--bdr); height: 24px; opacity: 0.5;"></div>
+      <!-- Selection Counter -->
+      <span class="badge bg-purple-dim text-purple border border-purple px-3 py-2 fw-bold" id="selectionCount" style="font-size: 13px; border-color: rgba(191,0,255,0.2) !important;">
+        Selected: {{ students|length }} / {{ students|length }}
+      </span>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <button onclick="window.print()" class="btn btn-light px-4" id="btnPrintSelected" style="font-weight:600;">
+        <i class="fas fa-print me-2"></i>Print Selected
+      </button>
+      <a href="{{ url_for('idcard.pdf') }}?class={{ sel_class }}" id="btnDownloadSelected" class="btn btn-danger px-4" style="font-weight:600; background-color: #df2027; border-color: #df2027;">
+        <i class="fas fa-file-pdf me-2"></i>Download PDF
+      </a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ID Cards Grid -->
+<div class="id-cards-grid">
+  {% for s in students %}
+  <div class="id-card selected">
+    <!-- Overlay Selection Checkbox (Screen Only) -->
+    <div class="id-card-checkbox-container no-print">
+      <input type="checkbox" class="id-card-checkbox" data-student-id="{{ s.id }}" checked>
+    </div>
+
+    <!-- Header Block -->
+    <div class="id-card-header">
+      <div class="school-title">{{ school_name }}</div>
+      <div class="id-badge-text">Student Identity Card</div>
+    </div>
+
+    <!-- Sub-header Tagline & Session -->
+    <div class="id-card-sub-header">
+      <div class="id-tagline">An English Medium Co-educational School</div>
+      <div class="id-session-skew">SESSION: {{ current_session }}</div>
+    </div>
+
+    <!-- Stylized Circular Logo Seal (Floating left) -->
+    <div class="id-logo-badge">
+      {% if school_logo_b64 %}
+      <img src="{{ school_logo_b64 }}" alt="School Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+      {% else %}
+      <div style="font-size: 8px; font-weight: 800; color: #df2027; text-align: center; line-height: 1.1; font-family:'Inter',sans-serif;">
+        VVM<br><span style="font-size: 6px; color: #086b35;">DHP</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Photo Container with specific double-border -->
+    <div class="id-photo-box">
+      {% if s.photo_b64 %}
+      <img src="{{ s.photo_b64 }}" alt="{{ s.student_name }}" class="id-photo-img">
+      {% else %}
+      <div class="id-photo-placeholder">
+        <i class="fas fa-user fa-2x"></i>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Student Name -->
+    <div class="id-student-name">{{ s.student_name }}</div>
+
+    <!-- Class, Section, Roll Quick-view Row -->
+    <div class="id-class-row">
+      <span>Class: <strong class="val-red">{{ s.class }}</strong></span>
+      <span>Sec: <strong class="val-red">{{ s.section }}</strong></span>
+      <span>Roll: <strong class="val-red">{{ s.roll_number or 'N/A' }}</strong></span>
+    </div>
+
+    <!-- Main Details Table -->
+    <table class="id-details-table">
+      <tr>
+        <td class="id-details-label">Father's Name</td>
+        <td class="id-details-colon">:</td>
+        <td class="id-details-value">{{ s.father_name }}</td>
+      </tr>
+      <tr>
+        <td class="id-details-label">Date of Birth</td>
+        <td class="id-details-colon">:</td>
+        <td class="id-details-value">
+          {% if s.date_of_birth %}
+            {% if s.date_of_birth.strftime %}
+              {{ s.date_of_birth.strftime('%d-%m-%Y') }}
+            {% else %}
+              {{ s.date_of_birth }}
+            {% endif %}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td class="id-details-label">Adm. No</td>
+        <td class="id-details-colon">:</td>
+        <td class="id-details-value">{{ s.admission_number }}</td>
+      </tr>
+      <tr>
+        <td class="id-details-label">Mobile No</td>
+        <td class="id-details-colon">:</td>
+        <td class="id-details-value">{{ s.mobile_number }}</td>
+      </tr>
+      <tr>
+        <td class="id-details-label">Address</td>
+        <td class="id-details-colon">:</td>
+        <td class="id-details-value" style="font-size: 8.5px; line-height: 1.25; font-weight: 500;">{{ s.address or 'N/A' }}</td>
+      </tr>
+    </table>
+
+    <!-- Principal Signature Area -->
+    <div class="id-signature-area">
+      Principal
+    </div>
+
+    <!-- Footer Block with circular phone badge and address text -->
+    <div class="id-card-footer">
+      {% if school_phone %}
+      <div class="id-footer-phone-badge">
+        <span>📞</span> {{ school_phone }}
+      </div>
+      {% endif %}
+      <div style="text-transform: uppercase; font-size: 7px; opacity: 0.95; letter-spacing: 0.2px;">
+        {{ school_address or 'Dharampur, Himachal Pradesh' }}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="card w-100 no-print" style="background: rgba(255,255,255,0.05); border: 1px solid var(--bdr);">
+    <div class="card-body text-center py-5 text-muted">
+      <i class="fas fa-id-card fa-3x mb-3 d-block" style="color:var(--purple-dim);"></i>
+      No students found. Select a class and click "Load" to generate ID cards.
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const selectAllCheckbox = document.getElementById('selectAllCards');
+  const studentCheckboxes = document.querySelectorAll('.id-card-checkbox');
+  const selectionCountBadge = document.getElementById('selectionCount');
+  const btnPrintSelected = document.getElementById('btnPrintSelected');
+  const btnDownloadSelected = document.getElementById('btnDownloadSelected');
+  
+  const totalCards = studentCheckboxes.length;
+  
+  function updateSelection() {
+    let selectedIds = [];
+    let checkedCount = 0;
+    
+    studentCheckboxes.forEach(cb => {
+      const card = cb.closest('.id-card');
+      const studentId = cb.getAttribute('data-student-id');
+      
+      if (cb.checked) {
+        card.classList.add('selected');
+        selectedIds.push(studentId);
+        checkedCount++;
+      } else {
+        card.classList.remove('selected');
+      }
+    });
+    
+    // Update badge text
+    if (selectionCountBadge) {
+      selectionCountBadge.textContent = `Selected: ${checkedCount} / ${totalCards}`;
+    }
+    
+    // Update Select All checkbox state
+    if (selectAllCheckbox) {
+      selectAllCheckbox.checked = (checkedCount === totalCards);
+      selectAllCheckbox.indeterminate = (checkedCount > 0 && checkedCount < totalCards);
+    }
+    
+    // Enable/disable buttons based on selection
+    if (checkedCount === 0) {
+      if (btnPrintSelected) btnPrintSelected.disabled = true;
+      if (btnDownloadSelected) {
+        btnDownloadSelected.classList.add('disabled');
+        btnDownloadSelected.style.pointerEvents = 'none';
+        btnDownloadSelected.style.opacity = '0.5';
+      }
+    } else {
+      if (btnPrintSelected) btnPrintSelected.disabled = false;
+      if (btnDownloadSelected) {
+        btnDownloadSelected.classList.remove('disabled');
+        btnDownloadSelected.style.pointerEvents = 'auto';
+        btnDownloadSelected.style.opacity = '1';
+        
+        // Update URL
+        const idsParam = selectedIds.join(',');
+        btnDownloadSelected.href = `{{ url_for('idcard.pdf') }}?ids=${idsParam}`;
+      }
+    }
+  }
+  
+  // Individual checkbox change
+  studentCheckboxes.forEach(cb => {
+    cb.addEventListener('change', updateSelection);
+  });
+  
+  // Select All change
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      const isChecked = this.checked;
+      studentCheckboxes.forEach(cb => {
+        cb.checked = isChecked;
+      });
+      updateSelection();
+    });
+  }
+  
+  // Initialize selection
+  updateSelection();
+});
+</script>
+{% endblock %}

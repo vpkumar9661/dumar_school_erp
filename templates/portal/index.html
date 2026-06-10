@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}My Portal — VVM ERP{% endblock %}
+{% block page_title %}Student Portal{% endblock %}
+{% block content %}
+{% if student %}
+<div class="page-header">
+  <div>
+    <h4>Welcome, {{ student.student_name }}! 👋</h4>
+    <p style="color:var(--text-muted);font-size:13.5px;margin:0;">{{ student.class if student.class in ['Nursery','LKG','UKG'] else 'Class ' ~ student.class }}-{{ student.section }} | Roll {{ student.roll_number or '—' }}</p>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-cyan">
+      <div class="stat-top"><div class="stat-label">Total Paid</div><div class="stat-icon-wrap"><i class="fas fa-rupee-sign"></i></div></div>
+      <div class="stat-value">₹{{ "%.0f"|format(fee_data.total_paid or 0) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-green">
+      <div class="stat-top"><div class="stat-label">Present (month)</div><div class="stat-icon-wrap"><i class="fas fa-check"></i></div></div>
+      <div class="stat-value">{{ att_summary.get('Present',0) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-rose">
+      <div class="stat-top"><div class="stat-label">Absent (month)</div><div class="stat-icon-wrap"><i class="fas fa-times"></i></div></div>
+      <div class="stat-value">{{ att_summary.get('Absent',0) }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-gold">
+      <div class="stat-top"><div class="stat-label">Upcoming Exams</div><div class="stat-icon-wrap"><i class="fas fa-calendar"></i></div></div>
+      <div class="stat-value">{{ exams|length }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header"><div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-bullhorn"></i></div><h5>Latest Notices</h5></div>
+      <div class="card-body">
+        {% for n in notices %}
+        <div style="padding:10px 0;border-bottom:1px solid var(--border);">
+          <div style="display:flex;gap:8px;align-items:flex-start;">
+            <span class="badge badge-pill priority-{{ n.priority }}" style="font-size:10px;white-space:nowrap;">{{ n.priority }}</span>
+            <div>
+              <div style="font-weight:600;font-size:13.5px;">{{ n.title }}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">{{ n.content[:80] }}{% if n.content|length > 80 %}...{% endif %}</div>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="text-center py-3" style="color:var(--text-muted);font-size:13px;">No notices</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header"><div class="card-icon" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);"><i class="fas fa-calendar-alt"></i></div><h5>Upcoming Exams</h5></div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead><tr><th>Subject</th><th>Date</th><th>Time</th><th>Max</th></tr></thead>
+            <tbody>
+              {% for e in exams %}
+              <tr>
+                <td style="font-weight:600;font-size:13.5px;">{{ e.subject }}</td>
+                <td style="font-size:13px;">{{ e.exam_date }}</td>
+                <td style="font-size:12px;color:var(--text-muted);">{{ e.start_time or '—' }}</td>
+                <td><span class="badge badge-pill badge-purple">{{ e.max_marks }}</span></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-center py-3 text-muted">No upcoming exams</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

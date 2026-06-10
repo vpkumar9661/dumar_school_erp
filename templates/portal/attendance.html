@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}My Attendance — VVM ERP{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block content %}
+<div class="page-header"><div><h4>Attendance Record</h4></div></div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="stat-card stat-cyan"><div class="stat-top"><div class="stat-label">Total Days</div><div class="stat-icon-wrap"><i class="fas fa-calendar"></i></div></div><div class="stat-value">{{ total }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat-card stat-green"><div class="stat-top"><div class="stat-label">Present</div><div class="stat-icon-wrap"><i class="fas fa-check"></i></div></div><div class="stat-value">{{ summary.get('Present',0) }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat-card stat-rose"><div class="stat-top"><div class="stat-label">Absent</div><div class="stat-icon-wrap"><i class="fas fa-times"></i></div></div><div class="stat-value">{{ summary.get('Absent',0) }}</div></div></div>
+  <div class="col-6 col-md-3"><div class="stat-card stat-gold"><div class="stat-top"><div class="stat-label">Attendance %</div><div class="stat-icon-wrap"><i class="fas fa-percent"></i></div></div><div class="stat-value">{{ pct }}%</div></div></div>
+</div>
+<div class="card">
+  <div class="card-header"><h5>This Month's Records</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>Date</th><th>Status</th><th>Remarks</th></tr></thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td style="font-weight:600;">{{ r.attendance_date }}</td>
+            <td><span class="badge badge-pill badge-{{ 'active' if r.status=='Present' else 'inactive' if r.status=='Absent' else 'due' }}">{{ r.status }}</span></td>
+            <td style="font-size:13px;color:var(--text-muted);">{{ r.remarks or '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

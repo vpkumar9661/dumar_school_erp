@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.student_name }} — School ERP{% endblock %}
+{% block page_title %}Student Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Student Profile</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('students.list') }}">Students</a></li>
+      <li class="breadcrumb-item active">{{ student.student_name }}</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('fees.collect') }}?search={{ student.admission_number }}"
+       class="btn btn-success btn-sm px-3">
+      <i class="fas fa-rupee-sign me-1"></i> Collect Fee
+    </a>
+    <a href="{{ url_for('students.edit', sid=student.id) }}"
+       class="btn btn-purple btn-sm px-3">
+      <i class="fas fa-edit me-1"></i> Edit
+    </a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Profile Card -->
+  <div class="col-12 col-lg-4">
+    <div class="card text-center">
+      <div class="card-body py-4">
+        {% if student.photo %}
+        <img src="{{ get_url('students', student.photo) }}"
+             style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:4px solid var(--purple-400);margin-bottom:14px;">
+        {% else %}
+        <div style="width:120px;height:120px;border-radius:50%;background:var(--purple-50);border:4px solid var(--purple-400);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <i class="fas fa-user fa-3x" style="color:var(--purple-400);"></i>
+        </div>
+        {% endif %}
+        <h5 class="fw-bold" style="color:var(--purple-800);">{{ student.student_name }}</h5>
+        <p class="text-muted mb-2" style="font-size:13px;">{{ student.father_name }}'s Child</p>
+        <span class="badge badge-pill badge-purple me-1">Class {{ student.class }}-{{ student.section }}</span>
+        <span class="badge badge-pill
+          {% if student.status == 'Active' %}badge-active{% else %}badge-inactive{% endif %}">
+          {{ student.status }}
+        </span>
+        <hr>
+        <div style="font-size:13px;color:#555;">
+          <div class="mb-1"><i class="fas fa-id-badge me-2" style="color:var(--purple-400);"></i><strong>{{ student.admission_number }}</strong></div>
+          <div class="mb-1"><i class="fas fa-phone me-2" style="color:var(--purple-400);"></i>{{ student.mobile_number }}</div>
+          <div><i class="fas fa-venus-mars me-2" style="color:var(--purple-400);"></i>{{ student.gender }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fee Summary Card -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-rupee-sign" style="color:var(--purple-600);"></i>
+        <h5>Fee Summary</h5>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+          <span style="font-size:13px;color:#666;">Monthly Fee</span>
+          <strong>₹{{ student.monthly_fee }}</strong>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span style="font-size:13px;color:#666;">Transport Fee</span>
+          <strong>₹{{ student.transport_fee }}</strong>
+        </div>
+        <hr style="margin:8px 0;">
+        <div class="d-flex justify-content-between">
+          <span style="font-size:14px;font-weight:600;color:var(--purple-800);">Total/Month</span>
+          <strong style="color:var(--purple-800);font-size:16px;">
+            ₹{{ student.monthly_fee|float + student.transport_fee|float }}
+          </strong>
+        </div>
+        {% if student.transport_distance and student.transport_distance != 'None' %}
+        <div class="mt-2 p-2 rounded" style="background:var(--purple-50);font-size:12px;color:#555;">
+          <i class="fas fa-bus me-1" style="color:var(--purple-600);"></i>
+          Transport: {{ student.transport_distance }} km slab
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Attendance Summary -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <i class="fas fa-clipboard-check" style="color:var(--purple-600);"></i>
+        <h5>Attendance</h5>
+      </div>
+      <div class="card-body">
+        {% set total_att = (att.get('Present',0) + att.get('Absent',0) + att.get('Late',0)) %}
+        <div class="row text-center g-2">
+          <div class="col-4">
+            <div style="font-size:22px;font-weight:700;color:#27ae60;">{{ att.get('Present',0) }}</div>
+            <div style="font-size:11px;color:#888;">Present</div>
+          </div>
+          <div class="col-4">
+            <div style="font-size:22px;font-weight:700;color:#e74c3c;">{{ att.get('Absent',0) }}</div>
+            <div style="font-size:11px;color:#888;">Absent</div>
+          </div>
+          <div class="col-4">
+            <div style="font-size:22px;font-weight:700;color:#f39c12;">{{ att.get('Late',0) }}</div>
+            <div style="font-size:11px;color:#888;">Late</div>
+          </div>
+        </div>
+        {% if total_att > 0 %}
+        <div class="mt-3">
+          <div class="d-flex justify-content-between mb-1">
+            <span style="font-size:12px;">Attendance %</span>
+            <span style="font-size:12px;font-weight:600;">
+              {{ "%.1f"|format(att.get('Present',0) / total_att * 100) }}%
+            </span>
+          </div>
+          <div class="progress" style="height:6px;border-radius:3px;">
+            <div class="progress-bar bg-success" style="width:{{ att.get('Present',0) / total_att * 100 }}%;"></div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Column -->
+  <div class="col-12 col-lg-8">
+
+    <!-- Personal Info -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="fas fa-info-circle" style="color:var(--purple-600);"></i>
+        <h5>Personal Details</h5>
+      </div>
+      <div class="card-body">
+        <div class="row g-2" style="font-size:13.5px;">
+          <div class="col-md-6">
+            <span class="text-muted">Father's Name</span>
+            <div class="fw-600">{{ student.father_name }}</div>
+          </div>
+          <div class="col-md-6">
+            <span class="text-muted">Mother's Name</span>
+            <div class="fw-600">{{ student.mother_name }}</div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <span class="text-muted">Date of Birth</span>
+            <div>{{ student.date_of_birth or '—' }}</div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <span class="text-muted">Aadhar Number</span>
+            <div>{{ student.aadhar_number or '—' }}</div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <span class="text-muted">Roll Number</span>
+            <div>{{ student.roll_number or '—' }}</div>
+          </div>
+          <div class="col-md-6 mt-2">
+            <span class="text-muted">Admission Date</span>
+            <div>{{ student.admission_date }}</div>
+          </div>
+          <div class="col-12 mt-2">
+            <span class="text-muted">Address</span>
+            <div>{{ student.address or '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fee History -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-history" style="color:var(--purple-600);"></i>
+        <h5>Fee Payment History</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Receipt</th>
+                <th>Month / Year</th>
+                <th>Monthly Fee</th>
+                <th>Transport</th>
+                <th>Late Fine</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Mode</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in fee_history %}
+              <tr>
+                <td style="font-size:12px;font-weight:600;color:var(--purple-600);">
+                  {{ p.receipt_number }}
+                </td>
+                <td>{{ p.month }} {{ p.year }}</td>
+                <td>₹{{ p.monthly_fee }}</td>
+                <td>₹{{ p.transport_fee }}</td>
+                <td style="color:{% if p.late_fine > 0 %}#e74c3c{% else %}#27ae60{% endif %};">
+                  ₹{{ p.late_fine }}
+                </td>
+                <td><strong>₹{{ p.total_amount }}</strong></td>
+                <td style="font-size:12px;">{{ p.payment_date }}</td>
+                <td><span class="badge badge-pill badge-purple">{{ p.payment_mode }}</span></td>
+                <td>
+                  <a href="{{ url_for('fees.receipt', receipt_id=p.receipt_number) }}"
+                     class="btn btn-sm btn-outline-purple" title="View Receipt">
+                    <i class="fas fa-receipt"></i>
+                  </a>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="9" class="text-center py-4 text-muted">
+                  No fee payments recorded yet.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

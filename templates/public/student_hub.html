@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | VVM Dharampur</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png" />
+
+    <!-- Fonts & Icons -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Import Global VVM Design Tokens -->
+    <link href="{{ url_for('static', filename='css/public.css') }}" rel="stylesheet" />
+
+    <style type="text/tailwindcss">
+        /* Base overrrides for the Student Hub */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--t1);
+            overflow: hidden; /* App-like feel */
+        }
+        
+        /* ── Glassmorphism Panels ── */
+        .glass-panel {
+            background: rgba(15, 15, 20, 0.4);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(144, 245, 11, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(144, 245, 11, 0.1);
+        }
+
+        /* ── Glowing UI Elements ── */
+        .neon-text {
+            background: linear-gradient(135deg, var(--a) 0%, #00e5ff 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* ── Sidebar Buttons ── */
+        .nav-btn {
+            @apply w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left font-medium transition-all duration-300 relative overflow-hidden;
+            color: var(--t2);
+            border: 1px solid transparent;
+        }
+        .nav-btn:hover {
+            color: var(--t1);
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .nav-btn.active {
+            color: var(--t1);
+            background: rgba(144, 245, 11, 0.08);
+            border-color: rgba(144, 245, 11, 0.3);
+            box-shadow: 0 0 20px rgba(144, 245, 11, 0.1);
+        }
+        .nav-btn.active::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 10%; bottom: 10%; width: 3px;
+            background: var(--a);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 0 10px var(--a);
+        }
+
+        /* ── Custom Select Dropdown ── */
+        select.custom-select {
+            appearance: none;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(144, 245, 11, 0.4);
+            color: var(--a);
+            padding: 8px 36px 8px 16px;
+            border-radius: 99px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 0 15px rgba(144, 245, 11, 0.1);
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2390f50b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        select.custom-select:hover {
+            background-color: rgba(144, 245, 11, 0.1);
+            box-shadow: 0 0 25px rgba(144, 245, 11, 0.2);
+        }
+        select.custom-select option {
+            background: var(--bg2);
+            color: var(--t1);
+        }
+
+        /* ── Calculator Styles ── */
+        .calc-wrapper {
+            background: rgba(12, 12, 16, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.6);
+        }
+        .calc-screen {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px inset rgba(255,255,255,0.05);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+            color: var(--a);
+            text-shadow: 0 0 10px rgba(144,245,11,0.5);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .calc-btn {
+            @apply p-4 rounded-xl text-lg font-semibold transition-all duration-200 active:scale-90;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--t1);
+        }
+        .calc-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+        }
+        .calc-op {
+            background: rgba(0, 229, 255, 0.1) !important;
+            border-color: rgba(0, 229, 255, 0.3) !important;
+            color: #00e5ff !important;
+            box-shadow: 0 0 15px rgba(0,229,255,0.1);
+        }
+        .calc-eq {
+            background: var(--a) !important;
+            border-color: var(--al) !important;
+            color: #000 !important;
+            box-shadow: 0 0 20px rgba(144,245,11,0.4);
+        }
+
+        /* ── Chatbot Styles ── */
+        .chat-container {
+            background: rgba(12, 12, 16, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .chat-bubble-user {
+            background: linear-gradient(135deg, rgba(144,245,11,0.15), rgba(0,229,255,0.15));
+            border: 1px solid rgba(144,245,11,0.3);
+            color: var(--t1);
+            @apply self-end rounded-l-2xl rounded-tr-2xl p-4 max-w-[80%] shadow-lg;
+        }
+        .chat-bubble-ai {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--t2);
+            @apply self-start rounded-r-2xl rounded-tl-2xl p-4 max-w-[80%] shadow-lg;
+        }
+        .chat-input-wrap {
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .chat-input {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: var(--t1);
+        }
+        .chat-input:focus {
+            border-color: #bf00ff;
+            background: rgba(191,0,255,0.05);
+            box-shadow: 0 0 15px rgba(191,0,255,0.15);
+            outline: none;
+        }
+
+        /* Custom Scrollbar for Hub */
+        .hub-scroll::-webkit-scrollbar { width: 6px; }
+        .hub-scroll::-webkit-scrollbar-track { background: transparent; }
+        .hub-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .hub-scroll::-webkit-scrollbar-thumb:hover { background: var(--a); }
+        /* ── Dues styles ── */
+        .fee-glow-border:focus {
+            border-color: #ffbd2e !important;
+            background: rgba(255, 189, 46, 0.05) !important;
+            box-shadow: 0 0 15px rgba(255, 189, 46, 0.2) !important;
+            outline: none;
+        }
+        .fee-glow-btn:hover {
+            box-shadow: 0 0 25px rgba(255, 189, 46, 0.4);
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col relative">
+
+    <!-- ══ Background Effects ══ -->
+    <div class="h-grid"></div>
+    <div class="orb orb1" style="opacity: 0.5;"></div>
+    <div class="orb orb2" style="opacity: 0.5;"></div>
+    <div class="orb orb3" style="opacity: 0.5;"></div>
+    <div class="h-ov"
+        style="background: radial-gradient(circle at center, transparent 0%, var(--bg) 100%); opacity:0.8;"></div>
+
+    <!-- ══ Top Navbar ══ -->
+    <nav class="glass-panel px-6 py-4 flex items-center justify-between z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="/" class="group flex items-center gap-3">
+                <div
+                    class="w-11 h-11 rounded-xl bg-black/40 border border-[#90f50b]/30 flex items-center justify-center shadow-[0_0_15px_rgba(144,245,11,0.2)] group-hover:scale-105 transition-transform">
+                    <img src="{{ url_for('static', filename='images/school_logo.png') }}" class="w-7 h-7 object-contain"
+                        alt="Logo">
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight text-white font-[Inter]">Student Hub</h1>
+                    <p class="text-[11px] text-[#a1a1aa] uppercase tracking-wider font-semibold">Interactive Learning
+                    </p>
+                </div>
+            </a>
+            <!-- AI-Powered Capsule Banner (cohesive branding) -->
+            <div class="hidden md:inline-flex">
+                <div class="ai-badge" style="margin-bottom: 0; padding: 6px 14px 6px 8px; height: auto;">
+                    <div class="ai-badge-icon-wrap" style="width: 20px; height: 20px;">
+                        <i class="fas fa-brain ai-badge-icon" style="font-size: 10px;"></i>
+                    </div>
+                    <span class="ai-badge-text" style="font-size: 12px;">AI-Powered Platform</span>
+                    <div class="ai-badge-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-5">
+            <div class="flex items-center gap-2 bg-black/20 p-1.5 pr-2 rounded-full border border-white/5">
+                <span class="text-xs font-semibold text-gray-400 pl-3 uppercase tracking-wider">I am in</span>
+                <select id="class-selector" class="custom-select text-sm">
+                    <option value="1">Class 1</option>
+                    <option value="2">Class 2</option>
+                    <option value="3">Class 3</option>
+                    <option value="4">Class 4</option>
+                    <option value="5" selected>Class 5</option>
+                    <option value="6">Class 6</option>
+                    <option value="7">Class 7</option>
+                    <option value="8">Class 8</option>
+                    <option value="9">Class 9</option>
+                    <option value="10">Class 10</option>
+                    <option value="11">Class 11</option>
+                    <option value="12">Class 12</option>
+                </select>
+            </div>
+
+            <div class="h-8 w-px bg-white/10"></div>
+
+            <a href="/"
+                class="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-semibold transition-all">
+                <i class="fas fa-sign-out-alt"></i> Exit Hub
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ Main Layout ══ -->
+    <div class="flex-1 flex overflow-hidden z-10 relative">
+
+        <!-- ══ Sidebar ══ -->
+        <div class="w-64 glass-panel border-t-0 flex flex-col h-full shrink-0">
+            <div class="p-5 flex-1">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase tracking-[2px] mb-4 px-2">Navigation</h3>
+                <nav class="space-y-2">
+                    <button onclick="switchTab('study')" id="tab-btn-study" class="nav-btn active">
+                        <div class="w-8 h-8 rounded-lg bg-[#90f50b]/10 flex items-center justify-center text-[#90f50b]">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <span class="font-semibold tracking-wide text-sm">Study Material</span>
+                    </button>
+
+                    <button onclick="switchTab('calc')" id="tab-btn-calc" class="nav-btn">
+                        <div class="w-8 h-8 rounded-lg bg-[#00e5ff]/10 flex items-center justify-center text-[#00e5ff]">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <span class="font-semibold tracking-wide text-sm">Calculator</span>
+                    </button>
+
+                    <button onclick="switchTab('ai')" id="tab-btn-ai" class="nav-btn">
+                        <div class="w-8 h-8 rounded-lg bg-[#bf00ff]/10 flex items-center justify-center text-[#bf00ff]">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="font-semibold tracking-wide text-sm">AI Tutor</span>
+                        <div
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#bf00ff] shadow-[0_0_8px_#bf00ff] animate-pulse">
+                        </div>
+                    </button>
+
+                    <button onclick="switchTab('fees')" id="tab-btn-fees" class="nav-btn">
+                        <div class="w-8 h-8 rounded-lg bg-[#ffbd2e]/10 flex items-center justify-center text-[#ffbd2e]">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <span class="font-semibold tracking-wide text-sm">My Due Fees</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Bottom user card mock -->
+            <div class="p-4 m-4 rounded-xl bg-black/30 border border-white/5 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00e5ff] to-[#90f50b] p-[2px]">
+                    <div class="w-full h-full bg-[#0c0c10] rounded-full flex items-center justify-center text-xs font-bold"
+                        id="user-avatar-text">VVM</div>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-white" id="user-card-name">Student Mode</p>
+                    <p class="text-[10px] text-[#a1a1aa]" id="user-card-status">Secure Session</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ Content Area ══ -->
+        <div class="flex-1 overflow-y-auto hub-scroll relative">
+
+            <!-- Tab: Study Materials -->
+            <div id="tab-study" class="p-10 max-w-6xl mx-auto block animate-[nav-entrance_0.5s_ease_both]">
+                <div class="mb-10 flex items-center justify-between">
+                    <div>
+                        <h2 class="font-[Inter] text-4xl font-black text-white mb-2 tracking-tight">Holographic <span
+                                class="neon-text">Library</span></h2>
+                        <p class="text-[#a1a1aa]" id="library-subtitle">Select a subject to explore concepts dynamically
+                            tuned for <span id="display-class" class="text-[#90f50b] font-bold">Class 5</span>.</p>
+                    </div>
+                    <div
+                        class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 backdrop-blur-md">
+                        <i class="fas fa-book-open text-[#90f50b]"></i>
+                    </div>
+                </div>
+
+                <!-- Subjects View -->
+                <div id="subjects-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Chapters/Formulas View -->
+                <div id="chapters-view" class="hidden animate-[nav-entrance_0.4s_ease_both]">
+                    <button onclick="showSubjectsView()"
+                        class="mb-6 flex items-center gap-2 text-sm font-bold text-[#a1a1aa] hover:text-white transition-colors group bg-transparent border-none cursor-pointer p-0">
+                        <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> Back to
+                        Subjects
+                    </button>
+
+                    <div class="flex items-center gap-4 border-b border-white/10 pb-4 mb-6">
+                        <div id="active-subject-icon-wrap"
+                            class="w-10 h-10 rounded-xl flex items-center justify-center text-white">
+                            <i id="active-subject-icon" class="text-lg"></i>
+                        </div>
+                        <h3 id="active-subject-title" class="text-2xl font-bold text-white font-[Inter]">Subject Name
+                        </h3>
+                    </div>
+
+                    <div id="chapters-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Calculator -->
+            <div id="tab-calc"
+                class="p-10 h-full hidden items-center justify-center animate-[nav-entrance_0.5s_ease_both]">
+                <div class="calc-wrapper p-6 rounded-[2rem] w-full max-w-sm">
+                    <div class="mb-6">
+                        <input type="text" id="calc-display"
+                            class="calc-screen w-full text-right text-4xl p-5 rounded-2xl focus:outline-none tracking-wider"
+                            readonly value="0">
+                    </div>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button class="calc-btn text-[#ff1a8c] hover:text-[#ff1a8c]" onclick="calcClear()">C</button>
+                        <button class="calc-btn" onclick="calcAppend('(')">(</button>
+                        <button class="calc-btn" onclick="calcAppend(')')">)</button>
+                        <button class="calc-btn calc-op" onclick="calcAppend('/')">÷</button>
+
+                        <button class="calc-btn" onclick="calcAppend('7')">7</button>
+                        <button class="calc-btn" onclick="calcAppend('8')">8</button>
+                        <button class="calc-btn" onclick="calcAppend('9')">9</button>
+                        <button class="calc-btn calc-op" onclick="calcAppend('*')">×</button>
+
+                        <button class="calc-btn" onclick="calcAppend('4')">4</button>
+                        <button class="calc-btn" onclick="calcAppend('5')">5</button>
+                        <button class="calc-btn" onclick="calcAppend('6')">6</button>
+                        <button class="calc-btn calc-op" onclick="calcAppend('-')">-</button>
+
+                        <button class="calc-btn" onclick="calcAppend('1')">1</button>
+                        <button class="calc-btn" onclick="calcAppend('2')">2</button>
+                        <button class="calc-btn" onclick="calcAppend('3')">3</button>
+                        <button class="calc-btn calc-op" onclick="calcAppend('+')">+</button>
+
+                        <button class="calc-btn col-span-2" onclick="calcAppend('0')">0</button>
+                        <button class="calc-btn" onclick="calcAppend('.')">.</button>
+                        <button class="calc-btn calc-eq" onclick="calcCalculate()">=</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: AI Tutor -->
+            <div id="tab-ai"
+                class="p-6 h-full hidden items-center justify-center animate-[nav-entrance_0.5s_ease_both]">
+                <div class="chat-container flex flex-col w-full max-w-4xl h-[90%] rounded-3xl overflow-hidden relative">
+
+                    <!-- Decorative glow behind chat -->
+                    <div
+                        class="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[100px] bg-[#bf00ff] opacity-20 blur-[80px] rounded-full pointer-events-none">
+                    </div>
+
+                    <!-- Header -->
+                    <div
+                        class="p-5 border-b border-white/5 flex items-center justify-between bg-black/20 backdrop-blur-md z-10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#bf00ff] to-[#00e5ff] p-[1px]">
+                                <div
+                                    class="w-full h-full bg-[#111118] rounded-2xl flex items-center justify-center text-white text-xl">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-white text-lg font-[Inter] tracking-wide">Gemini Brain</h2>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2 h-2 rounded-full bg-[#90f50b] shadow-[0_0_8px_#90f50b]"></div>
+                                    <p class="text-[11px] text-[#90f50b] font-bold uppercase tracking-wider">Neural Link
+                                        Active</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Box -->
+                    <div id="chat-box" class="flex-1 overflow-y-auto hub-scroll p-6 flex flex-col gap-5 z-10">
+                        <!-- Initial Welcome Message -->
+                        <div class="chat-bubble-ai">
+                            <p
+                                class="font-bold text-[11px] uppercase tracking-wider mb-2 text-[#bf00ff] flex items-center gap-2">
+                                <i class="fas fa-sparkles"></i> AI Tutor
+                            </p>
+                            <p class="text-[15px] leading-relaxed">System online. I am connected to the VVM educational
+                                database. How can I assist with your studies today?</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="p-5 chat-input-wrap z-10">
+                        <form id="chat-form" class="flex items-end gap-3 relative max-w-3xl mx-auto">
+                            <textarea id="chat-input" rows="1"
+                                class="chat-input flex-1 resize-none rounded-2xl py-3.5 pl-5 pr-14 text-[15px] transition-all"
+                                placeholder="Initiate query..."></textarea>
+                            <button type="submit" id="chat-submit"
+                                class="absolute right-2 bottom-1.5 w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-r from-[#bf00ff] to-[#00e5ff] text-white hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(191,0,255,0.4)] disabled:opacity-50">
+                                <i class="fas fa-paper-plane text-sm translate-y-px -translate-x-px"></i>
+                            </button>
+                        </form>
+                        <p class="text-center text-[10px] text-[#52525b] mt-3 uppercase tracking-wider font-semibold">
+                            Responses are dynamically calibrated to your selected class level.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Due Fees -->
+            <div id="tab-fees" class="p-10 max-w-6xl mx-auto hidden animate-[nav-entrance_0.5s_ease_both] w-full">
+                <!-- If not logged in: show Login Gate -->
+                <div id="fees-unauth-container" class="flex flex-col items-center justify-center min-h-[70vh] w-full">
+                    <div
+                        class="glass-panel p-8 rounded-3xl w-full max-w-md border border-white/10 relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                        <!-- Decorative glow -->
+                        <div
+                            class="absolute -top-24 -left-24 w-48 h-48 bg-[#ffbd2e] opacity-10 blur-[60px] rounded-full pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute -bottom-24 -right-24 w-48 h-48 bg-[#ff8c00] opacity-10 blur-[60px] rounded-full pointer-events-none">
+                        </div>
+
+                        <div class="text-center mb-8">
+                            <div
+                                class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#ffbd2e] to-[#ff8c00] p-[1px] mb-4 shadow-[0_0_20px_rgba(255,189,46,0.3)]">
+                                <div
+                                    class="w-full h-full bg-[#111118] rounded-2xl flex items-center justify-center text-[#ffbd2e] text-2xl">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                            </div>
+                            <h2 class="font-[Inter] text-3xl font-black text-white tracking-tight mb-2">Holographic <span
+                                    class="neon-text"
+                                    style="background: linear-gradient(135deg, #ffbd2e 0%, #ff8c00 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Vault</span>
+                            </h2>
+                            <p class="text-[#a1a1aa] text-sm">Verify your credentials to safely decrypt your student fee
+                                statement.</p>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form id="fees-login-form" class="space-y-5">
+                            <div id="fees-login-error"
+                                class="hidden p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold uppercase tracking-wider text-center">
+                                Invalid credentials. Please try again.
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Username</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500">
+                                        <i class="fas fa-user text-xs"></i>
+                                    </span>
+                                    <input type="text" id="fees-username" required
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#ffbd2e] focus:bg-[#ffbd2e]/5 focus:shadow-[0_0_15px_rgba(255,189,46,0.15)] transition-all"
+                                        placeholder="Enter username...">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Password</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-500">
+                                        <i class="fas fa-key text-xs"></i>
+                                    </span>
+                                    <input type="password" id="fees-password" required
+                                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white text-sm focus:outline-none focus:border-[#ffbd2e] focus:bg-[#ffbd2e]/5 focus:shadow-[0_0_15px_rgba(255,189,46,0.15)] transition-all"
+                                        placeholder="Enter password...">
+                                </div>
+                            </div>
+
+                            <button type="submit" id="fees-login-submit"
+                                class="w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase transition-all duration-300 transform active:scale-95 bg-gradient-to-r from-[#ffbd2e] to-[#ff8c00] text-black hover:opacity-90 shadow-[0_0_25px_rgba(255,189,46,0.3)] flex items-center justify-center gap-2">
+                                <i class="fas fa-sign-in-alt"></i> Decrypt Vault
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- If logged in: show Dues Dashboard -->
+                <div id="fees-auth-container" class="hidden animate-[nav-entrance_0.5s_ease_both]">
+                    <div class="mb-10 flex items-center justify-between">
+                        <div>
+                            <h2 class="font-[Inter] text-4xl font-black text-white mb-2 tracking-tight">Fee <span
+                                    class="neon-text"
+                                    style="background: linear-gradient(135deg, #ffbd2e 0%, #ff8c00 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Statement</span>
+                            </h2>
+                            <p class="text-[#a1a1aa]" id="fees-display-subtitle">Securely displaying outstanding fee
+                                records for student: <span id="fees-student-name-bold"
+                                    class="text-[#ffbd2e] font-bold">...</span></p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="lockFeesVault()"
+                                class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500/10 border border-red-500/20 text-xs font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 transition-all cursor-pointer">
+                                <i class="fas fa-lock"></i> Lock Vault
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left panel: summary stats -->
+                        <div class="lg:col-span-1 space-y-6">
+                            <div
+                                class="glass-card p-6 border-white/5 relative overflow-hidden flex flex-col items-center text-center">
+                                <div
+                                    class="absolute -inset-1 bg-gradient-to-b from-[#ffbd2e]/5 to-transparent opacity-50 blur">
+                                </div>
+
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Total
+                                    Overdue Dues</p>
+
+                                <div
+                                    class="w-40 h-40 rounded-full border-4 border-dashed border-[#ffbd2e]/30 flex flex-col items-center justify-center relative mb-6 shadow-[inset_0_0_30px_rgba(255,189,46,0.05)]">
+                                    <div
+                                        class="absolute inset-2 rounded-full bg-black/40 flex flex-col items-center justify-center">
+                                        <span class="text-3xl font-black text-white font-[Inter]"
+                                            id="fees-total-due-text">₹0</span>
+                                        <span class="text-[9px] text-[#ffbd2e] uppercase font-bold tracking-wider mt-1"
+                                            id="fees-overdue-status-label">Outstanding</span>
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="w-full space-y-3 bg-black/30 border border-white/5 rounded-2xl p-4 text-left">
+                                    <div class="flex justify-between text-xs border-b border-white/5 pb-2">
+                                        <span class="text-gray-400">Admission No:</span>
+                                        <span class="font-bold text-white" id="fees-adm-no">...</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs border-b border-white/5 pb-2">
+                                        <span class="text-gray-400">Class & Section:</span>
+                                        <span class="font-bold text-white" id="fees-class-section">...</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs border-b border-white/5 pb-2">
+                                        <span class="text-gray-400">Monthly Tuition Fee:</span>
+                                        <span class="font-bold text-white" id="fees-monthly-tfee">₹0</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-400">Monthly Transport Fee:</span>
+                                        <span class="font-bold text-white" id="fees-monthly-trfee">₹0</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="/portal/fees"
+                                class="w-full flex items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-semibold text-sm text-white text-center">
+                                <i class="fas fa-receipt text-[#ffbd2e]"></i> View Detailed ERP Statement
+                            </a>
+                        </div>
+
+                        <!-- Right panel: detailed breakdown -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest px-2 mb-2">Unpaid
+                                Months Detail</h3>
+
+                            <!-- Months list container -->
+                            <div id="fees-months-list-container"
+                                class="space-y-4 max-h-[60vh] overflow-y-auto pr-2 hub-scroll">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Global variables for auth state in student hub
+        let IS_LOGGED_IN = "{{ 'true' if current_user.is_authenticated and current_user.student_id else 'false' }}" === 'true';
+
+        // --- 1. Tab Navigation ---
+        function switchTab(tabId) {
+            ['study', 'calc', 'ai', 'fees'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                document.getElementById(`tab-${id}`).classList.remove('flex');
+                document.getElementById(`tab-${id}`).classList.remove('block');
+                document.getElementById(`tab-btn-${id}`).classList.remove('active');
+            });
+
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            targetTab.classList.remove('hidden');
+            if (tabId === 'study' || tabId === 'fees') targetTab.classList.add('block');
+            else targetTab.classList.add('flex'); // Center calc & AI
+
+            document.getElementById(`tab-btn-${tabId}`).classList.add('active');
+
+            if (tabId === 'fees') {
+                if (IS_LOGGED_IN) {
+                    fetchDues();
+                } else {
+                    document.getElementById('fees-unauth-container').classList.remove('hidden');
+                    document.getElementById('fees-auth-container').classList.add('hidden');
+                }
+            }
+        }
+
+        // --- 1.1 Due Fees Business Logic & AJAX Controllers ---
+        async function fetchDues() {
+            const unauthContainer = document.getElementById('fees-unauth-container');
+            const authContainer = document.getElementById('fees-auth-container');
+            const errDiv = document.getElementById('fees-login-error');
+
+            try {
+                const response = await fetch('/api/student-hub/dues');
+
+                let data = null;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await response.json();
+                }
+
+                if (response.ok && data && data.status === 'success') {
+                    IS_LOGGED_IN = true;
+
+                    // Show authenticated container
+                    unauthContainer.classList.add('hidden');
+                    authContainer.classList.remove('hidden');
+
+                    // Render details
+                    document.getElementById('fees-student-name-bold').textContent = data.student_name;
+                    document.getElementById('fees-total-due-text').textContent = '₹' + Math.round(data.total_due_amount);
+                    document.getElementById('fees-adm-no').textContent = data.admission_number;
+                    document.getElementById('fees-class-section').textContent = `Class ${data.class} - ${data.section}`;
+                    document.getElementById('fees-monthly-tfee').textContent = '₹' + Math.round(data.monthly_fee);
+                    document.getElementById('fees-monthly-trfee').textContent = '₹' + Math.round(data.transport_fee);
+
+                    // Set status label based on dues
+                    const statusLabel = document.getElementById('fees-overdue-status-label');
+                    if (data.due_count > 0) {
+                        statusLabel.textContent = 'Outstanding';
+                        statusLabel.style.color = '#ff8c00';
+                    } else {
+                        statusLabel.textContent = 'Fully Paid';
+                        statusLabel.style.color = '#90f50b';
+                    }
+
+                    // Render months breakdown
+                    const container = document.getElementById('fees-months-list-container');
+                    container.innerHTML = '';
+
+                    if (data.due_count === 0) {
+                        container.innerHTML = `
+                            <div class="glass-card p-8 flex flex-col items-center justify-center text-center border-dashed border-[#90f50b]/20 relative overflow-hidden py-12">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-[#90f50b]/5 to-transparent opacity-30 blur"></div>
+                                <div class="w-16 h-16 rounded-full bg-[#90f50b]/10 border border-[#90f50b]/30 flex items-center justify-center text-[#90f50b] text-2xl shadow-[0_0_20px_rgba(144,245,11,0.2)] mb-4 animate-bounce">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <h4 class="text-lg font-bold text-white font-[Inter] mb-2">Vault Fully Cleared</h4>
+                                <p class="text-sm text-[#a1a1aa] max-w-sm">Congratulations! You have no pending dues. Your account is fully paid and up to date.</p>
+                            </div>
+                        `;
+                    } else {
+                        data.due_months.forEach(m => {
+                            const subtotal = data.monthly_fee + data.transport_fee;
+                            container.innerHTML += `
+                                <div class="glass-card p-5 flex items-center justify-between border-white/5 group relative hover:border-[#ffbd2e]/30 transition-all duration-300">
+                                    <div class="absolute -inset-1 bg-gradient-to-r from-[#ffbd2e]/5 to-transparent opacity-0 group-hover:opacity-20 transition-opacity blur"></div>
+                                    <div class="relative z-10">
+                                        <div class="flex items-center gap-3">
+                                            <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e] shadow-[0_0_8px_#ffbd2e]"></span>
+                                            <h4 class="font-bold text-white text-base">${m.month} ${m.year}</h4>
+                                        </div>
+                                        <div class="flex gap-4 mt-2 text-xs text-[#a1a1aa]">
+                                            <span>Tuition: <strong class="text-white/80">₹${Math.round(data.monthly_fee)}</strong></span>
+                                            ${data.transport_fee > 0 ? `<span>Transport: <strong class="text-white/80">₹${Math.round(data.transport_fee)}</strong></span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="relative z-10 text-right">
+                                        <p class="text-xs text-[#a1a1aa] uppercase tracking-wider font-semibold">Subtotal</p>
+                                        <p class="text-lg font-extrabold text-white mt-1">₹${Math.round(subtotal)}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Update bottom user card profile
+                    document.getElementById('user-card-name').textContent = data.student_name;
+                    document.getElementById('user-card-status').textContent = `Class ${data.class} - ${data.section}`;
+
+                    // Short initials for avatar
+                    const initials = data.student_name.split(' ').map(n => n[0]).join('').slice(0, 3).toUpperCase();
+                    document.getElementById('user-avatar-text').textContent = initials;
+
+                } else {
+                    IS_LOGGED_IN = false;
+                    unauthContainer.classList.remove('hidden');
+                    authContainer.classList.add('hidden');
+                    if (data && data.message) {
+                        errDiv.textContent = data.message;
+                        errDiv.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching dues:", err);
+                IS_LOGGED_IN = false;
+                unauthContainer.classList.remove('hidden');
+                authContainer.classList.add('hidden');
+            }
+        }
+
+        async function lockFeesVault() {
+            try {
+                const response = await fetch('/logout');
+                IS_LOGGED_IN = false;
+
+                // Show unauth gate
+                document.getElementById('fees-unauth-container').classList.remove('hidden');
+                document.getElementById('fees-auth-container').classList.add('hidden');
+
+                // Reset bottom user card
+                document.getElementById('user-card-name').textContent = "Student Mode";
+                document.getElementById('user-card-status').textContent = "Secure Session";
+                document.getElementById('user-avatar-text').textContent = "VVM";
+
+                // Reset form
+                document.getElementById('fees-login-form').reset();
+                document.getElementById('fees-login-error').classList.add('hidden');
+            } catch (err) {
+                console.error("Logout failed:", err);
+            }
+        }
+
+        // Bind form submit listener and run initial load check on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('fees-login-form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const u = document.getElementById('fees-username').value.trim();
+                    const p = document.getElementById('fees-password').value;
+                    const errDiv = document.getElementById('fees-login-error');
+                    const submitBtn = document.getElementById('fees-login-submit');
+
+                    errDiv.classList.add('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Decrypting...`;
+
+                    try {
+                        const formData = new FormData();
+                        formData.append('username', u);
+                        formData.append('password', p);
+
+                        const response = await fetch('/login', {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        if (response.redirected) {
+                            await fetchDues();
+                            return;
+                        }
+
+                        let data = null;
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            data = await response.json();
+                        } else {
+                            await fetchDues();
+                            return;
+                        }
+
+                        if (response.ok && data && data.status === 'success') {
+                            IS_LOGGED_IN = true;
+                            await fetchDues();
+                        } else {
+                            errDiv.textContent = (data && data.message) ? data.message : "Invalid credentials. Please try again.";
+                            errDiv.classList.remove('hidden');
+                        }
+                    } catch (err) {
+                        console.error("Login catch error:", err);
+                        await fetchDues();
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Decrypt Vault`;
+                    }
+                });
+            }
+
+            // If already logged in on load, pre-fetch student profile to update sidebar details
+            if (IS_LOGGED_IN) {
+                fetchDues();
+            }
+        });
+
+        // --- 2. Dynamic Study Materials ---
+        let studyMaterialsDB = {};
+
+        async function fetchStudyData() {
+            try {
+                const response = await fetch('/static/data/study_material.json');
+                if (response.ok) {
+                    studyMaterialsDB = await response.json();
+                    renderSubjects();
+                } else {
+                    console.error("Failed to load study materials");
+                }
+            } catch (err) {
+                console.error("Error fetching study materials:", err);
+            }
+        }
+
+        function renderSubjects() {
+            const classLvl = document.getElementById('class-selector').value;
+            document.getElementById('display-class').textContent = `Class ${classLvl}`;
+
+            const subjectsView = document.getElementById('subjects-view');
+            const chaptersView = document.getElementById('chapters-view');
+
+            subjectsView.innerHTML = '';
+            subjectsView.style.display = 'grid';
+            chaptersView.style.display = 'none';
+
+            const subjects = studyMaterialsDB[classLvl] || [];
+
+            subjects.forEach((subject, index) => {
+                const safeSubject = encodeURIComponent(JSON.stringify(subject));
+                subjectsView.innerHTML += `
+                    <div class="glass-card p-6 flex items-center gap-5 cursor-pointer group hover:bg-white/5 transition-all duration-300" onclick="showSubjectDetails('${classLvl}', ${index})">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-[${subject.color}] to-transparent opacity-0 group-hover:opacity-20 transition-opacity blur"></div>
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center relative z-10 transition-transform group-hover:scale-110" style="background: ${subject.color}15; color: ${subject.color}; box-shadow: 0 0 20px ${subject.color}30;">
+                            <i class="${subject.icon} text-2xl"></i>
+                        </div>
+                        <div class="relative z-10">
+                            <h3 class="text-xl font-bold text-white font-[Inter] group-hover:text-[${subject.color}] transition-colors">${subject.name}</h3>
+                            <p class="text-xs text-[#a1a1aa] mt-1 uppercase tracking-wider font-semibold">${subject.chapters.length} Chapters available</p>
+                        </div>
+                        <i class="fas fa-chevron-right ml-auto text-white/20 group-hover:text-white/60 transition-colors relative z-10"></i>
+                    </div>
+                `;
+            });
+        }
+
+        function showSubjectDetails(classLvl, subjectIndex) {
+            const subject = studyMaterialsDB[classLvl][subjectIndex];
+
+            document.getElementById('subjects-view').style.display = 'none';
+            document.getElementById('chapters-view').style.display = 'block';
+
+            // Setup Header
+            const iconWrap = document.getElementById('active-subject-icon-wrap');
+            iconWrap.style.background = `${subject.color}15`;
+            iconWrap.style.color = subject.color;
+            iconWrap.style.boxShadow = `0 0 15px ${subject.color}30`;
+
+            document.getElementById('active-subject-icon').className = subject.icon;
+            document.getElementById('active-subject-title').textContent = subject.name;
+
+            // Render Chapters
+            const chaptersContainer = document.getElementById('chapters-container');
+            chaptersContainer.innerHTML = '';
+
+            subject.chapters.forEach(chapter => {
+                const hasFormula = chapter.formula && chapter.formula.trim() !== '';
+                const hasPractice = chapter.practice && chapter.practice.trim() !== '';
+                chaptersContainer.innerHTML += `
+                    <div class="glass-card p-6 flex flex-col justify-between group cursor-default">
+                        <div class="absolute -inset-1 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity blur" style="--tw-gradient-from: ${subject.color}; --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);"></div>
+                        <div class="relative z-10">
+                            <p class="text-[11px] font-bold uppercase tracking-wider mb-2" style="color: ${subject.color}">${chapter.title}</p>
+                            <p class="font-medium text-[#f4f4f5] text-[14px] leading-relaxed mb-4">${chapter.desc}</p>
+                        </div>
+                        <div class="mt-auto flex flex-col gap-3 relative z-10">
+                            ${hasFormula ? `
+                            <div class="bg-black/40 border border-white/5 rounded-xl p-4">
+                                <p class="text-[10px] text-[#a1a1aa] uppercase tracking-wider font-bold mb-2">Key Concept / Formula</p>
+                                <p class="font-bold text-white text-lg tracking-wide font-[Inter] neon-text" style="background: linear-gradient(135deg, ${subject.color} 0%, #fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${chapter.formula}</p>
+                            </div>
+                            ` : ''}
+                            ${hasPractice ? `
+                            <div class="rounded-xl p-4 border" style="background: ${subject.color}15; border-color: ${subject.color}40;">
+                                <p class="text-[10px] uppercase tracking-wider font-bold mb-2 flex items-center gap-2" style="color: ${subject.color}"><i class="fas fa-pencil-alt"></i> Practice Question</p>
+                                <p class="font-medium text-[#e4e4e7] text-sm tracking-wide leading-relaxed">${chapter.practice}</p>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function showSubjectsView() {
+            document.getElementById('chapters-view').style.display = 'none';
+            document.getElementById('subjects-view').style.display = 'grid';
+        }
+
+        document.getElementById('class-selector').addEventListener('change', renderSubjects);
+        fetchStudyData();
+
+        // --- 3. Calculator Logic ---
+        const calcDisplay = document.getElementById('calc-display');
+        let justCalculated = false;
+
+        function calcAppend(val) {
+            if (calcDisplay.value === '0' || justCalculated || calcDisplay.value === 'Error') {
+                calcDisplay.value = val;
+                justCalculated = false;
+            } else {
+                calcDisplay.value += val;
+            }
+        }
+        function calcClear() { calcDisplay.value = '0'; }
+        function calcCalculate() {
+            try {
+                const result = new Function('return ' + calcDisplay.value)();
+                if (!isFinite(result)) throw new Error('Math Error');
+                calcDisplay.value = Math.round(result * 100000000) / 100000000;
+                justCalculated = true;
+            } catch (e) {
+                calcDisplay.value = 'Error';
+                justCalculated = true;
+            }
+        }
+
+        // --- 4. AI Chatbot Logic ---
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatBox = document.getElementById('chat-box');
+        const chatSubmitBtn = document.getElementById('chat-submit');
+
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight < 120 ? this.scrollHeight : 120) + 'px';
+        });
+
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        function addMessage(msg, isUser) {
+            const div = document.createElement('div');
+            if (isUser) {
+                div.className = 'chat-bubble-user';
+                div.innerHTML = `<p class="text-[15px]">${msg.replace(/\n/g, '<br>')}</p>`;
+            } else {
+                div.className = 'chat-bubble-ai';
+                let formattedMsg = msg.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>').replace(/\n/g, '<br>');
+                div.innerHTML = `
+                    <p class="font-bold text-[11px] uppercase tracking-wider mb-2 text-[#bf00ff] flex items-center gap-2">
+                        <i class="fas fa-sparkles"></i> AI Tutor
+                    </p>
+                    <p class="text-[15px] leading-relaxed">${formattedMsg}</p>
+                `;
+            }
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+
+            const classLvl = document.getElementById('class-selector').value;
+
+            addMessage(msg, true);
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-bubble-ai text-[#a1a1aa] text-xs flex items-center gap-2 font-medium tracking-wide';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `<i class="fas fa-circle-notch fa-spin text-[#bf00ff]"></i> Processing query...`;
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            chatInput.disabled = true;
+            chatSubmitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, class_level: classLvl })
+                });
+
+                const data = await response.json();
+                document.getElementById('typing-indicator').remove();
+
+                if (response.ok && data.status === 'success') {
+                    addMessage(data.reply, false);
+                } else {
+                    addMessage("System error. Unable to connect to neural link. Please try again.", false);
+                }
+            } catch (err) {
+                if (document.getElementById('typing-indicator')) document.getElementById('typing-indicator').remove();
+                addMessage("Connection lost. Please check your network.", false);
+            } finally {
+                chatInput.disabled = false;
+                chatSubmitBtn.disabled = false;
+                chatInput.focus();
+            }
+        });
+    </script>
+</body>
+
+</html>

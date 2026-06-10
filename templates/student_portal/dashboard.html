@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — {{ student.student_name }} | VVM Student Portal</title>
+    <meta name="description" content="Personalized academic dashboard for {{ student.student_name }} at VVM Dharampur.">
+    <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Portal CSS -->
+    <link href="{{ url_for('static', filename='css/student_portal.css') }}" rel="stylesheet"/>
+</head>
+<body class="sp-page">
+
+    <!-- Background Effects -->
+    <div class="sp-bg-effects">
+        <div class="sp-grid-pattern"></div>
+        <div class="sp-orb sp-orb-1"></div>
+        <div class="sp-orb sp-orb-2"></div>
+        <div class="sp-orb sp-orb-3"></div>
+    </div>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sp-sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Dashboard Layout -->
+    <div class="sp-dashboard">
+
+        <!-- ═══ SIDEBAR ═══ -->
+        <aside class="sp-sidebar" id="sidebar">
+            <div class="sp-sidebar-header">
+                <img src="{{ url_for('static', filename='images/school_logo.png') }}" 
+                     alt="VVM" class="sp-sidebar-logo"/>
+                <div>
+                    <div class="sp-sidebar-brand-name">Student Portal</div>
+                    <div class="sp-sidebar-brand-sub">VVM Dharampur</div>
+                </div>
+            </div>
+
+            <nav class="sp-sidebar-nav">
+                <div class="sp-sidebar-section-label">Main</div>
+                
+                <button class="sp-nav-item active" data-tab="overview" onclick="switchTab('overview')">
+                    <div class="sp-nav-icon" style="background:rgba(144,245,11,.1);color:#90f50b;">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <span>Overview</span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="fees" onclick="switchTab('fees')">
+                    <div class="sp-nav-icon" style="background:rgba(255,189,46,.1);color:#ffbd2e;">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <span>Fee Management</span>
+                    <span class="sp-nav-badge" id="nav-fee-badge" style="display:none;"></span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="study" onclick="switchTab('study')">
+                    <div class="sp-nav-icon" style="background:rgba(0,229,255,.1);color:#00e5ff;">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span>Study Material</span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="ai" onclick="switchTab('ai')">
+                    <div class="sp-nav-icon" style="background:rgba(191,0,255,.1);color:#bf00ff;">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <span>AI Mentor</span>
+                    <span class="sp-nav-dot"></span>
+                </button>
+
+                <div class="sp-sidebar-section-label">Tools</div>
+
+                <button class="sp-nav-item" data-tab="calc" onclick="switchTab('calc')">
+                    <div class="sp-nav-icon" style="background:rgba(0,255,200,.1);color:#00ffc8;">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <span>Calculator</span>
+                </button>
+
+                <div class="sp-sidebar-section-label">Academic</div>
+
+                <button class="sp-nav-item" data-tab="attendance" onclick="switchTab('attendance')">
+                    <div class="sp-nav-icon" style="background:rgba(77,159,255,.1);color:#4d9fff;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <span>Attendance</span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="performance" onclick="switchTab('performance')">
+                    <div class="sp-nav-icon" style="background:rgba(255,26,140,.1);color:#ff1a8c;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <span>Performance</span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="notices" onclick="switchTab('notices')">
+                    <div class="sp-nav-icon" style="background:rgba(255,107,26,.1);color:#ff6b1a;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <span>Notices</span>
+                </button>
+
+                <button class="sp-nav-item" data-tab="profile" onclick="switchTab('profile')">
+                    <div class="sp-nav-icon" style="background:rgba(144,245,11,.1);color:#90f50b;">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <span>My Profile</span>
+                </button>
+            </nav>
+
+            <!-- User Card -->
+            <div class="sp-sidebar-user">
+                <div class="sp-user-card">
+                    <div class="sp-user-avatar">
+                        <div class="sp-user-avatar-inner" id="sidebar-avatar">
+                            {{ student.student_name.split(' ')[0][0] }}{{ student.student_name.split(' ')[-1][0] if student.student_name.split(' ')|length > 1 else '' }}
+                        </div>
+                    </div>
+                    <div class="sp-user-info">
+                        <div class="sp-user-name">{{ student.student_name }}</div>
+                        <div class="sp-user-class">Class {{ student.class }} — {{ student.section }}</div>
+                    </div>
+                    <a href="{{ url_for('student_portal.portal_logout') }}" class="sp-user-logout" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <main class="sp-main">
+            <!-- Topbar -->
+            <header class="sp-topbar">
+                <div class="sp-topbar-left">
+                    <button class="sp-mobile-toggle" id="mobile-toggle" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="sp-page-title" id="page-title">Overview</h1>
+                </div>
+                <div class="sp-topbar-right">
+                    <button class="sp-topbar-btn" id="topbar-theme-toggle" title="Toggle theme">
+                        <i class="fas fa-moon" id="dash-theme-icon"></i>
+                    </button>
+                    <a href="/" class="sp-topbar-btn" title="School Website">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="sp-content" id="sp-content">
+
+                <!-- ═══════ OVERVIEW TAB ═══════ -->
+                <div class="sp-tab-content active" id="tab-overview">
+                    <!-- Welcome Banner -->
+                    <div class="sp-card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(144,245,11,.06),rgba(0,229,255,.04));border-color:rgba(144,245,11,.15);">
+                        <div class="sp-card-glow" style="background:var(--sp-accent);"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                            <div>
+                                <h2 style="font-family:'Inter',sans-serif;font-size:28px;font-weight:900;color:var(--sp-t1);margin-bottom:4px;">
+                                    Welcome, <span style="background:linear-gradient(135deg,#90f50b,#00e5ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">{{ student.student_name.split(' ')[0] }}</span>! 👋
+                                </h2>
+                                <p style="font-size:13px;color:var(--sp-t3);">
+                                    Class {{ student.class }} · Section {{ student.section }} · Roll No. {{ student.roll_number or 'N/A' }} · Adm: {{ student.admission_number }}
+                                </p>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="sp-badge sp-badge-green"><i class="fas fa-circle" style="font-size:6px;"></i> Active Session</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="sp-stats-grid" id="overview-stats">
+                        <div class="sp-stat-card sp-anim-fadeup sp-delay-1">
+                            <div class="sp-stat-icon" style="background:rgba(77,159,255,.1);color:#4d9fff;">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <div class="sp-stat-value" id="ov-attendance">—</div>
+                                <div class="sp-stat-label">Attendance</div>
+                            </div>
+                        </div>
+                        <div class="sp-stat-card sp-anim-fadeup sp-delay-2">
+                            <div class="sp-stat-icon" style="background:rgba(255,189,46,.1);color:#ffbd2e;">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                            <div>
+                                <div class="sp-stat-value" id="ov-dues">—</div>
+                                <div class="sp-stat-label">Pending Dues</div>
+                            </div>
+                        </div>
+                        <div class="sp-stat-card sp-anim-fadeup sp-delay-3">
+                            <div class="sp-stat-icon" style="background:rgba(144,245,11,.1);color:#90f50b;">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div>
+                                <div class="sp-stat-value" id="ov-average">—</div>
+                                <div class="sp-stat-label">Overall Avg</div>
+                            </div>
+                        </div>
+                        <div class="sp-stat-card sp-anim-fadeup sp-delay-4">
+                            <div class="sp-stat-icon" style="background:rgba(255,26,140,.1);color:#ff1a8c;">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div>
+                                <div class="sp-stat-value" id="ov-exams">—</div>
+                                <div class="sp-stat-label">Exams Taken</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Notices -->
+                    <div class="sp-section-header">
+                        <div>
+                            <h3 style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:var(--sp-t1);">Recent Notices</h3>
+                        </div>
+                        <button class="sp-back-btn" onclick="switchTab('notices')" style="margin-bottom:0;">View All <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div id="ov-notices-list">
+                        <div class="sp-empty-state" style="padding:30px;">
+                            <div class="sp-skeleton" style="width:100%;height:60px;margin-bottom:8px;"></div>
+                            <div class="sp-skeleton" style="width:100%;height:60px;margin-bottom:8px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div style="margin-top:24px;">
+                        <h3 style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:var(--sp-t1);margin-bottom:16px;">Quick Actions</h3>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">
+                            <button onclick="switchTab('ai')" class="sp-card" style="text-align:center;cursor:pointer;padding:20px;">
+                                <i class="fas fa-brain" style="font-size:24px;color:#bf00ff;margin-bottom:8px;display:block;"></i>
+                                <span style="font-size:13px;font-weight:700;">Ask AI Mentor</span>
+                            </button>
+                            <button onclick="switchTab('calc')" class="sp-card" style="text-align:center;cursor:pointer;padding:20px;">
+                                <i class="fas fa-calculator" style="font-size:24px;color:#00ffc8;margin-bottom:8px;display:block;"></i>
+                                <span style="font-size:13px;font-weight:700;">Calculator</span>
+                            </button>
+                            <button onclick="switchTab('study')" class="sp-card" style="text-align:center;cursor:pointer;padding:20px;">
+                                <i class="fas fa-book-open" style="font-size:24px;color:#00e5ff;margin-bottom:8px;display:block;"></i>
+                                <span style="font-size:13px;font-weight:700;">Study Material</span>
+                            </button>
+                            <button onclick="switchTab('profile')" class="sp-card" style="text-align:center;cursor:pointer;padding:20px;">
+                                <i class="fas fa-user-edit" style="font-size:24px;color:#90f50b;margin-bottom:8px;display:block;"></i>
+                                <span style="font-size:13px;font-weight:700;">My Profile</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════ FEE MANAGEMENT TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-fees">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">Fee <span class="sp-accent">Management</span></h2>
+                            <p class="sp-section-subtitle">Track your fee payments, pending dues, and payment history.</p>
+                        </div>
+                    </div>
+
+                    <div id="fees-content">
+                        <!-- Loaded via JS -->
+                        <div class="sp-stats-grid">
+                            <div class="sp-skeleton" style="height:100px;"></div>
+                            <div class="sp-skeleton" style="height:100px;"></div>
+                            <div class="sp-skeleton" style="height:100px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════ STUDY MATERIAL TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-study">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">Study <span class="sp-accent">Material</span></h2>
+                            <p class="sp-section-subtitle">Subject-wise learning content for Class {{ student.class }}.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Subjects View -->
+                    <div id="study-subjects-view" class="sp-subjects-grid">
+                        <!-- Loaded via JS -->
+                    </div>
+
+                    <!-- Chapters View (hidden by default) -->
+                    <div id="study-chapters-view" style="display:none;">
+                        <button class="sp-back-btn" onclick="showStudySubjects()">
+                            <i class="fas fa-arrow-left"></i> Back to Subjects
+                        </button>
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);">
+                            <div id="study-subject-icon" class="sp-subject-icon"></div>
+                            <h3 id="study-subject-title" style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:var(--sp-t1);"></h3>
+                        </div>
+                        <div id="study-chapters-container" class="sp-chapters-grid"></div>
+                    </div>
+                </div>
+
+                <!-- ═══════ AI MENTOR TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-ai">
+                    <div class="sp-chat-container">
+                        <div class="sp-chat-glow"></div>
+                        <div class="sp-chat-header">
+                            <div class="sp-chat-avatar">
+                                <div class="sp-chat-avatar-inner">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="sp-chat-name">AI Mentor</div>
+                                <div class="sp-chat-status">
+                                    <span class="sp-chat-status-dot"></span>
+                                    Neural Link Active — Class {{ student.class }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="sp-chat-messages" id="chat-messages">
+                            <div class="sp-chat-bubble-ai">
+                                <div class="sp-chat-bubble-label" style="color:#bf00ff;">
+                                    <i class="fas fa-sparkles"></i> AI Mentor
+                                </div>
+                                <p>Hello {{ student.student_name.split(' ')[0] }}! 👋 I'm your personal AI tutor, calibrated for Class {{ student.class }}. I can help you with:</p>
+                                <ul style="margin:8px 0 0 16px;font-size:13px;line-height:2;">
+                                    <li>📚 Homework & assignments</li>
+                                    <li>🧠 Concept explanations</li>
+                                    <li>🎯 Exam preparation tips</li>
+                                    <li>💡 Career guidance</li>
+                                </ul>
+                                <p style="margin-top:8px;">What would you like to learn today?</p>
+                            </div>
+                        </div>
+
+                        <div class="sp-chat-input-area">
+                            <form id="chat-form" class="sp-chat-input-wrap">
+                                <textarea id="chat-input" class="sp-chat-input" rows="1" placeholder="Ask me anything..." maxlength="2000"></textarea>
+                                <button type="submit" class="sp-chat-send-btn" id="chat-send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                            <p class="sp-chat-hint">Responses are personalized for Class {{ student.class }} level.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════ CALCULATOR TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-calc">
+                    <div class="sp-section-header" style="justify-content:center;">
+                        <div style="text-align:center;">
+                            <h2 class="sp-section-title">Scientific <span class="sp-accent">Calculator</span></h2>
+                            <p class="sp-section-subtitle">Advanced mathematical calculations at your fingertips.</p>
+                        </div>
+                    </div>
+
+                    <div class="sp-calc-wrapper">
+                        <div class="sp-calc-history" id="calc-history"></div>
+                        <input type="text" class="sp-calc-display" id="calc-display" readonly value="0"/>
+                        <div class="sp-calc-grid">
+                            <!-- Row 1: Scientific functions -->
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('sin')">sin</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('cos')">cos</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('tan')">tan</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('log')">log</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('sqrt')">√</button>
+                            <!-- Row 2 -->
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('pow2')">x²</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('pow3')">x³</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('pi')">π</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('exp')">eˣ</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('ln')">ln</button>
+                            <!-- Row 3 -->
+                            <button class="sp-calc-btn sp-calc-clear" onclick="calcClear()">C</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('(')">(</button>
+                            <button class="sp-calc-btn" onclick="calcAppend(')')">)</button>
+                            <button class="sp-calc-btn sp-calc-op" onclick="calcAppend('/')">÷</button>
+                            <button class="sp-calc-btn sp-calc-clear" onclick="calcBackspace()">⌫</button>
+                            <!-- Row 4 -->
+                            <button class="sp-calc-btn" onclick="calcAppend('7')">7</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('8')">8</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('9')">9</button>
+                            <button class="sp-calc-btn sp-calc-op" onclick="calcAppend('*')">×</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('percent')">%</button>
+                            <!-- Row 5 -->
+                            <button class="sp-calc-btn" onclick="calcAppend('4')">4</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('5')">5</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('6')">6</button>
+                            <button class="sp-calc-btn sp-calc-op" onclick="calcAppend('-')">−</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('inv')">1/x</button>
+                            <!-- Row 6 -->
+                            <button class="sp-calc-btn" onclick="calcAppend('1')">1</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('2')">2</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('3')">3</button>
+                            <button class="sp-calc-btn sp-calc-op" onclick="calcAppend('+')">+</button>
+                            <button class="sp-calc-btn sp-calc-eq" onclick="calcCompute()" style="grid-row:span 2;">&#61;</button>
+                            <!-- Row 7 -->
+                            <button class="sp-calc-btn sp-calc-span2" onclick="calcAppend('0')">0</button>
+                            <button class="sp-calc-btn" onclick="calcAppend('.')">.</button>
+                            <button class="sp-calc-btn sp-calc-fn" onclick="calcFn('abs')">|x|</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════ ATTENDANCE TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-attendance">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">Attendance <span class="sp-accent">Tracker</span></h2>
+                            <p class="sp-section-subtitle">Your monthly attendance record and statistics.</p>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <select id="att-month" class="sp-form-select" style="padding-left:14px;width:140px;" onchange="loadAttendance()"></select>
+                            <select id="att-year" class="sp-form-select" style="padding-left:14px;width:100px;" onchange="loadAttendance()"></select>
+                        </div>
+                    </div>
+
+                    <div id="attendance-content">
+                        <div class="sp-skeleton" style="height:300px;"></div>
+                    </div>
+                </div>
+
+                <!-- ═══════ PERFORMANCE TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-performance">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">Performance <span class="sp-accent">Analytics</span></h2>
+                            <p class="sp-section-subtitle">Exam results, subject-wise progress, and score analysis.</p>
+                        </div>
+                    </div>
+
+                    <div id="performance-content">
+                        <div class="sp-skeleton" style="height:200px;margin-bottom:16px;"></div>
+                        <div class="sp-skeleton" style="height:300px;"></div>
+                    </div>
+                </div>
+
+                <!-- ═══════ NOTICES TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-notices">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">School <span class="sp-accent">Notices</span></h2>
+                            <p class="sp-section-subtitle">Important announcements and updates.</p>
+                        </div>
+                    </div>
+
+                    <div id="notices-content">
+                        <div class="sp-skeleton" style="height:80px;margin-bottom:12px;"></div>
+                        <div class="sp-skeleton" style="height:80px;margin-bottom:12px;"></div>
+                        <div class="sp-skeleton" style="height:80px;"></div>
+                    </div>
+                </div>
+
+                <!-- ═══════ PROFILE TAB ═══════ -->
+                <div class="sp-tab-content" id="tab-profile">
+                    <div class="sp-section-header">
+                        <div>
+                            <h2 class="sp-section-title">My <span class="sp-accent">Profile</span></h2>
+                            <p class="sp-section-subtitle">Personal details and account settings.</p>
+                        </div>
+                    </div>
+
+                    <div id="profile-content">
+                        <div class="sp-skeleton" style="height:120px;margin-bottom:16px;"></div>
+                        <div class="sp-skeleton" style="height:300px;"></div>
+                    </div>
+                </div>
+
+            </div><!-- /sp-content -->
+        </main>
+    </div><!-- /sp-dashboard -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ═══════════════════════════════════════════════════════════════
+const STUDENT_CLASS = '{{ student.class }}';
+const STUDENT_NAME = '{{ student.student_name }}';
+let studyMaterialsDB = {};
+let dataLoaded = { overview: false, fees: false, study: false, attendance: false, performance: false, notices: false, profile: false };
+
+// ═══════════════════════════════════════════════════════════════
+//  TAB NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+const PAGE_TITLES = {
+    overview: 'Overview', fees: 'Fee Management', study: 'Study Material',
+    ai: 'AI Mentor', calc: 'Calculator', attendance: 'Attendance',
+    performance: 'Performance', notices: 'Notices', profile: 'My Profile'
+};
+
+function switchTab(tabId) {
+    // Update nav
+    document.querySelectorAll('.sp-nav-item').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.sp-nav-item[data-tab="${tabId}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    // Update content
+    document.querySelectorAll('.sp-tab-content').forEach(tab => tab.classList.remove('active'));
+    const targetTab = document.getElementById(`tab-${tabId}`);
+    if (targetTab) targetTab.classList.add('active');
+
+    // Update title
+    document.getElementById('page-title').textContent = PAGE_TITLES[tabId] || tabId;
+
+    // Close mobile sidebar
+    closeSidebar();
+
+    // Lazy load data
+    if (tabId === 'overview' && !dataLoaded.overview) loadOverview();
+    if (tabId === 'fees' && !dataLoaded.fees) loadFees();
+    if (tabId === 'study' && !dataLoaded.study) loadStudyMaterial();
+    if (tabId === 'attendance' && !dataLoaded.attendance) { initAttendanceSelectors(); loadAttendance(); }
+    if (tabId === 'performance' && !dataLoaded.performance) loadPerformance();
+    if (tabId === 'notices' && !dataLoaded.notices) loadNotices();
+    if (tabId === 'profile' && !dataLoaded.profile) loadProfile();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MOBILE SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('mobile-toggle').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+});
+document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════════════
+const dashThemeToggle = document.getElementById('topbar-theme-toggle');
+const dashThemeIcon = document.getElementById('dash-theme-icon');
+
+function applyDashTheme(mode) {
+    if (mode === 'light') { document.body.classList.add('lm'); dashThemeIcon.className = 'fas fa-sun'; }
+    else { document.body.classList.remove('lm'); dashThemeIcon.className = 'fas fa-moon'; }
+}
+applyDashTheme(localStorage.getItem('vvm_theme') || 'dark');
+dashThemeToggle.addEventListener('click', () => {
+    const isLight = document.body.classList.contains('lm');
+    const newTheme = isLight ? 'dark' : 'light';
+    applyDashTheme(newTheme);
+    localStorage.setItem('vvm_theme', newTheme);
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  OVERVIEW MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadOverview() {
+    try {
+        const res = await fetch('/student-portal/api/overview');
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        document.getElementById('ov-attendance').textContent = data.attendance_percentage + '%';
+        document.getElementById('ov-dues').textContent = '₹' + Math.round(data.total_due);
+        document.getElementById('ov-average').textContent = data.overall_average + '%';
+        document.getElementById('ov-exams').textContent = data.total_exams;
+
+        // Fee badge
+        if (data.due_months_count > 0) {
+            const badge = document.getElementById('nav-fee-badge');
+            badge.textContent = data.due_months_count;
+            badge.style.display = 'inline-flex';
+        }
+
+        // Recent notices
+        const noticesList = document.getElementById('ov-notices-list');
+        if (data.recent_notices && data.recent_notices.length > 0) {
+            noticesList.innerHTML = data.recent_notices.map(n => {
+                const priColors = { Urgent: '#ff1a8c', Important: '#ffbd2e', Normal: '#4d9fff' };
+                const catIcons = { General: 'fa-bullhorn', Exam: 'fa-file-alt', Holiday: 'fa-umbrella-beach', Fee: 'fa-rupee-sign', Event: 'fa-calendar-star' };
+                return `
+                    <div class="sp-notice-card">
+                        <div class="sp-notice-icon" style="background:${priColors[n.priority] || '#4d9fff'}15;color:${priColors[n.priority] || '#4d9fff'};">
+                            <i class="fas ${catIcons[n.category] || 'fa-bullhorn'}"></i>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="sp-notice-title">${n.title}</div>
+                            <div class="sp-notice-date">
+                                <span class="sp-badge" style="background:${priColors[n.priority]}15;color:${priColors[n.priority]};border-color:${priColors[n.priority]}30;">${n.priority}</span>
+                                &nbsp;${n.created_at}
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        } else {
+            noticesList.innerHTML = '<div class="sp-empty-state" style="padding:20px;"><p class="sp-empty-text">No recent notices</p></div>';
+        }
+
+        dataLoaded.overview = true;
+    } catch (err) { console.error('Overview load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  FEE MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadFees() {
+    try {
+        const res = await fetch('/student-portal/api/fees');
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        const s = data.fee_summary;
+        const container = document.getElementById('fees-content');
+
+        let html = `
+            <div class="sp-fee-summary-grid">
+                <div class="sp-fee-summary-card">
+                    <div class="sp-fee-amount" style="color:var(--sp-gold);">₹${Math.round(s.total_monthly)}</div>
+                    <div class="sp-fee-label">Monthly Fee</div>
+                </div>
+                <div class="sp-fee-summary-card">
+                    <div class="sp-fee-amount" style="color:var(--sp-accent);">₹${Math.round(s.total_paid)}</div>
+                    <div class="sp-fee-label">Total Paid</div>
+                </div>
+                <div class="sp-fee-summary-card">
+                    <div class="sp-fee-amount" style="color:${s.total_due > 0 ? '#ff6b6b' : 'var(--sp-accent)'};">₹${Math.round(s.total_due)}</div>
+                    <div class="sp-fee-label">Total Pending</div>
+                </div>
+                <div class="sp-fee-summary-card">
+                    <div class="sp-fee-amount" style="color:var(--sp-cyan);">${s.due_count}</div>
+                    <div class="sp-fee-label">Months Due</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <span style="font-size:12px;font-weight:700;color:var(--sp-t3);text-transform:uppercase;letter-spacing:1px;">Payment Progress</span>
+                    <span style="font-size:12px;font-weight:700;color:var(--sp-accent);">${s.total_paid > 0 ? Math.round(s.total_paid / (s.total_paid + s.total_due) * 100) : 0}%</span>
+                </div>
+                <div class="sp-progress">
+                    <div class="sp-progress-bar" style="width:${s.total_paid > 0 ? Math.round(s.total_paid / (s.total_paid + s.total_due) * 100) : 0}%;"></div>
+                </div>
+            </div>`;
+
+        // Due months
+        if (s.due_count > 0) {
+            html += `<h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin:24px 0 12px;">Unpaid Months</h3>`;
+            s.due_months.forEach(m => {
+                html += `
+                    <div class="sp-notice-card" style="border-left:3px solid var(--sp-gold);">
+                        <div class="sp-notice-icon" style="background:rgba(255,189,46,.1);color:#ffbd2e;">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div class="sp-notice-title">${m.month} ${m.year}</div>
+                            <div style="font-size:12px;color:var(--sp-t3);">
+                                Tuition: ₹${Math.round(s.monthly_fee)} ${s.transport_fee > 0 ? '+ Transport: ₹' + Math.round(s.transport_fee) : ''}
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:18px;font-weight:800;color:var(--sp-t1);">₹${Math.round(s.total_monthly)}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // Payment history
+        if (data.payments.length > 0) {
+            html += `<h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin:24px 0 12px;">Payment History</h3>
+                <div class="sp-table-wrap"><table class="sp-table">
+                    <thead><tr><th>Receipt</th><th>Period</th><th>Amount</th><th>Date</th><th>Mode</th></tr></thead>
+                    <tbody>`;
+            data.payments.forEach(p => {
+                html += `<tr>
+                    <td style="font-weight:700;color:var(--sp-t1);">${p.receipt_number}</td>
+                    <td>${p.months_paid || (p.month + ' ' + p.year)}</td>
+                    <td style="font-weight:700;color:var(--sp-accent);">₹${Math.round(p.total_amount)}</td>
+                    <td>${p.payment_date}</td>
+                    <td><span class="sp-badge sp-badge-cyan">${p.payment_mode}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+        }
+
+        container.innerHTML = html;
+        dataLoaded.fees = true;
+    } catch (err) { console.error('Fee load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  STUDY MATERIAL MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadStudyMaterial() {
+    try {
+        const res = await fetch('/static/data/study_material.json');
+        if (res.ok) {
+            studyMaterialsDB = await res.json();
+            renderStudySubjects();
+            dataLoaded.study = true;
+        }
+    } catch (err) { console.error('Study material load error:', err); }
+}
+
+function renderStudySubjects() {
+    const subjects = studyMaterialsDB[STUDENT_CLASS] || [];
+    const container = document.getElementById('study-subjects-view');
+
+    if (subjects.length === 0) {
+        container.innerHTML = '<div class="sp-empty-state"><div class="sp-empty-icon"><i class="fas fa-book"></i></div><div class="sp-empty-title">No Materials Yet</div><div class="sp-empty-text">Study materials for your class will appear here.</div></div>';
+        return;
+    }
+
+    container.innerHTML = subjects.map((s, i) => `
+        <div class="sp-subject-card" onclick="showStudyChapters(${i})">
+            <div class="sp-subject-icon" style="background:${s.color}15;color:${s.color};box-shadow:0 0 16px ${s.color}20;">
+                <i class="${s.icon}"></i>
+            </div>
+            <div>
+                <div class="sp-subject-name">${s.name}</div>
+                <div class="sp-subject-count">${s.chapters.length} Chapters</div>
+            </div>
+            <i class="fas fa-chevron-right sp-subject-arrow"></i>
+        </div>`).join('');
+}
+
+function showStudyChapters(index) {
+    const subjects = studyMaterialsDB[STUDENT_CLASS] || [];
+    const subject = subjects[index];
+    if (!subject) return;
+
+    document.getElementById('study-subjects-view').style.display = 'none';
+    document.getElementById('study-chapters-view').style.display = 'block';
+
+    const iconEl = document.getElementById('study-subject-icon');
+    iconEl.style.background = subject.color + '15';
+    iconEl.style.color = subject.color;
+    iconEl.innerHTML = `<i class="${subject.icon}"></i>`;
+    document.getElementById('study-subject-title').textContent = subject.name;
+
+    const container = document.getElementById('study-chapters-container');
+    container.innerHTML = subject.chapters.map(ch => {
+        let extra = '';
+        if (ch.formula) {
+            extra += `<div class="sp-chapter-formula-box">
+                <div class="sp-chapter-formula-label">Key Formula</div>
+                <div class="sp-chapter-formula" style="background:linear-gradient(135deg,${subject.color},#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${ch.formula}</div>
+            </div>`;
+        }
+        if (ch.practice) {
+            extra += `<div style="margin-top:10px;padding:12px;border-radius:10px;background:${subject.color}10;border:1px solid ${subject.color}30;">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:${subject.color};margin-bottom:4px;"><i class="fas fa-pencil-alt"></i> Practice</div>
+                <div style="font-size:13px;color:var(--sp-t2);">${ch.practice}</div>
+            </div>`;
+        }
+        return `<div class="sp-chapter-card">
+            <div class="sp-chapter-title" style="color:${subject.color};">${ch.title}</div>
+            <div class="sp-chapter-desc">${ch.desc}</div>
+            ${extra}
+        </div>`;
+    }).join('');
+}
+
+function showStudySubjects() {
+    document.getElementById('study-chapters-view').style.display = 'none';
+    document.getElementById('study-subjects-view').style.display = 'grid';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  AI MENTOR CHAT
+// ═══════════════════════════════════════════════════════════════
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatMessages = document.getElementById('chat-messages');
+const chatSendBtn = document.getElementById('chat-send-btn');
+
+chatInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+chatInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatForm.dispatchEvent(new Event('submit')); }
+});
+
+function addChatMessage(msg, isUser) {
+    const div = document.createElement('div');
+    if (isUser) {
+        div.className = 'sp-chat-bubble-user';
+        div.innerHTML = `<p>${msg.replace(/\n/g, '<br>')}</p>`;
+    } else {
+        div.className = 'sp-chat-bubble-ai';
+        let formatted = msg.replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--sp-t1)">$1</strong>').replace(/\n/g, '<br>');
+        div.innerHTML = `<div class="sp-chat-bubble-label" style="color:#bf00ff;"><i class="fas fa-sparkles"></i> AI Mentor</div><p>${formatted}</p>`;
+    }
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+
+    addChatMessage(msg, true);
+    chatInput.value = '';
+    chatInput.style.height = 'auto';
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'sp-chat-bubble-ai';
+    typing.id = 'chat-typing';
+    typing.innerHTML = '<span class="sp-spinner" style="color:#bf00ff;"></span> <span style="font-size:12px;color:var(--sp-t3);margin-left:8px;">Processing...</span>';
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    chatInput.disabled = true;
+    chatSendBtn.disabled = true;
+
+    try {
+        const res = await fetch('/student-portal/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        const typingEl = document.getElementById('chat-typing');
+        if (typingEl) typingEl.remove();
+
+        if (res.ok && data.status === 'success') {
+            addChatMessage(data.reply, false);
+        } else {
+            addChatMessage(data.message || 'Unable to get a response. Please try again.', false);
+        }
+    } catch (err) {
+        const typingEl = document.getElementById('chat-typing');
+        if (typingEl) typingEl.remove();
+        addChatMessage('Connection error. Please check your network.', false);
+    } finally {
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.focus();
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  SCIENTIFIC CALCULATOR
+// ═══════════════════════════════════════════════════════════════
+const calcDisplay = document.getElementById('calc-display');
+const calcHistory = document.getElementById('calc-history');
+let calcJustComputed = false;
+
+function calcAppend(val) {
+    if (calcDisplay.value === '0' || calcJustComputed || calcDisplay.value === 'Error') {
+        calcDisplay.value = (['/', '*', '-', '+'].includes(val) && calcDisplay.value !== 'Error' && !calcJustComputed) ? calcDisplay.value + val : val;
+        if (!['/', '*', '-', '+'].includes(val)) calcJustComputed = false;
+    } else {
+        calcDisplay.value += val;
+    }
+    calcJustComputed = false;
+}
+
+function calcClear() { calcDisplay.value = '0'; calcHistory.textContent = ''; }
+function calcBackspace() {
+    if (calcDisplay.value.length <= 1 || calcDisplay.value === 'Error') calcDisplay.value = '0';
+    else calcDisplay.value = calcDisplay.value.slice(0, -1);
+}
+
+function calcFn(fn) {
+    let val = parseFloat(calcDisplay.value) || 0;
+    let result;
+    try {
+        switch(fn) {
+            case 'sin': result = Math.sin(val * Math.PI / 180); break;
+            case 'cos': result = Math.cos(val * Math.PI / 180); break;
+            case 'tan': result = Math.tan(val * Math.PI / 180); break;
+            case 'log': result = Math.log10(val); break;
+            case 'ln': result = Math.log(val); break;
+            case 'sqrt': result = Math.sqrt(val); break;
+            case 'pow2': result = val * val; break;
+            case 'pow3': result = val * val * val; break;
+            case 'pi': calcDisplay.value = Math.PI.toFixed(8); calcJustComputed = true; return;
+            case 'exp': result = Math.exp(val); break;
+            case 'percent': result = val / 100; break;
+            case 'inv': result = 1 / val; break;
+            case 'abs': result = Math.abs(val); break;
+            default: return;
+        }
+        if (!isFinite(result)) { calcDisplay.value = 'Error'; } 
+        else {
+            calcHistory.textContent = `${fn}(${val})`;
+            calcDisplay.value = +result.toFixed(10);
+        }
+        calcJustComputed = true;
+    } catch(e) { calcDisplay.value = 'Error'; calcJustComputed = true; }
+}
+
+function calcCompute() {
+    try {
+        const expr = calcDisplay.value;
+        const result = new Function('return ' + expr)();
+        if (!isFinite(result)) throw new Error();
+        calcHistory.textContent = expr + ' =';
+        calcDisplay.value = +parseFloat(result).toFixed(10);
+        calcJustComputed = true;
+    } catch(e) { calcDisplay.value = 'Error'; calcJustComputed = true; }
+}
+
+// Keyboard support
+document.addEventListener('keydown', (e) => {
+    const activeTab = document.querySelector('.sp-tab-content.active');
+    if (!activeTab || activeTab.id !== 'tab-calc') return;
+    if (e.key >= '0' && e.key <= '9') calcAppend(e.key);
+    else if (['+', '-', '*', '/', '.', '(', ')'].includes(e.key)) calcAppend(e.key);
+    else if (e.key === 'Enter') { e.preventDefault(); calcCompute(); }
+    else if (e.key === 'Escape') calcClear();
+    else if (e.key === 'Backspace') calcBackspace();
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  ATTENDANCE MODULE
+// ═══════════════════════════════════════════════════════════════
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function initAttendanceSelectors() {
+    const now = new Date();
+    const monthSel = document.getElementById('att-month');
+    const yearSel = document.getElementById('att-year');
+
+    monthSel.innerHTML = MONTH_NAMES.map((m, i) =>
+        `<option value="${i+1}" ${i+1 === now.getMonth()+1 ? 'selected' : ''}>${m}</option>`
+    ).join('');
+
+    const startYear = 2020;
+    yearSel.innerHTML = '';
+    for (let y = startYear; y <= now.getFullYear() + 1; y++) {
+        yearSel.innerHTML += `<option value="${y}" ${y === now.getFullYear() ? 'selected' : ''}>${y}</option>`;
+    }
+}
+
+async function loadAttendance() {
+    const month = document.getElementById('att-month').value;
+    const year = document.getElementById('att-year').value;
+
+    try {
+        const res = await fetch(`/student-portal/api/attendance?month=${month}&year=${year}`);
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        const container = document.getElementById('attendance-content');
+        const stats = data.stats;
+
+        // Build calendar
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const firstDay = new Date(year, month - 1, 1).getDay(); // 0=Sun
+
+        const recordMap = {};
+        data.records.forEach(r => { recordMap[r.day] = r.status; });
+
+        let calendarHtml = '<div class="sp-card" style="margin-bottom:24px;"><div class="sp-att-calendar">';
+        ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(d => {
+            calendarHtml += `<div class="sp-att-day-header">${d}</div>`;
+        });
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            calendarHtml += '<div class="sp-att-day empty"></div>';
+        }
+
+        // Day cells
+        for (let d = 1; d <= daysInMonth; d++) {
+            const status = recordMap[d] || '';
+            const cls = status ? status.toLowerCase() : '';
+            calendarHtml += `<div class="sp-att-day ${cls}" title="${status || 'No Record'}">${d}</div>`;
+        }
+
+        calendarHtml += '</div>';
+        calendarHtml += `<div class="sp-att-legend">
+            <div class="sp-att-legend-item"><div class="sp-att-legend-dot" style="background:#90f50b;"></div> Present</div>
+            <div class="sp-att-legend-item"><div class="sp-att-legend-dot" style="background:#ff6b6b;"></div> Absent</div>
+            <div class="sp-att-legend-item"><div class="sp-att-legend-dot" style="background:#ffbd2e;"></div> Late</div>
+            <div class="sp-att-legend-item"><div class="sp-att-legend-dot" style="background:#00e5ff;"></div> Leave</div>
+        </div></div>`;
+
+        // Stats cards
+        calendarHtml += `<div class="sp-stats-grid">
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(144,245,11,.1);color:#90f50b;"><i class="fas fa-check"></i></div>
+                <div><div class="sp-stat-value">${stats.present}</div><div class="sp-stat-label">Present</div></div>
+            </div>
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(255,68,68,.1);color:#ff6b6b;"><i class="fas fa-times"></i></div>
+                <div><div class="sp-stat-value">${stats.absent}</div><div class="sp-stat-label">Absent</div></div>
+            </div>
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(255,189,46,.1);color:#ffbd2e;"><i class="fas fa-clock"></i></div>
+                <div><div class="sp-stat-value">${stats.late}</div><div class="sp-stat-label">Late</div></div>
+            </div>
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(77,159,255,.1);color:#4d9fff;"><i class="fas fa-percentage"></i></div>
+                <div><div class="sp-stat-value">${stats.percentage}%</div><div class="sp-stat-label">Attendance Rate</div></div>
+            </div>
+        </div>`;
+
+        container.innerHTML = calendarHtml;
+        dataLoaded.attendance = true;
+    } catch (err) { console.error('Attendance load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PERFORMANCE MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadPerformance() {
+    try {
+        const res = await fetch('/student-portal/api/performance');
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        const container = document.getElementById('performance-content');
+        let html = '';
+
+        // Overall stats
+        html += `<div class="sp-stats-grid">
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(144,245,11,.1);color:#90f50b;"><i class="fas fa-trophy"></i></div>
+                <div><div class="sp-stat-value">${data.overall_average}%</div><div class="sp-stat-label">Overall Average</div></div>
+            </div>
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(0,229,255,.1);color:#00e5ff;"><i class="fas fa-file-alt"></i></div>
+                <div><div class="sp-stat-value">${data.total_exams}</div><div class="sp-stat-label">Total Exams</div></div>
+            </div>
+            <div class="sp-stat-card">
+                <div class="sp-stat-icon" style="background:rgba(191,0,255,.1);color:#bf00ff;"><i class="fas fa-book"></i></div>
+                <div><div class="sp-stat-value">${data.subject_analytics.length}</div><div class="sp-stat-label">Subjects</div></div>
+            </div>
+        </div>`;
+
+        // Subject-wise chart
+        if (data.subject_analytics.length > 0) {
+            html += `<div class="sp-card" style="margin-bottom:24px;">
+                <h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin-bottom:16px;">Subject-wise Performance</h3>
+                <div class="sp-perf-bar-chart">`;
+
+            const barColors = ['#90f50b', '#00e5ff', '#bf00ff', '#ff1a8c', '#ffbd2e', '#ff6b1a', '#00ffc8', '#4d9fff'];
+            data.subject_analytics.forEach((s, i) => {
+                const color = barColors[i % barColors.length];
+                html += `<div class="sp-perf-bar-row">
+                    <div class="sp-perf-bar-label">${s.subject}</div>
+                    <div class="sp-perf-bar-track">
+                        <div class="sp-perf-bar-fill" style="width:${s.average_percentage}%;background:${color};">${s.average_percentage > 15 ? s.average_percentage + '%' : ''}</div>
+                    </div>
+                    <div class="sp-perf-bar-score">${s.average_percentage}%</div>
+                </div>`;
+            });
+            html += `</div></div>`;
+        }
+
+        // Marks table
+        if (data.marks.length > 0) {
+            html += `<div class="sp-card"><h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin-bottom:16px;">Exam Results</h3>
+                <div class="sp-table-wrap"><table class="sp-table">
+                <thead><tr><th>Exam</th><th>Subject</th><th>Marks</th><th>%</th><th>Grade</th><th>Date</th></tr></thead>
+                <tbody>`;
+            data.marks.forEach(m => {
+                const pctColor = m.percentage >= 80 ? '#90f50b' : m.percentage >= 60 ? '#ffbd2e' : m.percentage >= 40 ? '#ff6b1a' : '#ff6b6b';
+                html += `<tr>
+                    <td style="font-weight:600;color:var(--sp-t1);">${m.exam_name}</td>
+                    <td>${m.subject}</td>
+                    <td style="font-weight:700;">${m.marks_obtained}/${m.max_marks}</td>
+                    <td style="color:${pctColor};font-weight:700;">${m.percentage}%</td>
+                    <td><span class="sp-badge sp-badge-cyan">${m.grade || '—'}</span></td>
+                    <td>${m.exam_date}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div></div>`;
+        }
+
+        if (data.marks.length === 0) {
+            html += '<div class="sp-empty-state"><div class="sp-empty-icon"><i class="fas fa-chart-line"></i></div><div class="sp-empty-title">No Results Yet</div><div class="sp-empty-text">Your exam results will appear here once they are published.</div></div>';
+        }
+
+        container.innerHTML = html;
+
+        // Animate bars
+        setTimeout(() => {
+            container.querySelectorAll('.sp-perf-bar-fill').forEach(bar => {
+                const w = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = w; }, 50);
+            });
+        }, 100);
+
+        dataLoaded.performance = true;
+    } catch (err) { console.error('Performance load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NOTICES MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadNotices() {
+    try {
+        const res = await fetch('/student-portal/api/notices');
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        const container = document.getElementById('notices-content');
+        const priColors = { Urgent: '#ff1a8c', Important: '#ffbd2e', Normal: '#4d9fff' };
+        const catIcons = { General: 'fa-bullhorn', Exam: 'fa-file-alt', Holiday: 'fa-umbrella-beach', Fee: 'fa-rupee-sign', Event: 'fa-calendar-star' };
+
+        if (data.notices.length === 0) {
+            container.innerHTML = '<div class="sp-empty-state"><div class="sp-empty-icon"><i class="fas fa-bell-slash"></i></div><div class="sp-empty-title">No Notices</div><div class="sp-empty-text">There are no active notices at this time.</div></div>';
+            dataLoaded.notices = true;
+            return;
+        }
+
+        container.innerHTML = data.notices.map(n => `
+            <div class="sp-notice-card">
+                <div class="sp-notice-icon" style="background:${priColors[n.priority] || '#4d9fff'}15;color:${priColors[n.priority] || '#4d9fff'};">
+                    <i class="fas ${catIcons[n.category] || 'fa-bullhorn'}"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <div class="sp-notice-title" style="flex:1;">${n.title}</div>
+                        <span class="sp-badge" style="background:${priColors[n.priority]}15;color:${priColors[n.priority]};border-color:${priColors[n.priority]}30;">${n.priority}</span>
+                        <span class="sp-badge sp-badge-cyan">${n.category}</span>
+                    </div>
+                    <div class="sp-notice-body">${n.content}</div>
+                    <div class="sp-notice-date"><i class="fas fa-clock"></i> ${n.created_at}</div>
+                </div>
+            </div>`).join('');
+
+        dataLoaded.notices = true;
+    } catch (err) { console.error('Notices load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PROFILE MODULE
+// ═══════════════════════════════════════════════════════════════
+async function loadProfile() {
+    try {
+        const res = await fetch('/student-portal/api/profile');
+        const data = await res.json();
+        if (data.status !== 'success') return;
+
+        const s = data.student;
+        const container = document.getElementById('profile-content');
+        const initials = s.student_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+        container.innerHTML = `
+            <div class="sp-profile-header">
+                <div class="sp-profile-avatar-lg">
+                    <div class="sp-profile-avatar-lg-inner">${initials}</div>
+                </div>
+                <div>
+                    <div class="sp-profile-name">${s.student_name}</div>
+                    <div class="sp-profile-meta">Class ${s.class} · Section ${s.section} · Roll No. ${s.roll_number || 'N/A'}</div>
+                    <div style="margin-top:6px;"><span class="sp-badge sp-badge-green">${s.status}</span></div>
+                </div>
+            </div>
+
+            <h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin-bottom:16px;">Personal Information</h3>
+            <div class="sp-profile-grid">
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Admission Number</div>
+                    <div class="sp-profile-field-value">${s.admission_number}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Father's Name</div>
+                    <div class="sp-profile-field-value">${s.father_name}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Mother's Name</div>
+                    <div class="sp-profile-field-value">${s.mother_name}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Date of Birth</div>
+                    <div class="sp-profile-field-value">${s.date_of_birth || 'Not set'}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Gender</div>
+                    <div class="sp-profile-field-value">${s.gender}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Mobile Number</div>
+                    <div class="sp-profile-field-value">${s.mobile_number}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Email</div>
+                    <div class="sp-profile-field-value">${s.email || 'Not set'}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Address</div>
+                    <div class="sp-profile-field-value">${s.address || 'Not set'}</div>
+                </div>
+                <div class="sp-profile-field">
+                    <div class="sp-profile-field-label">Admission Date</div>
+                    <div class="sp-profile-field-value">${s.admission_date || 'Not set'}</div>
+                </div>
+            </div>
+
+            <!-- Change Password Section -->
+            <h3 style="font-family:'Inter',sans-serif;font-size:16px;font-weight:800;color:var(--sp-t1);margin:32px 0 16px;">Change Password</h3>
+            <div class="sp-card" style="max-width:500px;">
+                <div class="sp-alert sp-alert-error" id="pwd-change-error" style="display:none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="pwd-change-error-text"></span>
+                </div>
+                <div class="sp-alert sp-alert-success" id="pwd-change-success" style="display:none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="pwd-change-success-text"></span>
+                </div>
+                <form id="change-pwd-form">
+                    <div class="sp-form-group">
+                        <label class="sp-form-label">Current Password</label>
+                        <div class="sp-form-input-wrap">
+                            <input type="password" class="sp-form-input" id="cp-current" placeholder="Enter current password" required/>
+                            <i class="fas fa-lock sp-form-input-icon"></i>
+                        </div>
+                    </div>
+                    <div class="sp-form-group">
+                        <label class="sp-form-label">New Password</label>
+                        <div class="sp-form-input-wrap">
+                            <input type="password" class="sp-form-input" id="cp-new" placeholder="Min 8 chars" required/>
+                            <i class="fas fa-key sp-form-input-icon"></i>
+                        </div>
+                    </div>
+                    <div class="sp-form-group">
+                        <label class="sp-form-label">Confirm New Password</label>
+                        <div class="sp-form-input-wrap">
+                            <input type="password" class="sp-form-input" id="cp-confirm" placeholder="Repeat new password" required/>
+                            <i class="fas fa-key sp-form-input-icon"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="sp-btn-primary" id="cp-submit" style="max-width:300px;">
+                        <i class="fas fa-save"></i> Update Password
+                    </button>
+                </form>
+            </div>`;
+
+        // Change password handler
+        document.getElementById('change-pwd-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl = document.getElementById('pwd-change-error');
+            const sucEl = document.getElementById('pwd-change-success');
+            errEl.style.display = 'none';
+            sucEl.style.display = 'none';
+
+            const btn = document.getElementById('cp-submit');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="sp-spinner"></span> Saving...';
+
+            try {
+                const res = await fetch('/student-portal/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        current_password: document.getElementById('cp-current').value,
+                        new_password: document.getElementById('cp-new').value,
+                        confirm_password: document.getElementById('cp-confirm').value,
+                    })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    document.getElementById('pwd-change-success-text').textContent = data.message;
+                    sucEl.style.display = 'flex';
+                    document.getElementById('change-pwd-form').reset();
+                    setTimeout(() => { window.location.href = '/student-portal/logout'; }, 2000);
+                } else {
+                    document.getElementById('pwd-change-error-text').textContent = data.message || 'Failed.';
+                    errEl.style.display = 'flex';
+                }
+            } catch (err) {
+                document.getElementById('pwd-change-error-text').textContent = 'Connection error.';
+                errEl.style.display = 'flex';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Update Password';
+            }
+        });
+
+        dataLoaded.profile = true;
+    } catch (err) { console.error('Profile load error:', err); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT — Load overview on page load
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    loadOverview();
+});
+</script>
+</body>
+</html>

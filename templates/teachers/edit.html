@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Edit Teacher — VVM ERP{% endblock %}
+{% block page_title %}Edit Teacher{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Edit Teacher</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.teacher_list') }}">Teachers</a></li>
+      <li class="breadcrumb-item active">Edit</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('teachers.teacher_list') }}" class="btn btn-light">
+    <i class="fas fa-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card" style="max-width:700px;margin:0 auto;">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--violet-dim);color:var(--violet);border:1px solid rgba(124,111,239,.2);">
+      <i class="fas fa-user-edit"></i>
+    </div>
+    <h5>Edit — {{ teacher.teacher_name }}</h5>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{{ url_for('teachers.edit', tid=teacher.id) }}">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Teacher Name *</label>
+          <input type="text" class="form-control" name="teacher_name"
+                 value="{{ teacher.teacher_name }}" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-control" name="subject"
+                 value="{{ teacher.subject or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Mobile Number</label>
+          <input type="tel" class="form-control" name="mobile_number"
+                 value="{{ teacher.mobile_number or '' }}" maxlength="10">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" name="email"
+                 value="{{ teacher.email or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Monthly Salary (₹)</label>
+          <input type="number" class="form-control" name="salary"
+                 value="{{ teacher.salary }}" min="0" step="1">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Joining Date</label>
+          <input type="date" class="form-control" name="joining_date"
+                 value="{{ teacher.joining_date or '' }}">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Status</label>
+          <select class="form-select" name="status">
+            <option value="Active"   {{ 'selected' if teacher.status == 'Active' }}>Active</option>
+            <option value="Inactive" {{ 'selected' if teacher.status == 'Inactive' }}>Inactive</option>
+          </select>
+        </div>
+        <div class="col-12 d-flex gap-3 mt-2">
+          <button type="submit" class="btn btn-purple px-5">
+            <i class="fas fa-save me-2"></i>Update Teacher
+          </button>
+          <a href="{{ url_for('teachers.teacher_list') }}" class="btn btn-light px-4">Cancel</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

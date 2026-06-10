@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="description"
+    content="Vivekanand Vidya Mandir Dharampur — CBSE Affiliated English Medium School, Nursery to Class XII. Admissions open 2026-27." />
+  <title>Vivekanand Vidya Mandir Dharampur</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/public.css') }}?v=5" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet" />
+  <style>
+    .h-slide-staff {
+      background-image: url("{{ url_for('static', filename='images/school_staff.jpg') }}");
+    }
+
+    .h-slide-students {
+      background-image: url("{{ url_for('static', filename='images/school_students.jpg') }}");
+    }
+
+    .h-slide-sports {
+      background-image: url("{{ url_for('static', filename='images/school_sports.jpg') }}");
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══ CURSOR GLOW ONLY — ring & dot hata diye ═══ -->
+  <div id="c-glow"></div>
+
+  <!-- ═══ PARTICLES ═══ -->
+  <canvas id="pcv"></canvas>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="main-header">
+    <!-- ═══ TOP TICKER ═══ -->
+    <div class="top-ticker">
+      <div class="wr">
+        <div class="tt-inner">
+          <div class="tt-track">
+            <div class="tt-belt">
+              {% if notices %}
+              {% for n in notices %}<span>📢 {{ n.title }}</span>{% endfor %}
+              {% for n in notices %}<span>📢 {{ n.title }}</span>{% endfor %}
+              {% else %}
+              <span>🎓 Admissions Open · Session {{ cfg.get('admission_session','2026-27') }}</span>
+              <span>📞 Enquiry: {{ cfg.get('admission_enquiry_phone','7070373801') }}</span>
+              <span>✅ CBSE Affiliated · Aff. No. {{ cfg.get('school_affiliation','3430608') }}</span>
+              <span>🏫 School Code: {{ cfg.get('school_code','66688') }}</span>
+              <span>🎓 Admissions Open · Session {{ cfg.get('admission_session','2026-27') }}</span>
+              <span>📞 Enquiry: {{ cfg.get('admission_enquiry_phone','7070373801') }}</span>
+              <span>✅ CBSE Affiliated · Aff. No. {{ cfg.get('school_affiliation','3430608') }}</span>
+              <span>🏫 School Code: {{ cfg.get('school_code','66688') }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="tt-right">
+            <i class="fas fa-phone"></i>&nbsp;{{ cfg.get('school_phone2','8084558842') }}
+            &emsp;
+            <i class="fas fa-envelope"></i>&nbsp;{{ cfg.get('school_email','info@vvmdharampur.edu.in') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NAVBAR ═══ -->
+    <nav class="pub-nav" id="pubNav">
+      <div class="wr">
+        <div class="nav-w">
+          <a href="{{ url_for('public.index') }}" class="nav-brand">
+            <div class="nav-logo-wrap">
+              <img src="{{ url_for('static', filename='images/school_logo.png') }}" onerror="this.style.display='none'"
+                alt="VVM" class="nav-logo" />
+            </div>
+            <div class="nav-brand-text">
+              <div class="nb-name">Vivekanand Vidya Mandir</div>
+              <div class="nb-sub">Dharampur, Jharkhand</div>
+            </div>
+          </a>
+
+          <button class="ham" id="ham" onclick="toggleNav()" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+
+          <ul class="nav-links" id="navLinks">
+            <li><a href="#home" onclick="cn()">Home</a></li>
+            <li><a href="#about" onclick="cn()">About</a></li>
+            <li><a href="#principal" onclick="cn()">Principal</a></li>
+            <li><a href="#facilities" onclick="cn()">Facilities</a></li>
+            <li><a href="#notices" onclick="cn()">Notices</a></li>
+            <li><a href="#gallery" onclick="cn()">Gallery</a></li>
+            <li><a href="#admission" onclick="cn()">Admission</a></li>
+            <li><a href="#contact" onclick="cn()">Contact</a></li>
+            <li><a href="{{ url_for('public.student_hub') }}" class="nav-ai-hub"><i class="fas fa-brain"
+                  style="font-size: 10px; margin-right: 4px;"></i>Student Login</a></li>
+            <li class="mobile-cta-wrap"><a href="{{ url_for('auth.login') }}" class="mobile-nav-cta">Staff Login</a>
+            </li>
+          </ul>
+
+          <div class="nav-right">
+            <button class="theme-btn" id="tBtn" onclick="toggleTheme()" title="Toggle theme">
+              <i class="fas fa-moon" id="tIcon"></i>
+            </button>
+            <a href="{{ url_for('auth.login') }}" class="nav-cta">
+              Staff Login &nbsp;→
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ═══ FLASH MESSAGES ═══ -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="wr flash-wrap">
+    {% set cats = {'success':'s','danger':'d','info':'i','warning':'w'} %}
+    {% for cat, msg in messages %}
+    <div class="f-alert fa-{{ cats.get(cat,'i') }}">
+      <i
+        class="fas fa-{% if cat=='success' %}check-circle{% elif cat=='danger' %}times-circle{% else %}info-circle{% endif %}"></i>
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- ═══════════════════════════════════════════════════════════
+   HERO — Cinematic fullscreen with slides, grid, orbs
+═══════════════════════════════════════════════════════════════ -->
+  <section class="hero" id="home">
+    <div class="h-slides">
+      <div class="h-slide on h-slide-staff"></div>
+      <div class="h-slide h-slide-students"></div>
+      <div class="h-slide h-slide-sports"></div>
+    </div>
+
+    <!-- Scroll pe bg color blend overlay — JS se opacity control hoti hai -->
+    <div class="h-scroll-bg" id="hScrollBg"></div>
+
+    <div class="h-ov"></div>
+    <div class="h-grid"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <div class="wr hero-body">
+      <!-- Centered Premium AI Platform Pill -->
+      <div class="ai-badge-container">
+        <a href="{{ url_for('public.student_hub') }}" class="ai-badge">
+          <div class="ai-badge-icon-wrap">
+            <i class="fas fa-brain ai-badge-icon"></i>
+          </div>
+          <span class="ai-badge-text">AI-Powered Platform</span>
+          <div class="ai-badge-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </a>
+      </div>
+
+      <div class="hero-content">
+        <div class="h-badge">
+          <div class="badge-pulse"></div>
+          CBSE Affiliated &nbsp;·&nbsp; Est. December 2009
+        </div>
+
+        <h1 class="h-title">
+          <span class="t-white">Where Every Child's</span><br>
+          <span class="t-amber">Journey Starts Here</span>
+        </h1>
+
+        <p class="h-sub">
+          Vivekanand Vidya Mandir Dharampur — an English medium CBSE school
+          nurturing <strong style="color:var(--t1);">{{ cfg.get('total_students','965') }}+</strong> students
+          from Nursery to Class XII with excellence, values and global vision since 2009.
+        </p>
+
+        <div class="hero-btns">
+          <a href="#admission" class="btn-amber">
+            <i class="fas fa-graduation-cap"></i> Apply for Admission
+          </a>
+          <a href="#about" class="btn-ghost">
+            <i class="fas fa-info-circle"></i> Explore School
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="v-dots" id="vDots">
+      <div class="vd on" onclick="goSlide(0)"></div>
+      <div class="vd" onclick="goSlide(1)"></div>
+      <div class="vd" onclick="goSlide(2)"></div>
+    </div>
+
+    <div class="h-stats">
+      <div class="wr">
+        <div class="h-stats-grid">
+          <div class="hs-item">
+            <div class="hs-num" data-count="{{ cfg.get('total_students','965') }}">0</div>
+            <div class="hs-lbl">Students Enrolled</div>
+          </div>
+          <div class="hs-item">
+            <div class="hs-num" data-count="{{ cfg.get('total_teachers','19') }}">0</div>
+            <div class="hs-lbl">Expert Teachers</div>
+          </div>
+          <div class="hs-item">
+            <div class="hs-num">{{ now().year - 2009 }}+</div>
+            <div class="hs-lbl">Years of Excellence</div>
+          </div>
+          <div class="hs-item">
+            <div class="hs-num">Nur–XII</div>
+            <div class="hs-lbl">Classes Offered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% if cfg.get('admission_open') == '1' %}
+  <div class="adm-band">
+    <div class="wr">
+      <div class="adm-inner">
+        <span class="adm-live">
+          <div class="adm-live-dot"></div> Admissions Open
+        </span>
+        <span class="adm-text">Session {{ cfg.get('admission_session','2026-27') }} — Limited Seats</span>
+        <span class="adm-info">
+          <i class="fas fa-calendar-alt" style="color:var(--a);margin-right:4px;"></i>
+          Last Date: {{ cfg.get('admission_last_date','April 2026') }}
+        </span>
+        <a href="#admission" class="adm-go">Apply Now →</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="sec-div"></div>
+
+  <section class="sec" id="about">
+    <div class="wr">
+      <div class="tc">
+        <div class="s-badge anim"><i class="fas fa-award"></i> Why Choose Us</div>
+        <h2 class="s-h2 anim d1">Academic Excellence<br><span class="ac">at Every Level</span></h2>
+        <p class="s-sub anim d2">A school where every child's potential is recognised, nurtured and celebrated through
+          world-class education and holistic development.</p>
+      </div>
+      <div class="feat-grid anim d2">
+        <div class="feat-cell">
+          <div class="fc-icon">🏆</div>
+          <span class="fc-chip">Board</span>
+          <div class="fc-t">CBSE Affiliated</div>
+          <div class="fc-d">Affiliated to Central Board of Secondary Education, New Delhi. Affiliation No. {{
+            cfg.get('school_affiliation','3430608') }}. School Code {{ cfg.get('school_code','66688') }}.</div>
+        </div>
+        <div class="feat-cell">
+          <div class="fc-icon">📚</div>
+          <span class="fc-chip">Curriculum</span>
+          <div class="fc-t">Nursery to Class XII</div>
+          <div class="fc-d">A complete 14-year educational journey from early childhood through senior secondary — all
+            in the English medium under one roof.</div>
+        </div>
+        <div class="feat-cell">
+          <div class="fc-icon">👩‍🏫</div>
+          <span class="fc-chip">Faculty</span>
+          <div class="fc-t">{{ cfg.get('total_teachers','19') }} Expert Educators</div>
+          <div class="fc-d">Qualified, dedicated professionals committed to academic excellence and every student's
+            personal growth.</div>
+        </div>
+        <div class="feat-cell">
+          <div class="fc-icon">🏛️</div>
+          <span class="fc-chip">Trust</span>
+          <div class="fc-t">Mission-Driven Institution</div>
+          <div class="fc-d">Managed by Swami Vivekanand Seva Trust (Reg. No. 4161/128) — committed to accessible,
+            quality education for all.</div>
+        </div>
+        <div class="feat-cell">
+          <div class="fc-icon">📍</div>
+          <span class="fc-chip">Location</span>
+          <div class="fc-t">Hazaribag, Jharkhand</div>
+          <div class="fc-d">Situated at At-Mandpa, Tatijhariya, Hazaribag — 825313, serving families across the entire
+            region.</div>
+        </div>
+        <div class="feat-cell">
+          <div class="fc-icon">⭐</div>
+          <span class="fc-chip">Est. 2009</span>
+          <div class="fc-t">{{ now().year - 2009 }}+ Years Strong</div>
+          <div class="fc-d">Over {{ now().year - 2009 }} years of building character, fostering creativity and shaping
+            tomorrow's responsible global citizens.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec sec-alt">
+    <div class="wr">
+      <div class="about-g">
+        <div class="about-img-w anim">
+          <img src="{{ url_for('static',filename='images/school_staff.jpg') }}" alt="VVM Dharampur" class="about-img" />
+          <div class="about-badge">
+            <div class="ab-n">Est.</div>
+            <div class="ab-s">Dec 2009</div>
+          </div>
+        </div>
+        <div>
+          <div class="s-badge anim"><i class="fas fa-school"></i> About Our School</div>
+          <h2 class="s-h2 anim d1">A Legacy of <span class="ac">Excellence</span></h2>
+          <p class="anim d2" style="font-size:15px;color:var(--t2);line-height:1.8;margin-bottom:22px;">
+            Vivekanand Vidya Mandir Dharampur is a premier CBSE-affiliated English medium school
+            combining academic rigour with character development, creative thinking and modern skills —
+            preparing students for a rapidly evolving world since December 2009.
+          </p>
+          <div class="info-g anim d2">
+            <div class="info-c">
+              <div class="ic-l">Affiliation Board</div>
+              <div class="ic-v">CBSE, New Delhi</div>
+            </div>
+            <div class="info-c">
+              <div class="ic-l">Affiliation No.</div>
+              <div class="ic-v">{{ cfg.get('school_affiliation','3430608') }}</div>
+            </div>
+            <div class="info-c">
+              <div class="ic-l">School Code</div>
+              <div class="ic-v">{{ cfg.get('school_code','66688') }}</div>
+            </div>
+            <div class="info-c">
+              <div class="ic-l">Medium</div>
+              <div class="ic-v">English</div>
+            </div>
+            <div class="info-c">
+              <div class="ic-l">Classes</div>
+              <div class="ic-v">Nursery to Class XII</div>
+            </div>
+            <div class="info-c">
+              <div class="ic-l">Trust</div>
+              <div class="ic-v" style="font-size:12.5px;">Swami Vivekanand Seva Trust<br>Reg. No. 4161/128</div>
+            </div>
+          </div>
+          <p class="anim d3" style="font-size:13px;font-weight:700;color:var(--t1);margin:16px 0 10px;">Documents
+            Required for Admission</p>
+          <ul class="docs-list anim d3">
+            <li>Aadhaar Card of Student</li>
+            <li>Birth Certificate</li>
+            <li>School Leaving / Transfer Certificate</li>
+            <li>Passport-size Photograph</li>
+            <li>Parents' Aadhaar Card</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec" id="principal">
+    <div class="wr">
+      <div class="prin-g">
+        <div class="anim">
+          <div class="prin-card">
+            <img src="{{ url_for('static',filename='images/principal.jpg') }}"
+              alt="{{ cfg.get('principal_name','Virendra Kumar') }}" class="prin-img" />
+            <div class="prin-name">{{ cfg.get('principal_name','Virendra Kumar') }}</div>
+            <div class="prin-role">Principal</div>
+            <div class="prin-meta">{{ cfg.get('principal_qual','B.tech') }} · {{ cfg.get('principal_exp','12 Years') }}
+              Experience</div>
+            <div class="prin-tags">
+              <span class="p-tag">CBSE Expert</span>
+              <span class="p-tag">{{ cfg.get('principal_exp','12 Yrs') }}</span>
+              <span class="p-tag">{{ cfg.get('principal_qual','B.tech') }}</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="s-badge anim"><i class="fas fa-quote-left"></i> Message</div>
+          <h2 class="s-h2 anim d1">From Our <span class="ac">Principal</span></h2>
+          <div class="anim d2">
+            <span class="quote-icon">"</span>
+            <p class="prin-text">
+              {% set msg = cfg.get('principal_message','') %}
+              {% if msg %}{{ msg|replace('\n','<br>')|safe }}
+              {% else %}
+              VVM Dharampur School is a proud mission-driven community providing a world-class
+              education, celebrating the fact that each student is different — as a person and as
+              a learner. We believe that powerful learning and teaching occurs under a shared spirit
+              of respect which creates a passionate schooling experience recognised for its warmth,
+              energy and excellence.<br><br>
+              We dedicate ourselves as professional administrators creating a dynamic education
+              programme that empowers students in a global perspective — a wholesome package of
+              attitude, challenge and opportunity.
+              {% endif %}
+            </p>
+            <div class="prin-sig">— {{ cfg.get('principal_name','Virendra Kumar') }}, Principal · VVM Dharampur</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec sec-alt" id="facilities">
+    <div class="wr">
+      <div class="tc">
+        <div class="s-badge anim"><i class="fas fa-building"></i> Infrastructure</div>
+        <h2 class="s-h2 anim d1">World-Class <span class="ac">Facilities</span></h2>
+        <p class="s-sub anim d2">Modern infrastructure designed to support academic excellence and all-round student
+          development.</p>
+      </div>
+      <div class="fac-g">
+        {% set facs = [
+        ('💻','Smart Classrooms','Technology-integrated rooms with digital boards for immersive, interactive
+        learning.'),
+        ('🖥️','Computer Lab','High-speed internet, modern PCs — building digital literacy and coding skills.'),
+        ('🔬','Science Labs','Modern Physics, Chemistry and Biology laboratories with up-to-date equipment.'),
+        ('📚','Library','Rich collection of books, journals and digital resources for all grades.'),
+        ('⚽','Sports Ground','Spacious grounds for cricket, football, athletics and outdoor team sports.'),
+        ('🚌','School Transport','Safe, reliable bus service covering all major routes in the region.'),
+        ('📹','CCTV Security','24×7 surveillance ensuring a safe, secure and monitored campus.'),
+        ('🏛️','Assembly Hall','Spacious hall for daily assemblies, events and cultural programmes.')
+        ] %}
+        {% for ico, title, desc in facs %}
+        <div class="fac-card anim d{{ loop.index % 4 + 1 }}">
+          <div class="fac-ico">{{ ico }}</div>
+          <div class="fac-t">{{ title }}</div>
+          <div class="fac-d">{{ desc }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec" id="notices">
+    <div class="wr">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+        <div>
+          <div class="s-badge anim"><i class="fas fa-bell"></i> Latest Announcements</div>
+          <h2 class="s-h2 anim d1" style="margin-bottom:0;">Notice <span class="ac">Board</span></h2>
+        </div>
+      </div>
+      <div class="notices-g">
+        {% if notices %}
+        {% for n in notices %}
+        <a href="{{ url_for('public.notice_detail', nid=n.id) }}"
+          class="n-card {{ n.priority|lower if n.priority else 'normal' }} anim">
+          <span class="n-chip nc-{{ n.priority[0]|lower if n.priority else 'n' }}">
+            {% if n.priority=='Urgent' %}🔴{% elif n.priority=='Important' %}🟡{% else %}🟢{% endif %}
+            {{ n.priority or 'Notice' }}
+          </span>
+          <div class="n-title">{{ n.title }}</div>
+          <div class="n-text">{{ (n.content or '')[:130] }}{% if (n.content or '')|length > 130 %}…{% endif %}</div>
+          <div class="n-date"><i class="fas fa-calendar-alt"></i>{{ n.created_at.strftime('%d %b %Y') if n.created_at
+            else '' }}</div>
+          <div class="n-more">Read full notice <i class="fas fa-arrow-right" style="font-size:10px;"></i></div>
+        </a>
+        {% endfor %}
+        {% else %}
+        <div class="n-empty">
+          <i class="fas fa-bell" style="font-size:36px;display:block;margin-bottom:12px;"></i>
+          <div style="font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;">No announcements at this time
+          </div>
+          <div style="font-size:14px;">Check back soon for school updates and notices.</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec sec-alt" id="gallery">
+    <div class="wr">
+      <div class="tc">
+        <div class="s-badge anim"><i class="fas fa-images"></i> Campus Life</div>
+        <h2 class="s-h2 anim d1">School <span class="ac">Gallery</span></h2>
+        <p class="s-sub anim d2">Glimpses of vibrant academic, cultural and sporting life at VVM Dharampur.</p>
+      </div>
+      <div class="gal-g">
+        {% if gallery %}
+        {% for p in gallery %}
+        <div class="gal-item anim">
+          <img src="{{ get_url('gallery', p.filename) }}" alt="{{ p.caption or 'Gallery' }}" loading="lazy" />
+          {% if p.caption %}<div class="gal-ov">
+            <div class="gal-cap">{{ p.caption }}</div>
+          </div>{% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="gal-item anim">
+          <img src="{{ url_for('static',filename='images/school_staff.jpg') }}" alt="Staff" />
+          <div class="gal-ov">
+            <div class="gal-cap">Faculty &amp; Staff</div>
+          </div>
+        </div>
+        <div class="gal-item anim d1">
+          <img src="{{ url_for('static',filename='images/school_students.jpg') }}" alt="Students" />
+          <div class="gal-ov">
+            <div class="gal-cap">Our Students</div>
+          </div>
+        </div>
+        <div class="gal-item anim d2">
+          <img src="{{ url_for('static',filename='images/school_sports.jpg') }}" alt="Sports" />
+          <div class="gal-ov">
+            <div class="gal-cap">Sports Day</div>
+          </div>
+        </div>
+        <div class="gal-empty anim d3"
+          style="aspect-ratio:4/3;padding:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <i class="fas fa-images" style="font-size:30px;margin-bottom:10px;"></i>
+          <div>More photos coming soon</div>
+        </div>
+        {% endif %}
+      </div>
+      {% if gallery %}
+      <div class="anim" style="text-align:center;margin-top:32px;">
+        <a href="{{ url_for('public.gallery') }}" class="btn-ghost" style="display:inline-flex;">
+          <i class="fas fa-images"></i> View Full Gallery
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec" id="admission">
+    <div class="wr">
+      <div class="tc">
+        <div class="s-badge anim"><i class="fas fa-graduation-cap"></i> Admissions {{
+          cfg.get('admission_session','2026-27') }}</div>
+        <h2 class="s-h2 anim d1">Begin Your <span class="ac">Academic Journey</span></h2>
+        <p class="s-sub anim d2">Applications are open for all classes from Nursery to Class XII. Join our community of
+          lifelong learners.</p>
+      </div>
+      <div class="adm-g">
+        <div class="adm-info-panel anim">
+          <div class="aip-h">
+            <div class="aip-title">Session {{ cfg.get('admission_session','2026-27') }}</div>
+            <div class="aip-sub">Open for all classes — Nursery to Class XII</div>
+          </div>
+          <div class="aip-body">
+            <ol class="adm-steps">
+              <li class="a-step"><span class="sn">1</span><span>Submit enquiry form online or visit the school office in
+                  person</span></li>
+              <li class="a-step"><span class="sn">2</span><span>Collect and submit Admission Form with required
+                  documents</span></li>
+              <li class="a-step"><span class="sn">3</span><span>Attend interaction session (where applicable for the
+                  class)</span></li>
+              <li class="a-step"><span class="sn">4</span><span>Pay admission fee and confirm your child's seat</span>
+              </li>
+            </ol>
+            <div class="adm-hotline">
+              <div class="ahl-l">Admission Enquiries</div>
+              <div class="ahl-n"><i class="fas fa-phone" style="font-size:18px;margin-right:8px;"></i>{{
+                cfg.get('admission_enquiry_phone','7070373801') }}</div>
+              <div class="ahl-s">
+                <i class="fas fa-clock" style="margin-right:4px;"></i>Mon–Sat · 9:00 AM – 4:00 PM
+                {% if cfg.get('admission_last_date') %}
+                &nbsp;·&nbsp;<i class="fas fa-calendar-times" style="margin-right:3px;color:var(--rose);"></i>Last Date:
+                {{ cfg.get('admission_last_date') }}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-form-card anim d1">
+          <div class="afc-title">📝 Admission Enquiry Form</div>
+          <form method="POST" action="{{ url_for('public.enquiry') }}">
+            <div class="f-row">
+              <div class="fg"><label>Student Name *</label><input type="text" name="student_name"
+                  placeholder="Full name" required /></div>
+              <div class="fg"><label>Father's Name</label><input type="text" name="father_name"
+                  placeholder="Father's full name" /></div>
+            </div>
+            <div class="f-row">
+              <div class="fg"><label>Mobile Number *</label><input type="tel" name="mobile"
+                  placeholder="10-digit number" required maxlength="10" /></div>
+              <div class="fg"><label>Email Address</label><input type="email" name="email"
+                  placeholder="email@example.com" /></div>
+            </div>
+            <div class="f-row">
+              <div class="fg">
+                <label>Class Applying For</label>
+                <select name="class_applying">
+                  <option value="">— Select Class —</option>
+                  {% for cls in ['Nursery','LKG','UKG','Class I','Class II','Class III','Class IV','Class V','Class
+                  VI','Class VII','Class VIII','Class IX','Class X','Class XI','Class XII'] %}
+                  <option>{{ cls }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="fg"><label>Previous School</label><input type="text" name="current_school"
+                  placeholder="Current / previous school" /></div>
+            </div>
+            <div class="fg"><label>Message (Optional)</label><textarea name="message"
+                placeholder="Any specific query or requirement..."></textarea></div>
+            <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Enquiry</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-div"></div>
+
+  <section class="sec sec-alt" id="contact">
+    <div class="wr">
+      <div class="tc">
+        <div class="s-badge anim"><i class="fas fa-map-marker-alt"></i> Locate Us</div>
+        <h2 class="s-h2 anim d1">Get in <span class="ac">Touch</span></h2>
+      </div>
+      <div class="ct-g">
+        <div>
+          <div class="ct-row anim">
+            <div class="ct-ic"><i class="fas fa-map-marker-alt"></i></div>
+            <div>
+              <div class="ct-l">Address</div>
+              <div class="ct-v">At-Mandpa, P.O. Khambhwa,<br>Tatijhariya, Hazaribag,<br>Jharkhand – 825313</div>
+            </div>
+          </div>
+          <div class="ct-row anim d1">
+            <div class="ct-ic"><i class="fas fa-phone-alt"></i></div>
+            <div>
+              <div class="ct-l">Phone</div>
+              <div class="ct-v"><a href="tel:{{ cfg.get('school_phone2','8084558842') }}">{{
+                  cfg.get('school_phone2','8084558842') }}</a><br><a
+                  href="tel:{{ cfg.get('admission_enquiry_phone','7070373801') }}">{{
+                  cfg.get('admission_enquiry_phone','7070373801') }}</a> <span
+                  style="font-size:12px;color:var(--t3);">(Admission)</span></div>
+            </div>
+          </div>
+          <div class="ct-row anim d2">
+            <div class="ct-ic"><i class="fas fa-envelope"></i></div>
+            <div>
+              <div class="ct-l">Email</div>
+              <div class="ct-v"><a href="mailto:{{ cfg.get('school_email','info@vvmdharampur.edu.in') }}">{{
+                  cfg.get('school_email','info@vvmdharampur.edu.in') }}</a></div>
+            </div>
+          </div>
+          <div class="ct-row anim d3">
+            <div class="ct-ic"><i class="fas fa-clock"></i></div>
+            <div>
+              <div class="ct-l">Office Hours</div>
+              <div class="ct-v">Monday – Saturday: 9:00 AM – 4:00 PM</div>
+            </div>
+          </div>
+          <div class="ct-row anim d4">
+            <div class="ct-ic"><i class="fas fa-certificate"></i></div>
+            <div>
+              <div class="ct-l">Managing Trust</div>
+              <div class="ct-v">Swami Vivekanand Seva Trust<br><span style="font-size:13px;">Reg. No. 4161/128</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="map-w anim d1">
+          <iframe
+            src="https://maps.google.com/maps?q=Vivekanand+Vidya+Mandir+Dharampur,Marpa,Jharkhand+825313&output=embed&z=15"
+            allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Location"></iframe>
+        </div>
+      </div>
+
+      <!-- Modern Social Connect Section -->
+      <div class="social-connect anim d2">
+        <div class="social-grid">
+
+          <!-- WhatsApp -->
+          <a href="https://wa.me/91{{ cfg.get('school_phone2','8084558842') }}?text=Hello%20Vivekanand%20Vidya%20Mandir%2C%20I%20have%20an%20enquiry%20about%20admissions."
+            class="social-btn whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+            <div class="social-icon"><i class="fa-brands fa-whatsapp"></i></div>
+            <div class="social-glow"></div>
+          </a>
+
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/profile.php?id=100063745975060" class="social-btn facebook" target="_blank"
+            rel="noopener noreferrer" aria-label="Follow on Facebook">
+            <div class="social-icon"><i class="fa-brands fa-facebook-f"></i></div>
+            <div class="social-glow"></div>
+          </a>
+
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/vvmdharampur/?hl=en" class="social-btn instagram" target="_blank"
+            rel="noopener noreferrer" aria-label="Follow on Instagram">
+            <div class="social-icon"><i class="fa-brands fa-instagram"></i></div>
+            <div class="social-glow"></div>
+          </a>
+
+          <!-- X (Twitter) -->
+          <a href="https://x.com" class="social-btn twitter" target="_blank" rel="noopener noreferrer"
+            aria-label="Follow on X (Twitter)">
+            <div class="social-icon"><i class="fa-brands fa-x-twitter"></i></div>
+            <div class="social-glow"></div>
+          </a>
+
+          <!-- YouTube -->
+          <a href="https://www.youtube.com/@deepaksaw4439" class="social-btn youtube" target="_blank"
+            rel="noopener noreferrer" aria-label="Follow on YouTube">
+            <div class="social-icon"><i class="fa-brands fa-youtube"></i></div>
+            <div class="social-glow"></div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wr">
+      <div class="ft-g">
+        <div>
+          <img src="{{ url_for('static',filename='images/school_logo.png') }}" onerror="this.style.display='none'"
+            alt="VVM" style="width:44px;height:44px;object-fit:contain;border-radius:9px;" />
+          <div class="ft-bname">Vivekanand Vidya Mandir</div>
+          <p class="ft-desc">A CBSE-affiliated English medium school in Hazaribag, Jharkhand, dedicated to holistic
+            education and character development since December 2009. Managed by Swami Vivekanand Seva Trust, Reg. No.
+            4141/128.</p>
+          <div class="ft-tag">"Empowering Minds, Building Futures"</div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="ft-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About School</a></li>
+            <li><a href="#principal">Principal's Message</a></li>
+            <li><a href="#facilities">Facilities</a></li>
+            <li><a href="#notices">Notice Board</a></li>
+            <li><a href="{{ url_for('public.downloads') }}">Downloads</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Admissions</h4>
+          <ul class="ft-links">
+            <li><a href="#admission">Apply Now</a></li>
+            <li><a href="#admission">Eligibility</a></li>
+            <li><a href="#admission">Documents Required</a></li>
+            <li><a href="#contact">Enquiry Contact</a></li>
+            <li><a href="{{ url_for('public.downloads') }}">Download Forms</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <div class="ft-cr"><i class="fas fa-map-marker-alt"></i><span>At-Mandpa, Tatijhariya, Hazaribag, JH
+              825313</span></div>
+          <div class="ft-cr"><i class="fas fa-phone"></i><a href="tel:8084558842">8084558842</a></div>
+          <div class="ft-cr"><i class="fas fa-phone"></i><a href="tel:7070373801">7070373801 (Admission)</a></div>
+          <div class="ft-cr"><i class="fas fa-envelope"></i><a
+              href="mailto:info@vvmdharampur.edu.in">info@vvmdharampur.edu.in</a></div>
+          <a href="{{ url_for('auth.login') }}" class="ft-portal-btn">
+            <i class="fas fa-sign-in-alt"></i> Staff Login Portal
+          </a>
+        </div>
+      </div>
+      <div class="ft-bottom">
+        <span>&copy; {{ now().year }} Vivekanand Vidya Mandir Dharampur · Aff. No. {{
+          cfg.get('school_affiliation','3430608') }} · Code {{ cfg.get('school_code','66688') }}</span>
+        <a href="{{ url_for('auth.login') }}">Staff Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#home" class="btt" id="btt"><i class="fas fa-chevron-up"></i></a>
+
+  <script>
+    /* ══ Theme ════════════════════════════════════════════ */
+    (function () {
+      if (localStorage.getItem('vvmT') === 'light') {
+        document.body.classList.add('lm');
+        document.getElementById('tIcon').className = 'fas fa-sun';
+      }
+    })();
+    function toggleTheme() {
+      var l = document.body.classList.toggle('lm');
+      document.getElementById('tIcon').className = l ? 'fas fa-sun' : 'fas fa-moon';
+      localStorage.setItem('vvmT', l ? 'light' : 'dark');
+    }
+
+    /* ══ Cursor: sirf glow rakhna, ring+dot hata diye ════ */
+    (function () {
+      var glow = document.getElementById('c-glow');
+      if (!glow) return;
+      document.addEventListener('mousemove', function (e) {
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      }, { passive: true });
+    })();
+
+    /* ══ Particles ════════════════════════════════════════ */
+    (function () {
+      var cv = document.getElementById('pcv');
+      if (!cv) return;
+      var ctx = cv.getContext('2d');
+      var W, H;
+      function sz() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+      sz(); window.addEventListener('resize', sz, { passive: true });
+      var N = 60, pts = [];
+      for (var i = 0; i < N; i++) pts.push({
+        x: Math.random() * 2000, y: Math.random() * 1200,
+        vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
+        r: Math.random() * 1.7 + .3, o: Math.random()
+      });
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        var dark = !document.body.classList.contains('lm');
+        pts.forEach(function (p) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+          if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = dark
+            ? 'rgba(245,158,11,' + (.1 + p.o * .2) + ')'
+            : 'rgba(217,119,6,' + (.04 + p.o * .08) + ')';
+          ctx.fill();
+        });
+        for (var i = 0; i < N; i++) for (var j = i + 1; j < N; j++) {
+          var dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 140) {
+            var a = dark ? (1 - d / 140) * .06 : (1 - d / 140) * .025;
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.strokeStyle = 'rgba(245,158,11,' + a + ')';
+            ctx.lineWidth = .5; ctx.stroke();
+          }
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    /* ══ Hero Slideshow ═══════════════════════════════════ */
+    var slides = document.querySelectorAll('.h-slide');
+    var vdots = document.querySelectorAll('.vd');
+    var sc = 0;
+    function goSlide(n) {
+      slides[sc].classList.remove('on'); vdots[sc].classList.remove('on');
+      sc = (n + slides.length) % slides.length;
+      slides[sc].classList.add('on'); vdots[sc].classList.add('on');
+    }
+    setInterval(function () { goSlide(sc + 1); }, 5200);
+
+    /* ══ Hero Scroll Colour Blend ════════════════════════
+       Jaise user scroll karta hai, hero me bg colour
+       dheere dheere blend hota hai — cinematic feel  ══════ */
+    (function () {
+      var hero = document.getElementById('home');
+      var sb = document.getElementById('hScrollBg');
+      if (!hero || !sb) return;
+      function upd() {
+        var progress = Math.min(window.scrollY / (hero.offsetHeight * 0.38), 1);
+        sb.style.opacity = progress;
+      }
+      window.addEventListener('scroll', upd, { passive: true });
+      upd();
+    })();
+
+
+
+    /* ══ Counter Animation ════════════════════════════════ */
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      var t = parseInt(el.dataset.count), s = 0, step = Math.ceil(t / 55);
+      if (isNaN(t)) return;
+      var tm = setInterval(function () {
+        s += step; if (s >= t) { el.textContent = t; clearInterval(tm); }
+        else el.textContent = s;
+      }, 20);
+    });
+
+    /* ══ Scroll Reveal ════════════════════════════════════ */
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: .08 });
+    document.querySelectorAll('.anim').forEach(function (el) { io.observe(el); });
+
+    /* ══ Back to Top ══════════════════════════════════════ */
+    var btt = document.getElementById('btt');
+    window.addEventListener('scroll', function () {
+      btt.classList.toggle('show', scrollY > 500);
+    }, { passive: true });
+
+    /* ══ Scroll-aware Navbar — glass card morph ═══════════ */
+    (function () {
+      var nav = document.getElementById('pubNav');
+      if (!nav) return;
+      function upd() { nav.classList.toggle('scrolled', window.scrollY > 60); }
+      window.addEventListener('scroll', upd, { passive: true });
+      upd();
+    })();
+
+    /* ══ Mobile nav ═══════════════════════════════════════ */
+    function toggleNav() {
+      var nl = document.getElementById('navLinks');
+      var h = document.getElementById('ham');
+      var isOpen = nl.classList.toggle('open');
+      h.classList.toggle('open', isOpen);
+      /* Mobile: toggle display then animate */
+      if (isOpen) {
+        nl.style.display = 'flex';
+        requestAnimationFrame(function () {
+          nl.style.opacity = '1';
+          nl.style.transform = 'translateY(0) scale(1)';
+        });
+      } else {
+        nl.style.opacity = '0';
+        nl.style.transform = 'translateY(-8px) scale(.97)';
+        setTimeout(function () {
+          if (!nl.classList.contains('open')) nl.style.display = '';
+        }, 260);
+      }
+    }
+    function cn() {
+      var nl = document.getElementById('navLinks');
+      var h = document.getElementById('ham');
+      nl.classList.remove('open');
+      h.classList.remove('open');
+      nl.style.opacity = '0';
+      nl.style.transform = 'translateY(-8px) scale(.97)';
+      setTimeout(function () {
+        if (!nl.classList.contains('open')) nl.style.display = '';
+      }, 260);
+    }
+    document.addEventListener('click', function (e) {
+      var nl = document.getElementById('navLinks'), h = document.getElementById('ham');
+      if (nl && h && !nl.contains(e.target) && !h.contains(e.target)) {
+        nl.classList.remove('open'); h.classList.remove('open');
+        nl.style.opacity = '0';
+        nl.style.transform = 'translateY(-8px) scale(.97)';
+        setTimeout(function () {
+          if (!nl.classList.contains('open')) nl.style.display = '';
+        }, 260);
+      }
+    });
+
+    /* ══ Smooth scroll ════════════════════════════════════ */
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var id = this.getAttribute('href');
+        if (id === '#') return;
+        var el = document.querySelector(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
+    /* ══ Active nav highlight ═════════════════════════════ */
+    window.addEventListener('scroll', function () {
+      var pos = scrollY + 90;
+      document.querySelectorAll('section[id]').forEach(function (s) {
+        var lk = document.querySelector('.nav-links a[href="#' + s.id + '"]');
+        if (lk) lk.classList.toggle('on', pos >= s.offsetTop && pos < s.offsetTop + s.offsetHeight);
+      });
+    }, { passive: true });
+  </script>
+</body>
+
+</html>

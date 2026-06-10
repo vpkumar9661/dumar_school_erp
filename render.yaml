@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: school-erp-v2
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SCHOOL_NAME
+        value: Vivekanand Vidya Mandir Dharampur
+      - key: SCHOOL_ADDRESS
+        value: Dharampur, Tatijhariya Hazaribagh, Jharkhand
+      - key: SCHOOL_PHONE
+        value: "7070373801"
+      - key: SCHOOL_EMAIL
+        value: deepak7070@gmail.com
+      - key: RATELIMIT_STORAGE_URL
+        value: memory://

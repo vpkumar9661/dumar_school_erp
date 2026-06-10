@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% block title %}Fee History — School ERP{% endblock %}
+{% block page_title %}Fee History{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Fee Payment History</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Fee History</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('fees.collect') }}" class="btn btn-purple btn-sm px-3">
+      <i class="fas fa-plus me-1"></i> Collect Fee
+    </a>
+    <a href="{{ url_for('fees.pending') }}" class="btn btn-warning btn-sm px-3">
+      <i class="fas fa-exclamation-circle me-1"></i> Pending
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-12 col-md-4">
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="form-control" name="search"
+                 placeholder="Search student or receipt no..."
+                 value="{{ search }}">
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select" name="month">
+          <option value="">All Months</option>
+          {% for m in months %}
+          <option value="{{ m }}" {{ 'selected' if sel_month == m }}>{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select" name="year">
+          <option value="">All Years</option>
+          {% for y in years %}
+          <option value="{{ y }}" {{ 'selected' if sel_year == y|string }}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select" name="class">
+          <option value="">All Classes</option>
+          {% for c in classes %}
+          <option value="{{ c }}" {{ 'selected' if sel_class == c }}>Class {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-6 col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-purple flex-fill">
+          <i class="fas fa-filter me-1"></i>Filter
+        </button>
+        <a href="{{ url_for('fees.history') }}" class="btn btn-light">
+          <i class="fas fa-times"></i>
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <i class="fas fa-list" style="color:var(--purple-600);"></i>
+    <h5>Transactions</h5>
+    <span class="badge badge-pill badge-purple ms-auto">
+      {{ total }} record{{ 's' if total != 1 }}
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Receipt No.</th>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Month/Year</th>
+            <th>Monthly Fee</th>
+            <th>Transport</th>
+            <th>Late Fine</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Mode</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td style="font-size:12px;color:#888;">{{ loop.index + (page-1)*per_page }}</td>
+            <td>
+              <a href="{{ url_for('fees.receipt', receipt_id=p.receipt_number) }}"
+                 style="color:var(--purple-600);font-weight:600;font-size:12px;">
+                {{ p.receipt_number }}
+              </a>
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:13px;">{{ p.student_name }}</div>
+              <div style="font-size:11px;color:#888;">{{ p.admission_number }}</div>
+            </td>
+            <td><span class="badge badge-pill badge-purple">{{ p.class }}-{{ p.section }}</span></td>
+            <td style="font-size:13px;">{{ p.month }} {{ p.year }}</td>
+            <td style="font-size:13px;">₹{{ p.monthly_fee }}</td>
+            <td style="font-size:13px;">₹{{ p.transport_fee }}</td>
+            <td style="font-size:13px;color:{% if p.late_fine > 0 %}#e74c3c{% else %}#27ae60{% endif %};">
+              ₹{{ p.late_fine }}
+            </td>
+            <td><strong style="color:var(--purple-800);">₹{{ p.total_amount }}</strong></td>
+            <td style="font-size:12px;white-space:nowrap;">{{ p.payment_date }}</td>
+            <td><span class="badge badge-pill badge-purple">{{ p.payment_mode }}</span></td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('fees.receipt', receipt_id=p.receipt_number) }}"
+                   class="btn btn-sm btn-outline-purple" title="View Receipt">
+                  <i class="fas fa-receipt"></i>
+                </a>
+                <a href="{{ url_for('fees.receipt_pdf', receipt_id=p.receipt_number) }}"
+                   class="btn btn-sm btn-outline-danger" title="Download PDF">
+                  <i class="fas fa-file-pdf"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="12" class="text-center py-5 text-muted">
+              <i class="fas fa-receipt fa-2x mb-2 d-block" style="color:var(--purple-100);"></i>
+              No transactions found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  {% if total > per_page %}
+  <div class="card-footer d-flex justify-content-between align-items-center py-2">
+    <small class="text-muted">
+      Showing {{ (page-1)*per_page+1 }}–{{ page*per_page if page*per_page < total else total }} of {{ total }}
+    </small>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if page > 1 %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page-1 }}&month={{ sel_month }}&year={{ sel_year }}&class={{ sel_class }}&search={{ search }}">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        </li>
+        {% endif %}
+        {% for p in range(1, (total // per_page) + 2) %}
+        <li class="page-item {{ 'active' if p == page }}">
+          <a class="page-link" href="?page={{ p }}&month={{ sel_month }}&year={{ sel_year }}&class={{ sel_class }}&search={{ search }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        {% if page * per_page < total %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page+1 }}&month={{ sel_month }}&year={{ sel_year }}&class={{ sel_class }}&search={{ search }}">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

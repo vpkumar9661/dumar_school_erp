@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Settings — VVM ERP{% endblock %}
+{% block page_title %}School Settings{% endblock %}
+{% block content %}
+<div class="page-header"><div><h4>⚙️ Settings</h4></div></div>
+<div class="row g-3">
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header"><div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-school"></i></div><h5>School Information</h5></div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('settings.index') }}" class="row g-3">
+          {% for key, label in [('school_name','School Name'),('school_address','Address'),('school_phone','Phone'),('school_email','Email'),('late_fine_per_day','Late Fine Per Day (₹)'),('late_fine_after_days','Late Fine After Days'),('current_session','Current Session'),('monthly_fee_default','Default Monthly Fee (₹)')] %}
+          <div class="col-12">
+            <label class="form-label">{{ label }}</label>
+            <input type="text" class="form-control" name="{{ key }}" value="{{ settings.get(key,'') }}">
+          </div>
+          {% endfor %}
+          <div class="col-12"><button type="submit" class="btn btn-purple w-100"><i class="fas fa-save me-2"></i>Save Settings</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="card">
+      <div class="card-header"><div class="card-icon" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);"><i class="fas fa-rupee-sign"></i></div><h5>Fee Structure (Class-wise)</h5></div>
+      <div class="card-body">
+        <form method="POST" action="{{ url_for('settings.update_fee_structure') }}">
+          <div class="table-responsive">
+            <table class="table" style="font-size:13px;">
+              <thead><tr><th>Class</th><th>Monthly</th><th>Admission</th><th>Dev.</th><th>Exam</th></tr></thead>
+              <tbody>
+                {% for fs in fee_structure %}
+                <tr>
+                  <td style="font-weight:700;color:var(--cyan);">
+                    {{ fs.class }}
+                    <input type="hidden" name="fs_class" value="{{ fs.class }}">
+                    <input type="hidden" name="fs_session" value="{{ fs.session }}">
+                  </td>
+                  <td><input type="number" class="form-control form-control-sm" name="fs_monthly" value="{{ fs.monthly_fee }}" style="width:80px;"></td>
+                  <td><input type="number" class="form-control form-control-sm" name="fs_admission" value="{{ fs.admission_fee }}" style="width:80px;"></td>
+                  <td><input type="number" class="form-control form-control-sm" name="fs_development" value="{{ fs.development_fee }}" style="width:80px;"></td>
+                  <td><input type="number" class="form-control form-control-sm" name="fs_exam" value="{{ fs.exam_fee }}" style="width:80px;"></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <button type="submit" class="btn btn-gold w-100"><i class="fas fa-save me-2"></i>Update Fee Structure</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

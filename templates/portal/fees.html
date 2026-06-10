@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}My Fees — VVM ERP{% endblock %}
+{% block page_title %}My Fee Statement{% endblock %}
+{% block content %}
+<div class="page-header"><div><h4>Fee Statement</h4></div></div>
+{% if due_months %}
+<div style="background:var(--rose-dim);border:1px solid rgba(255,77,109,.2);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;">
+  <strong style="color:var(--rose);">⚠️ {{ due_months|length }} month(s) fee payment is overdue</strong>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+    {% for m in due_months %}
+    <span style="background:var(--rose-dim);border:1px solid rgba(255,77,109,.2);color:var(--rose);font-size:12px;padding:3px 10px;border-radius:99px;">{{ m.month }} {{ m.year }}</span>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-header"><div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-receipt"></i></div><h5>Payment History</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>Receipt</th><th>Months</th><th>Amount</th><th>Date</th><th>Mode</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for p in payments %}
+          <tr>
+            <td style="color:var(--cyan);font-weight:600;font-size:12px;">{{ p.receipt_number }}</td>
+            <td style="font-size:13px;">{{ p.months_paid.replace('_',' ').replace(',',' | ') if p.months_paid else p.month ~ ' ' ~ p.year }}</td>
+            <td><strong style="color:var(--cyan);">₹{{ "%.0f"|format(p.total_amount) }}</strong></td>
+            <td style="font-size:13px;">{{ p.payment_date }}</td>
+            <td><span class="badge badge-pill badge-purple">{{ p.payment_mode }}</span></td>
+            <td><a href="{{ url_for('portal.receipt', receipt_id=p.receipt_number) }}" class="btn btn-outline-purple btn-sm btn-icon"><i class="fas fa-eye"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

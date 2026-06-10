@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Reports — VVM ERP{% endblock %}
+{% block page_title %}Reports & Export{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 22px;
+  transition: all .2s var(--ease);
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+.report-card:hover {
+  border-color: var(--border-cyan);
+  transform: translateY(-3px);
+  box-shadow: var(--sh-cyan);
+}
+.report-icon {
+  width: 48px; height: 48px;
+  border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 14px;
+}
+.report-title { font-family:'Inter',sans-serif; font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+.report-desc  { font-size: 13px; color: var(--text-muted); }
+.report-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 99px; margin-top: 10px; text-transform: uppercase; letter-spacing: .6px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Reports & Export</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Reports</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ── Students Reports ──────────────────── -->
+<div class="sec-label mb-3" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-muted);">
+  Student Reports
+</div>
+<div class="row g-3 mb-4">
+
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('reports.students_excel') }}" class="report-card">
+      <div class="report-icon" style="background:rgba(16,232,123,.1);border:1px solid rgba(16,232,123,.22);color:var(--green);">
+        <i class="fas fa-file-excel"></i>
+      </div>
+      <div class="report-title">All Students</div>
+      <div class="report-desc">Full student list with class, section, fees</div>
+      <span class="report-badge" style="background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.22);">Excel</span>
+    </a>
+  </div>
+
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('reports.students_excel') }}?status=Active&class={{ '' }}" class="report-card">
+      <div class="report-icon" style="background:var(--cyan-dim);border:1px solid var(--border-cyan);color:var(--cyan);">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="report-title">Active Students</div>
+      <div class="report-desc">Currently enrolled students only</div>
+      <span class="report-badge" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--border-cyan);">Excel</span>
+    </a>
+  </div>
+
+</div>
+
+<!-- ── Fee Reports ────────────────────────── -->
+<div class="sec-label mb-3" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-muted);">
+  Fee Reports
+</div>
+<div class="row g-3 mb-4">
+
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('reports.fees_excel') }}" class="report-card">
+      <div class="report-icon" style="background:rgba(16,232,123,.1);border:1px solid rgba(16,232,123,.22);color:var(--green);">
+        <i class="fas fa-file-excel"></i>
+      </div>
+      <div class="report-title">All Fee Payments</div>
+      <div class="report-desc">Complete fee collection history</div>
+      <span class="report-badge" style="background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.22);">Excel</span>
+    </a>
+  </div>
+
+  <!-- Fee by Month Filter -->
+  <div class="col-12 col-sm-6 col-lg-5">
+    <div class="report-card" style="cursor:default;">
+      <div class="report-icon" style="background:var(--gold-dim);border:1px solid rgba(245,200,66,.22);color:var(--gold);">
+        <i class="fas fa-calendar-check"></i>
+      </div>
+      <div class="report-title">Fee by Month</div>
+      <div class="report-desc">Export fee data for a specific month/year</div>
+      <form action="{{ url_for('reports.fees_excel') }}" method="GET" class="d-flex gap-2 mt-3 flex-wrap">
+        <select class="form-select form-select-sm" name="month" style="width:130px;">
+          {% for m in months %}
+          <option value="{{ m }}">{{ m }}</option>
+          {% endfor %}
+        </select>
+        <select class="form-select form-select-sm" name="year" style="width:90px;">
+          {% for y in years %}
+          <option value="{{ y }}" {{ 'selected' if y == now().year }}>{{ y }}</option>
+          {% endfor %}
+        </select>
+        <select class="form-select form-select-sm" name="class" style="width:100px;">
+          <option value="">All Classes</option>
+          {% for c in classes %}
+          <option value="{{ c }}">{{ c }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-gold btn-sm px-3">
+          <i class="fas fa-download me-1"></i>Export
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Fee Pending Report ─────────────────── -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('fees.pending') }}" class="report-card">
+      <div class="report-icon" style="background:var(--rose-dim);border:1px solid rgba(255,77,109,.22);color:var(--rose);">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <div class="report-title">Pending Fees</div>
+      <div class="report-desc">Students with outstanding dues</div>
+      <span class="report-badge" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.22);">View</span>
+    </a>
+  </div>
+
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('fees.history') }}" class="report-card">
+      <div class="report-icon" style="background:var(--violet-dim);border:1px solid rgba(124,111,239,.22);color:var(--violet);">
+        <i class="fas fa-history"></i>
+      </div>
+      <div class="report-title">Fee History</div>
+      <div class="report-desc">Full payment history & receipts</div>
+      <span class="report-badge" style="background:var(--violet-dim);color:var(--violet);border:1px solid rgba(124,111,239,.22);">View</span>
+    </a>
+  </div>
+</div>
+
+<!-- ── Attendance Reports ─────────────────── -->
+<div class="sec-label mb-3" style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-muted);">
+  Attendance Reports
+</div>
+<div class="row g-3">
+  <div class="col-12 col-sm-6 col-lg-3">
+    <a href="{{ url_for('attendance.report') }}" class="report-card">
+      <div class="report-icon" style="background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.22);color:var(--orange);">
+        <i class="fas fa-clipboard-list"></i>
+      </div>
+      <div class="report-title">Attendance Report</div>
+      <div class="report-desc">Class-wise monthly attendance summary</div>
+      <span class="report-badge" style="background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.22);">View</span>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

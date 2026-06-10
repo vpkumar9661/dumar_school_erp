@@ -1,0 +1,754 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — VVM Dharampur ERP{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════════════════════
+   AETHER-STYLE DASHBOARD
+═══════════════════════════════════════════════════════════ */
+
+/* ── Gradient Stat Cards ─────────────────────────────────── */
+.aether-card {
+  border-radius: 16px;
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  min-height: 130px;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,.35) !important;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1),
+              box-shadow .22s ease;
+  cursor: default;
+}
+.aether-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 36px rgba(0,0,0,.45) !important;
+}
+
+/* Glossy overlay */
+.aether-card::after {
+  content: '';
+  position: absolute;
+  top: -40%; left: -20%;
+  width: 70%; height: 120%;
+  background: rgba(255,255,255,.08);
+  transform: rotate(-20deg);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* Card color variants */
+.ac-blue   { background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 60%, #1E40AF 100%); }
+.ac-green  { background: linear-gradient(135deg, #059669 0%, #047857 60%, #065F46 100%); }
+.ac-orange { background: linear-gradient(135deg, #D97706 0%, #B45309 60%, #92400E 100%); }
+.ac-purple { background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 60%, #5B21B6 100%); }
+
+.aether-card .ac-icon {
+  width: 46px; height: 46px;
+  background: rgba(255,255,255,.2);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff;
+  flex-shrink: 0;
+}
+.aether-card .ac-label {
+  font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,.8);
+  margin-bottom: 6px;
+}
+.aether-card .ac-value {
+  font-family:'Inter',sans-serif;
+  font-size: 30px; font-weight: 800;
+  color: #fff; line-height: 1;
+  letter-spacing: -.5px;
+}
+.aether-card .ac-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(255,255,255,.2);
+  color: #fff; font-size: 11.5px; font-weight: 700;
+  padding: 3px 9px; border-radius: 99px;
+  position: absolute; top: 18px; right: 18px;
+}
+.aether-card .ac-badge i { font-size: 9px; }
+
+/* ── Section Title ───────────────────────────────────────── */
+.section-title {
+  font-size: 14.5px; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 14px; letter-spacing: -.2px;
+}
+
+/* ── Chart Cards ─────────────────────────────────────────── */
+.chart-card {
+  background: #0f1621;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.chart-card-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; align-items: center; gap: 10px;
+}
+.chart-card-title {
+  font-size: 14.5px; font-weight: 700;
+  color: var(--text-primary); margin: 0;
+}
+.chart-card-body { padding: 16px 20px 20px; }
+
+/* Chart legend dots */
+.legend-dot {
+  width: 12px; height: 12px; border-radius: 3px;
+  display: inline-block; flex-shrink: 0;
+}
+
+/* ── Bottom Panel Cards ──────────────────────────────────── */
+.panel-card {
+  background: #0f1621;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  overflow: hidden;
+  height: 100%;
+}
+.panel-card-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.panel-card-title {
+  font-size: 14.5px; font-weight: 700;
+  color: var(--text-primary); margin: 0;
+}
+.panel-card-body { padding: 0; }
+
+/* ── Activity Items ──────────────────────────────────────── */
+.activity-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: background .15s;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-item:hover { background: rgba(255,255,255,.025); }
+.act-icon-wrap {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0; margin-top: 1px;
+}
+.act-text { font-size: 13.5px; font-weight: 500; color: #C8D3E0; line-height: 1.45; }
+.act-time { font-size: 11.5px; color: #4A5E78; margin-top: 3px; }
+
+/* ── Quick Action Buttons ────────────────────────────────── */
+.qa-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 20px;
+}
+.qa-action-btn {
+  border-radius: 12px;
+  padding: 18px 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  border: none !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; font-weight: 700;
+  color: #fff !important;
+  transition: all .2s cubic-bezier(.34,1.56,.64,1);
+  cursor: pointer; position: relative; overflow: hidden;
+}
+.qa-action-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background .15s;
+}
+.qa-action-btn:hover::after { background: rgba(255,255,255,.1); }
+.qa-action-btn:hover { transform: scale(1.04); }
+.qa-action-btn i { font-size: 22px; }
+.qa-blue   { background: linear-gradient(135deg,#3B82F6,#2563EB); box-shadow:0 4px 16px rgba(59,130,246,.35); }
+.qa-green  { background: linear-gradient(135deg,#10B981,#059669); box-shadow:0 4px 16px rgba(16,185,129,.35); }
+.qa-violet { background: linear-gradient(135deg,#8B5CF6,#7C3AED); box-shadow:0 4px 16px rgba(139,92,246,.35); }
+.qa-orange { background: linear-gradient(135deg,#F59E0B,#D97706); box-shadow:0 4px 16px rgba(245,158,11,.35); }
+.qa-rose   { background: linear-gradient(135deg,#F43F5E,#E11D48); box-shadow:0 4px 16px rgba(244,63,94,.35); }
+.qa-teal   { background: linear-gradient(135deg,#14B8A6,#0D9488); box-shadow:0 4px 16px rgba(20,184,166,.35); }
+
+/* ── Alert Items ─────────────────────────────────────────── */
+.alert-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: background .15s;
+}
+.alert-item:last-child { border-bottom: none; }
+.alert-item:hover { background: rgba(255,255,255,.025); }
+.alert-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; margin-top: 1px;
+}
+.alert-text { font-size: 13px; color: #C8D3E0; line-height: 1.45; flex: 1; }
+.alert-badge {
+  font-size: 10.5px; font-weight: 700;
+  padding: 3px 9px; border-radius: 99px;
+  white-space: nowrap; flex-shrink: 0;
+  align-self: flex-start; margin-top: 2px;
+}
+.ab-high   { background: rgba(239,68,68,.15);  color: #EF4444; }
+.ab-medium { background: rgba(245,158,11,.15); color: #F59E0B; }
+.ab-low    { background: rgba(16,185,129,.15); color: #10B981; }
+
+/* ── No data placeholder ─────────────────────────────────── */
+.no-data {
+  text-align: center; padding: 32px 20px;
+  color: #4A5E78; font-size: 13px;
+}
+.no-data i { font-size: 32px; display: block; margin-bottom: 10px; color: #2A3A50; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Chart data for JS block -->
+<div id="chart-data" 
+     data-labels='{{ chart_labels|tojson }}' 
+     data-amounts='{{ chart_amounts|tojson }}'
+     data-expected='{{ chart_expected|tojson }}'
+     data-pending='{{ chart_pending|tojson }}'
+     style="display: none;">
+</div>
+
+<!-- ══════════════════════════════════════════════
+  TOP STAT CARDS — 4 Gradient Cards
+══════════════════════════════════════════════ -->
+<div class="row g-3 mb-4">
+
+  <div class="col-6 col-lg-3">
+    <div class="aether-card ac-blue">
+      <div class="ac-badge">
+        <i class="fas fa-arrow-up"></i> 5.2%
+      </div>
+      <div class="ac-icon mb-3"><i class="fas fa-user-graduate"></i></div>
+      <div class="ac-label">Total Students</div>
+      <div class="ac-value" id="sc-students">{{ total_students }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="aether-card ac-green">
+      <div class="ac-badge">
+        <i class="fas fa-arrow-up"></i> 12.8%
+      </div>
+      <div class="ac-icon mb-3"><i class="fas fa-rupee-sign"></i></div>
+      <div class="ac-label">Fees Collected</div>
+      <div class="ac-value" id="sc-received">₹{{ "%.0f"|format(fee_received) }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="aether-card ac-orange">
+      <div class="ac-badge" style="background:rgba(255,255,255,.15);">
+        <i class="fas fa-arrow-down"></i> 3.4%
+      </div>
+      <div class="ac-icon mb-3"><i class="fas fa-clock"></i></div>
+      <div class="ac-label">Pending Fees</div>
+      <div class="ac-value" id="sc-pending">₹{{ "%.0f"|format(fee_pending) }}</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="aether-card ac-purple">
+      <div class="ac-badge">
+        <i class="fas fa-arrow-up"></i> 8.1%
+      </div>
+      <div class="ac-icon mb-3"><i class="fas fa-chart-line"></i></div>
+      <div class="ac-label">Expected Fees</div>
+      <div class="ac-value">₹{{ "%.0f"|format(fee_expected) }}</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+  DUAL CHARTS ROW
+══════════════════════════════════════════════ -->
+<div class="row g-3 mb-4">
+
+  <!-- Monthly Fee Collection Line Chart -->
+  <div class="col-12 col-lg-7">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h6 class="chart-card-title">Monthly Fee Collection</h6>
+        <div class="ms-auto d-flex align-items-center gap-3" style="font-size:12px;">
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#3B82F6;"></span>Expected
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#10B981;"></span>Received
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#F43F5E;"></span>Pending
+          </span>
+        </div>
+      </div>
+      <div class="chart-card-body">
+        <div style="height:260px;"><canvas id="monthlyLineChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fee Comparison Grouped Bar Chart -->
+  <div class="col-12 col-lg-5">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h6 class="chart-card-title">Fee Comparison</h6>
+        <div class="ms-auto d-flex align-items-center gap-3" style="font-size:12px;">
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#3B82F6;"></span>Expected
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#10B981;"></span>Received
+          </span>
+          <span style="display:flex;align-items:center;gap:6px;color:#93ACCC;">
+            <span class="legend-dot" style="background:#F43F5E;"></span>Pending
+          </span>
+        </div>
+      </div>
+      <div class="chart-card-body">
+        <div style="height:260px;"><canvas id="feeCompChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+  BOTTOM ROW — 3 Columns
+══════════════════════════════════════════════ -->
+<div class="row g-3">
+
+  <!-- Recent Activity -->
+  <div class="col-12 col-md-4">
+    <div class="panel-card">
+      <div class="panel-card-header">
+        <h6 class="panel-card-title">Recent Activity</h6>
+      </div>
+      <div class="panel-card-body">
+
+        {% for t in recent_txn[:3] %}
+        <div class="activity-item">
+          <div class="act-icon-wrap" style="background:rgba(16,185,129,.15);color:#10B981;">
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+          <div>
+            <div class="act-text">
+              ₹{{ "%.0f"|format(t.total_amount) }} fee received from
+              <strong style="color:#E2EBF5;">{{ t.student_name }}</strong>
+              (Class {{ t.class }}-{{ t.section }})
+            </div>
+            <div class="act-time">{{ t.payment_date }}</div>
+          </div>
+        </div>
+        {% endfor %}
+
+        {% for s in student_activity[:2] %}
+        <div class="activity-item">
+          <div class="act-icon-wrap" style="background:rgba(59,130,246,.15);color:#3B82F6;">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div>
+            <div class="act-text">{{ s.desc_text }}</div>
+            <div class="act-time">{{ s.meta }}</div>
+          </div>
+        </div>
+        {% endfor %}
+
+        {% for n in latest_notices[:2] %}
+        <div class="activity-item">
+          <div class="act-icon-wrap" style="background:rgba(139,92,246,.15);color:#8B5CF6;">
+            <i class="fas fa-bullhorn"></i>
+          </div>
+          <div>
+            <div class="act-text">{{ n.title }}</div>
+            <div class="act-time">{{ n.category }} · {{ n.priority }}</div>
+          </div>
+        </div>
+        {% endfor %}
+
+        {% if not recent_txn and not student_activity and not latest_notices %}
+        <div class="no-data">
+          <i class="fas fa-stream"></i>
+          No recent activity
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="col-12 col-md-4">
+    <div class="panel-card">
+      <div class="panel-card-header">
+        <h6 class="panel-card-title">Quick Actions</h6>
+      </div>
+      <div class="qa-grid-2x2">
+
+        {% if current_user.has_permission('manage_students') %}
+        <a href="{{ url_for('students.add') }}" class="qa-action-btn qa-blue">
+          <i class="fas fa-user-plus"></i>
+          Add Student
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_fees') %}
+        <a href="{{ url_for('fees.collect') }}" class="qa-action-btn qa-green">
+          <i class="fas fa-dollar-sign"></i>
+          Collect Fee
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_noticeboard') %}
+        <a href="{{ url_for('noticeboard.index') }}" class="qa-action-btn qa-violet">
+          <i class="fas fa-bullhorn"></i>
+          Add Notice
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_attendance') %}
+        <a href="{{ url_for('attendance.students') }}" class="qa-action-btn qa-orange">
+          <i class="fas fa-clipboard-check"></i>
+          Mark Attendance
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_salary') %}
+        <a href="{{ url_for('teachers.salary') }}" class="qa-action-btn qa-teal">
+          <i class="fas fa-money-check-alt"></i>
+          Pay Salary
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_reports') %}
+        <a href="{{ url_for('reports.index') }}" class="qa-action-btn qa-rose">
+          <i class="fas fa-file-export"></i>
+          Reports
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_students') %}
+        <a href="{{ url_for('students.list') }}" class="qa-action-btn qa-blue" style="background:linear-gradient(135deg,#0EA5E9,#0284C7);box-shadow:0 4px 16px rgba(14,165,233,.35);">
+          <i class="fas fa-users"></i>
+          All Students
+        </a>
+        {% endif %}
+
+        {% if current_user.has_permission('manage_exams') %}
+        <a href="{{ url_for('exams.schedule') }}" class="qa-action-btn qa-violet" style="background:linear-gradient(135deg,#EC4899,#DB2777);box-shadow:0 4px 16px rgba(236,72,153,.35);">
+          <i class="fas fa-calendar-alt"></i>
+          Exam Schedule
+        </a>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Alerts -->
+  <div class="col-12 col-md-4">
+    <div class="panel-card">
+      <div class="panel-card-header d-flex align-items-center">
+        <h6 class="panel-card-title">Pending Alerts</h6>
+        {% set total_alerts = fee_defaulters|length + (1 if pending_salaries > 0 else 0) %}
+        {% if total_alerts > 0 %}
+        <span style="margin-left:auto;background:rgba(239,68,68,.15);color:#EF4444;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;">
+          {{ total_alerts }} alerts
+        </span>
+        {% endif %}
+      </div>
+      <div class="panel-card-body">
+
+        {% if fee_defaulters %}
+        <div class="alert-item">
+          <div class="alert-icon" style="background:rgba(239,68,68,.12);color:#EF4444;">
+            <i class="fas fa-rupee-sign"></i>
+          </div>
+          <div class="alert-text">
+            <strong style="color:#E2EBF5;">{{ fee_defaulters|length }} students</strong>
+            have overdue fees (&gt;30 days)
+          </div>
+          <span class="alert-badge ab-high">High</span>
+        </div>
+        {% endif %}
+
+        {% if pending_salaries > 0 %}
+        <div class="alert-item">
+          <div class="alert-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
+            <i class="fas fa-money-check-alt"></i>
+          </div>
+          <div class="alert-text">
+            <strong style="color:#E2EBF5;">{{ pending_salaries }} teachers</strong>
+            salary pending for {{ current_month }}
+          </div>
+          <span class="alert-badge ab-medium">Medium</span>
+        </div>
+        {% endif %}
+
+        {% if att_absent > 5 %}
+        <div class="alert-item">
+          <div class="alert-icon" style="background:rgba(245,158,11,.12);color:#F59E0B;">
+            <i class="fas fa-user-times"></i>
+          </div>
+          <div class="alert-text">
+            <strong style="color:#E2EBF5;">{{ att_absent }} students</strong>
+            absent today
+          </div>
+          <span class="alert-badge ab-medium">Medium</span>
+        </div>
+        {% endif %}
+
+        {% for d in fee_defaulters[:3] %}
+        <div class="alert-item">
+          <div class="alert-icon" style="background:rgba(239,68,68,.1);color:#EF4444;">
+            <i class="fas fa-exclamation"></i>
+          </div>
+          <div class="alert-text">
+            <strong style="color:#E2EBF5;">{{ d.student_name }}</strong>
+            (Class {{ d.class }}-{{ d.section }}) pending fee
+          </div>
+          <a href="{{ url_for('fees.collect') }}?search={{ d.admission_number }}"
+             class="alert-badge ab-high" style="text-decoration:none;cursor:pointer;">
+            Pay
+          </a>
+        </div>
+        {% endfor %}
+
+        {% if not fee_defaulters and pending_salaries == 0 and att_absent <= 5 %}
+        <div class="no-data">
+          <i class="fas fa-check-circle" style="color:#10B981;"></i>
+          <span style="color:#10B981;font-weight:600;">All clear!</span><br>
+          No pending alerts
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Chart Global Defaults ────────────────────────────────────
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = '#4A5E78';
+
+const tooltip = {
+  backgroundColor: '#0a0e1a',
+  borderColor: 'rgba(59,130,246,.3)',
+  borderWidth: 1,
+  titleColor: '#3B82F6',
+  bodyColor: '#93ACCC',
+  padding: 11,
+  cornerRadius: 8,
+};
+
+// ── Monthly Line Chart (day-by-day simulation) ───────────────
+(function() {
+  // Use actual monthly data from backend, display as trend line
+  const chartDataEl = document.getElementById('chart-data');
+  const months    = JSON.parse(chartDataEl.getAttribute('data-labels') || '[]');
+  const received  = JSON.parse(chartDataEl.getAttribute('data-amounts') || '[]');
+  const expected  = JSON.parse(chartDataEl.getAttribute('data-expected') || '[]');
+  const pending   = JSON.parse(chartDataEl.getAttribute('data-pending') || '[]');
+
+  // Generate smoother day-level data by interpolating
+  const dayLabels = Array.from({length:30}, (_,i) => i+1);
+
+  function interpolateDays(arr) {
+    if (!arr.length) return dayLabels.map(()=>0);
+    // Map monthly points across 30 days with smooth variation
+    const base = arr.reduce((a,b)=>a+b,0) / arr.length;
+    return dayLabels.map((d,i) => {
+      const idx   = Math.floor(i / 30 * arr.length);
+      const v     = arr[Math.min(idx, arr.length-1)] || base;
+      const noise = Math.sin(i * 0.7 + idx) * v * 0.18;
+      return Math.max(0, Math.round(v/30 + noise));
+    });
+  }
+
+  const ctx = document.getElementById('monthlyLineChart').getContext('2d');
+
+  const gradBlue = ctx.createLinearGradient(0,0,0,260);
+  gradBlue.addColorStop(0,'rgba(59,130,246,.3)');
+  gradBlue.addColorStop(1,'rgba(59,130,246,.01)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dayLabels,
+      datasets: [
+        {
+          label: 'Expected (₹)',
+          data: interpolateDays(expected),
+          borderColor: '#3B82F6',
+          backgroundColor: gradBlue,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#3B82F6',
+          tension: .45,
+          fill: true,
+        },
+        {
+          label: 'Received (₹)',
+          data: interpolateDays(received),
+          borderColor: '#10B981',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#10B981',
+          tension: .45,
+          fill: false,
+        },
+        {
+          label: 'Pending (₹)',
+          data: interpolateDays(pending),
+          borderColor: '#F43F5E',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#F43F5E',
+          tension: .45,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...tooltip,
+          callbacks: {
+            title: ctx => 'Day ' + ctx[0].label,
+            label: ctx => '  ' + ctx.dataset.label + ': ₹' +
+              ctx.parsed.y.toLocaleString('en-IN')
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255,255,255,.04)', drawBorder: false },
+          border: { display: false },
+          ticks: {
+            callback: v => '₹' + (v>=1000 ? (v/1000).toFixed(0)+'k' : v),
+            font: { size: 11 },
+            maxTicksLimit: 6,
+          }
+        },
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: {
+            font: { size: 11 },
+            maxTicksLimit: 10,
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── Fee Comparison Grouped Bar Chart ────────────────────────
+(function() {
+  const chartDataEl = document.getElementById('chart-data');
+  const labels   = JSON.parse(chartDataEl.getAttribute('data-labels') || '[]');
+  const expected = JSON.parse(chartDataEl.getAttribute('data-expected') || '[]');
+  const received = JSON.parse(chartDataEl.getAttribute('data-amounts') || '[]');
+  const pending  = JSON.parse(chartDataEl.getAttribute('data-pending') || '[]');
+
+  new Chart(document.getElementById('feeCompChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Expected',
+          data: expected,
+          backgroundColor: 'rgba(59,130,246,.75)',
+          borderRadius: 5,
+          borderSkipped: false,
+        },
+        {
+          label: 'Received',
+          data: received,
+          backgroundColor: 'rgba(16,185,129,.75)',
+          borderRadius: 5,
+          borderSkipped: false,
+        },
+        {
+          label: 'Pending',
+          data: pending,
+          backgroundColor: 'rgba(244,63,94,.75)',
+          borderRadius: 5,
+          borderSkipped: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...tooltip,
+          callbacks: {
+            label: ctx => '  ' + ctx.dataset.label + ': ₹' +
+              ctx.parsed.y.toLocaleString('en-IN')
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(255,255,255,.04)', drawBorder: false },
+          border: { display: false },
+          ticks: {
+            callback: v => '₹' + (v>=1000 ? (v/1000).toFixed(0)+'k' : v),
+            font: { size: 11 },
+            maxTicksLimit: 5,
+          }
+        },
+        x: {
+          grid: { display: false },
+          border: { display: false },
+          ticks: { font: { size: 11 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── Auto-refresh every 60s ──────────────────────────────────
+setInterval(() => {
+  fetch('/api/stats')
+    .then(r => r.json())
+    .then(d => {
+      const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+      document.getElementById('sc-students').textContent = d.students;
+      document.getElementById('sc-received').textContent = fmt(d.fee_received);
+      document.getElementById('sc-pending').textContent  = fmt(d.fee_pending);
+    }).catch(()=>{});
+}, 60000);
+</script>
+{% endblock %}

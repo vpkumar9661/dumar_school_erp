@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Transport — School ERP{% endblock %}
+{% block page_title %}Transport Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Transport Fee Management</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+      <li class="breadcrumb-item active">Transport</li>
+    </ol>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  {% for s in summary %}
+  <div class="col-6 col-md-3">
+    <div class="stat-card stat-purple">
+      <div class="stat-label">{{ s.transport_distance }} km</div>
+      <div class="stat-value">{{ s.count }}</div>
+      <div style="font-size:12px;opacity:.8;">₹{{ s.total_fee }} total</div>
+      <i class="fas fa-bus stat-icon"></i>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-3">
+  <!-- Update Slabs -->
+  <div class="col-12 col-lg-4">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-sliders-h" style="color:var(--purple-600);"></i>
+        <h5>Fee Slabs (Edit)</h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info" style="font-size:12px;">
+          <i class="fas fa-info-circle me-1"></i>
+          Saving will update all student transport fees automatically.
+        </div>
+        <form method="POST" action="{{ url_for('transport.update_slabs') }}">
+          {% for slab in slabs %}
+          <div class="mb-3">
+            <label class="form-label">{{ slab.distance_slab }} km slab (₹)</label>
+            <input type="number"
+                   class="form-control"
+                   name="fee_{{ slab.distance_slab.replace('-','_').replace('+','plus') }}"
+                   value="{{ slab.fee }}"
+                   min="0" step="0.01">
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-purple w-100">
+            <i class="fas fa-save me-2"></i>Update All Slabs
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students on Transport -->
+  <div class="col-12 col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-bus" style="color:var(--purple-600);"></i>
+        <h5>Students Using Transport</h5>
+        <span class="badge badge-pill badge-purple ms-auto">{{ transport_students|length }}</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Adm. No</th>
+                <th>Class</th>
+                <th>Distance</th>
+                <th>Transport Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in transport_students %}
+              <tr>
+                <td style="font-weight:600;font-size:13px;">{{ s.student_name }}</td>
+                <td style="font-size:12px;color:var(--purple-600);">{{ s.admission_number }}</td>
+                <td><span class="badge badge-pill badge-purple">{{ s.class }}-{{ s.section }}</span></td>
+                <td><span class="badge badge-pill" style="background:#e8f4f8;color:#1a5276;">{{ s.transport_distance }} km</span></td>
+                <td><strong>₹{{ s.transport_fee }}</strong></td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" class="text-center py-4 text-muted">No students using transport</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

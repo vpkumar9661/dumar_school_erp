@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Salary — VVM ERP{% endblock %}
+{% block page_title %}Teacher Salary{% endblock %}
+
+{% block extra_css %}
+<style>
+.pill-paid    {display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.22);}
+.pill-pending {display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;background:rgba(255,77,109,.1);color:var(--rose);border:1px solid rgba(255,77,109,.22);}
+.sal-stat  {background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;}
+.sal-stat-val {font-family:'Inter',sans-serif;font-size:24px;font-weight:800;line-height:1;}
+.sal-stat-lbl {font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-top:5px;}
+.filter-bar{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 16px;margin-bottom:16px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+
+/* Teacher name — always bright/visible */
+.t-name { font-weight:700; font-size:14px; color:#E8EDF5 !important; }
+.t-phone{ font-size:11px; color:var(--text-muted); margin-top:1px; }
+body.theme-light .t-name { color:#1A2535 !important; }
+
+/* Payment mode badge */
+.pm-b { display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px; }
+.pm-cash   { background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.22); }
+.pm-upi    { background:rgba(124,111,239,.1);color:var(--violet);border:1px solid rgba(124,111,239,.22); }
+.pm-cheque { background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.22); }
+.pm-other  { background:var(--cyan-dim);color:var(--cyan);border:1px solid var(--border-cyan); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>Teacher Salary Management</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.teacher_list') }}">Teachers</a></li>
+      <li class="breadcrumb-item active">Salary</li>
+    </ol>
+  </div>
+   {% if can_manage and pending_count > 0 %}
+  <button type="button" class="btn btn-gold px-4"
+          data-bs-toggle="modal" data-bs-target="#modalBulkPay">
+    
+  </button>
+  {% endif %}
+</div>
+
+
+<!-- Stats -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="sal-stat" style="border-color:rgba(0,212,255,.2);">
+      <div class="sal-stat-val" style="color:var(--cyan);">{{ total_teachers }}</div>
+      <div class="sal-stat-lbl">Total Teachers</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="sal-stat" style="border-color:rgba(16,232,123,.2);">
+      <div class="sal-stat-val" style="color:var(--green);">{{ paid_count }}</div>
+      <div class="sal-stat-lbl">Paid — {{ month }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="sal-stat" style="border-color:rgba(255,77,109,.2);">
+      <div class="sal-stat-val" style="color:var(--rose);">{{ pending_count }}</div>
+      <div class="sal-stat-lbl">Pending — {{ month }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="sal-stat" style="border-color:rgba(245,200,66,.2);">
+      <div class="sal-stat-val" style="color:var(--gold);">&#8377;{{ "%.0f"|format(total_paid_amt) }}</div>
+      <div class="sal-stat-lbl">Amount Paid</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<form method="GET" class="filter-bar">
+  <div>
+    <label class="form-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;">Month</label>
+    <select class="form-select form-select-sm" name="month" style="width:130px;">
+      {% for m in months %}
+      <option value="{{ m }}" {{ 'selected' if m == month }}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="form-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;">Year</label>
+    <select class="form-select form-select-sm" name="year" style="width:90px;">
+      {% for y in years %}
+      <option value="{{ y }}" {{ 'selected' if y|string == year|string }}>{{ y }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="form-label" style="font-size:10px;text-transform:uppercase;letter-spacing:.6px;">Search</label>
+    <input type="text" class="form-control form-control-sm" name="search"
+           placeholder="Teacher name..." value="{{ search }}" style="width:170px;">
+  </div>
+  <button type="submit" class="btn btn-purple btn-sm px-4">
+    <i class="fas fa-filter me-1"></i>Apply Filter
+  </button>
+  <a href="{{ url_for('teachers.salary') }}" class="btn btn-light btn-sm" title="Clear">
+    <i class="fas fa-times"></i>
+  </a>
+</form>
+
+<!-- Table -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);">
+      <i class="fas fa-money-check-alt"></i>
+    </div>
+    <h5>{{ month }} {{ year }} — Salary Status</h5>
+    <span class="badge badge-pill ms-auto"
+          style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.2);">
+      {{ pending_count }} pending
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th><th>Teacher</th><th>Subject</th>
+            <th>Fixed Salary</th><th>Deductions</th><th>Net Paid</th>
+            <th>Date</th><th>Mode</th><th>Status</th>
+            {% if can_manage %}<th>Action</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in teachers %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:12px;">{{ loop.index }}</td>
+            <td>
+              <div class="t-name">{{ t.teacher_name }}</div>
+              <div class="t-phone">{{ t.mobile_number or '' }}</div>
+            </td>
+            <td style="font-size:13.5px;color:var(--text-secondary);">{{ t.subject or '—' }}</td>
+            <td>
+              <span style="font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--cyan);">
+                &#8377;{{ "%.0f"|format(t.salary) }}
+              </span>
+            </td>
+            <td>
+              {% if t.paid_deductions and t.paid_deductions > 0 %}
+                <span style="color:var(--rose);font-weight:600;">&#8377;{{ "%.0f"|format(t.paid_deductions) }}</span>
+                {% if t.deduction_reason %}<br><small style="color:var(--text-muted);">{{ t.deduction_reason }}</small>{% endif %}
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if t.paid_net %}
+              <span style="font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--green);">&#8377;{{ "%.0f"|format(t.paid_net) }}</span>
+              {% elif t.paid_gross %}
+              <span style="font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--green);">&#8377;{{ "%.0f"|format(t.paid_gross) }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td style="font-size:13px;color:var(--text-secondary);">{{ t.payment_date or '—' }}</td>
+            <td>
+              {% if t.payment_mode %}
+              {% set pm = t.payment_mode|lower %}
+              <span class="pm-b {% if 'cash' in pm %}pm-cash{% elif 'upi' in pm %}pm-upi{% elif 'cheque' in pm %}pm-cheque{% else %}pm-other{% endif %}">
+                {{ t.payment_mode }}
+              </span>
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              {% if t.payment_id %}
+              <span class="pill-paid"><i class="fas fa-check-circle" style="font-size:10px;"></i> Paid</span>
+              {% else %}
+              <span class="pill-pending"><i class="fas fa-clock" style="font-size:10px;"></i> Pending</span>
+              {% endif %}
+            </td>
+            {% if can_manage %}
+            <td>
+              {% if not t.payment_id %}
+              {# PAY = direct link to payment page — NO MODAL, NO JS NEEDED #}
+              <a href="{{ url_for('teachers.pay_page', tid=t.id, month=month, year=year) }}"
+                 class="btn btn-success btn-sm px-3">
+                <i class="fas fa-rupee-sign me-1"></i>Pay
+              </a>
+              {% else %}
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('teachers.salary_receipt', spid=t.payment_id) }}"
+                   class="btn btn-purple btn-sm btn-icon" title="Receipt">
+                  <i class="fas fa-receipt"></i>
+                </a>
+                <a href="{{ url_for('teachers.salary_history', tid=t.id) }}"
+                   class="btn btn-outline-purple btn-sm btn-icon" title="History">
+                  <i class="fas fa-history"></i>
+                </a>
+                <form method="POST" action="{{ url_for('teachers.delete_salary', spid=t.payment_id) }}"
+                      data-confirm="Undo payment for {{ t.teacher_name }}?" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Undo">
+                    <i class="fas fa-undo"></i>
+                  </button>
+                </form>
+              </div>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="{{ 10 if can_manage else 9 }}" class="text-center py-4" style="color:var(--text-muted);">
+              No teachers found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if teachers %}
+        <tfoot>
+          <tr style="background:var(--bg-card2);">
+            <td colspan="3" style="font-weight:700;font-size:13px;padding:12px 18px;">
+              {{ paid_count }}/{{ total_teachers }} paid
+            </td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--cyan);padding:12px 18px;">
+              &#8377;{{ "%.0f"|format(teachers|sum(attribute='salary')) }}
+            </td>
+            <td></td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--green);padding:12px 18px;">
+              &#8377;{{ "%.0f"|format(total_paid_amt) }}
+            </td>
+            <td colspan="{{ 4 if can_manage else 3 }}"></td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+</div>
+
+{% if monthly_report %}
+<div class="card mt-3">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);">
+      <i class="fas fa-chart-bar"></i>
+    </div>
+    <h5>Monthly Salary Trend</h5>
+  </div>
+  <div class="card-body">
+    <div style="height:200px;"><canvas id="salChart"></canvas></div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if monthly_report %}
+<script>
+new Chart(document.getElementById('salChart').getContext('2d'), {
+  type:'bar',
+  data:{
+    labels:[{% for r in monthly_report %}"{{ r.month[:3] }} {{ r.year }}"{% if not loop.last %},{% endif %}{% endfor %}],
+    datasets:[{label:'Paid',data:[{% for r in monthly_report %}{{ r.total_paid|float }}{% if not loop.last %},{% endif %}{% endfor %}],backgroundColor:'rgba(16,232,123,.7)',borderRadius:6,borderSkipped:false}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.04)'},ticks:{callback:v=>'\u20B9'+(v>=1000?(v/1000).toFixed(0)+'k':v)}},x:{grid:{display:false}}}}
+});
+</script>
+{% endif %}
+{% endblock %}

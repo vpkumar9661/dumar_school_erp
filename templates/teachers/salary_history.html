@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% block title %}Salary History — {{ teacher.teacher_name }} — VVM ERP{% endblock %}
+{% block page_title %}Salary History{% endblock %}
+
+{% block extra_css %}
+<style>
+.hist-stat{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 18px;}
+.hist-stat-val{font-family:'Inter',sans-serif;font-size:22px;font-weight:800;line-height:1;}
+.hist-stat-lbl{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;}
+.pill-paid{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(16,232,123,.12);color:var(--green);border:1px solid rgba(16,232,123,.25);}
+.pm-badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;}
+.pm-cash  {background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.22);}
+.pm-upi   {background:rgba(124,111,239,.1);color:var(--violet);border:1px solid rgba(124,111,239,.22);}
+.pm-cheque{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.22);}
+.pm-neft  {background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.22);}
+.pm-rtgs  {background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.22);}
+.pm-online{background:rgba(255,140,66,.1);color:#ff8c42;border:1px solid rgba(255,140,66,.22);}
+.pm-default{background:var(--bg-card2);color:var(--text-secondary);border:1px solid var(--border);}
+</style>
+{% endblock %}
+
+{% block content %}
+{% if not teacher %}
+<div class="alert alert-danger">Teacher not found.</div>
+{% else %}
+
+<div class="page-header">
+  <div>
+    <h4>Salary History</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.teacher_list') }}">Teachers</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.salary') }}">Salary</a></li>
+      <li class="breadcrumb-item active">{{ teacher.teacher_name }}</li>
+    </ol>
+  </div>
+  <a href="{{ url_for('teachers.salary') }}" class="btn btn-light px-4">
+    <i class="fas fa-arrow-left me-2"></i>Back to Salary
+  </a>
+</div>
+
+<!-- Teacher Info Card -->
+<div class="card mb-3">
+  <div class="card-body" style="padding:18px 22px;">
+    <div class="d-flex align-items-center gap-3">
+      <div style="width:52px;height:52px;border-radius:var(--r-lg);background:rgba(16,232,123,.1);border:1px solid rgba(16,232,123,.2);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:20px;color:var(--green);">
+        {{ teacher.teacher_name[0]|upper }}
+      </div>
+      <div>
+        <div style="font-family:'Inter',sans-serif;font-size:18px;font-weight:800;color:#ffffff;">{{ teacher.teacher_name }}</div>
+        <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px;">
+          {{ teacher.subject or '—' }}
+          {% if teacher.mobile_number %}&nbsp;·&nbsp;{{ teacher.mobile_number }}{% endif %}
+          &nbsp;·&nbsp; Fixed Salary: <strong style="color:var(--cyan);">&#8377;{{ "%.0f"|format(teacher.salary) }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="hist-stat" style="border-color:rgba(0,212,255,.2);">
+      <div class="hist-stat-val" style="color:var(--cyan);">{{ history|length }}</div>
+      <div class="hist-stat-lbl">Total Payments</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="hist-stat" style="border-color:rgba(16,232,123,.2);">
+      <div class="hist-stat-val" style="color:var(--green);">&#8377;{{ "%.0f"|format(total_paid) }}</div>
+      <div class="hist-stat-lbl">Total Paid</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="hist-stat" style="border-color:rgba(245,200,66,.2);">
+      <div class="hist-stat-val" style="color:var(--gold);">
+        {% if history %}&#8377;{{ "%.0f"|format(total_paid / history|length) }}{% else %}—{% endif %}
+      </div>
+      <div class="hist-stat-lbl">Avg / Month</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="hist-stat" style="border-color:rgba(255,77,109,.2);">
+      <div class="hist-stat-val" style="color:var(--rose);">
+        &#8377;{{ "%.0f"|format(history|sum(attribute='deductions') if history else 0) }}
+      </div>
+      <div class="hist-stat-lbl">Total Deductions</div>
+    </div>
+  </div>
+</div>
+
+<!-- History Table -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-history"></i></div>
+    <h5>Payment Records — {{ teacher.teacher_name }}</h5>
+    <span class="badge badge-pill ms-auto" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);">{{ history|length }} records</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th><th>Month / Year</th><th>Gross</th>
+            <th>Deductions</th><th>Net Paid</th>
+            <th>Date</th><th>Mode</th><th>Reference</th><th>Status</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in history %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:12px;">{{ loop.index }}</td>
+            <td>
+              <div style="font-weight:700;color:#ffffff;">{{ r.month }}</div>
+              <div style="font-size:11px;color:var(--text-muted);">{{ r.year }}</div>
+            </td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--cyan);">&#8377;{{ "%.0f"|format(r.amount) }}</td>
+            <td>
+              {% if r.deductions and r.deductions > 0 %}
+              <span style="color:var(--rose);font-weight:600;">&#8377;{{ "%.0f"|format(r.deductions) }}</span>
+              {% if r.deduction_reason %}<br><span style="font-size:10.5px;color:var(--text-muted);">{{ r.deduction_reason }}</span>{% endif %}
+              {% else %}<span style="color:var(--text-muted);">—</span>{% endif %}
+            </td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--green);">&#8377;{{ "%.0f"|format(r.net_amount or r.amount) }}</td>
+            <td style="font-size:13px;color:var(--text-secondary);">
+              {% if r.payment_date %}{{ r.payment_date.strftime('%d %b %Y') if r.payment_date else '—' }}{% else %}—{% endif %}
+            </td>
+            <td>
+              {% if r.payment_mode %}
+              {% set pm = r.payment_mode|lower %}
+              <span class="pm-badge {% if 'cash' in pm %}pm-cash{% elif 'upi' in pm %}pm-upi{% elif 'cheque' in pm %}pm-cheque{% elif 'neft' in pm %}pm-neft{% elif 'rtgs' in pm %}pm-rtgs{% elif 'online' in pm %}pm-online{% else %}pm-default{% endif %}">
+                <i class="fas {% if 'cash' in pm %}fa-money-bill{% elif 'upi' in pm %}fa-mobile-alt{% elif 'cheque' in pm %}fa-file-invoice{% elif 'neft' in pm or 'rtgs' in pm %}fa-university{% elif 'online' in pm %}fa-globe{% else %}fa-credit-card{% endif %}" style="font-size:9px;"></i>
+                {{ r.payment_mode }}
+              </span>
+              {% else %}—{% endif %}
+            </td>
+            <td style="font-size:12px;color:var(--text-muted);">{{ r.payment_reference or '—' }}</td>
+            <td><span class="pill-paid"><i class="fas fa-check-circle" style="font-size:9px;"></i> Paid</span></td>
+            <td>
+              <a href="{{ url_for('teachers.salary_receipt', spid=r.id) }}"
+                 class="btn btn-purple btn-sm btn-icon" title="View Receipt" target="_blank">
+                <i class="fas fa-receipt"></i>
+              </a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" class="text-center py-5" style="color:var(--text-muted);">
+              <i class="fas fa-inbox" style="font-size:28px;opacity:.3;display:block;margin-bottom:8px;"></i>
+              No salary records found for this teacher.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if history %}
+        <tfoot>
+          <tr style="background:var(--bg-card2);">
+            <td colspan="2" style="font-weight:700;font-size:13px;padding:12px 18px;">Total</td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--cyan);padding:12px 18px;">
+              &#8377;{{ "%.0f"|format(history|sum(attribute='amount')) }}
+            </td>
+            <td style="color:var(--rose);font-weight:700;padding:12px 18px;">
+              &#8377;{{ "%.0f"|format(history|sum(attribute='deductions')) }}
+            </td>
+            <td style="font-family:'Inter',sans-serif;font-weight:700;color:var(--green);padding:12px 18px;">
+              &#8377;{{ "%.0f"|format(total_paid) }}
+            </td>
+            <td colspan="5"></td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

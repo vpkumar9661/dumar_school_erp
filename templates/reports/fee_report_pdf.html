@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #333; margin: 0; padding: 20px; }
+  h2 { color: #3C3489; margin: 0 0 4px; }
+  .sub { color: #888; font-size: 11px; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  thead th {
+    background: #534AB7; color: #fff;
+    padding: 8px 6px; font-size: 11px;
+    text-align: left; border: 1px solid #3C3489;
+  }
+  tbody td { padding: 6px; border: 1px solid #e0ddf8; font-size: 11px; }
+  tbody tr:nth-child(even) { background: #EEEDFE; }
+  .total-row td { font-weight: bold; background: #3C3489; color: #fff; }
+  .footer { margin-top: 20px; font-size: 10px; color: #999; text-align: center; }
+</style>
+</head>
+<body>
+<h2>{{ school_name }}</h2>
+<div class="sub">
+  Fee Collection Report
+  {% if month %} — {{ month }}{% endif %}
+  {% if year %} {{ year }}{% endif %}
+  {% if cls %} | Class {{ cls }}{% endif %}
+  &nbsp;|&nbsp; Generated: {{ generated_on }}
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Receipt</th>
+      <th>Student</th>
+      <th>Adm. No</th>
+      <th>Class</th>
+      <th>Month/Year</th>
+      <th>Monthly</th>
+      <th>Transport</th>
+      <th>Late Fine</th>
+      <th>Total</th>
+      <th>Mode</th>
+      <th>Date</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in payments %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ p.receipt_number }}</td>
+      <td>{{ p.student_name }}</td>
+      <td>{{ p.admission_number }}</td>
+      <td>{{ p.class }}-{{ p.section }}</td>
+      <td>{{ p.month }} {{ p.year }}</td>
+      <td>₹{{ "%.2f"|format(p.monthly_fee) }}</td>
+      <td>₹{{ "%.2f"|format(p.transport_fee) }}</td>
+      <td>₹{{ "%.2f"|format(p.late_fine) }}</td>
+      <td><strong>₹{{ "%.2f"|format(p.total_amount) }}</strong></td>
+      <td>{{ p.payment_mode }}</td>
+      <td>{{ p.payment_date }}</td>
+    </tr>
+    {% endfor %}
+    <tr class="total-row">
+      <td colspan="9" style="text-align:right;">TOTAL AMOUNT COLLECTED</td>
+      <td>₹{{ "%.2f"|format(total_amount) }}</td>
+      <td colspan="2"></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  This is a computer-generated report. | {{ school_name }}
+</div>
+</body>
+</html>

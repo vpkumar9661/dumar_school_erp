@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal — Login | VVM Dharampur</title>
+    <meta name="description" content="Premium student login portal for Vivekanand Vidya Mandir Dharampur. Access your personalized academic dashboard.">
+    <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    
+    <!-- Portal CSS -->
+    <link href="{{ url_for('static', filename='css/student_portal.css') }}" rel="stylesheet"/>
+</head>
+<body class="sp-page">
+
+    <!-- Background Effects -->
+    <div class="sp-bg-effects">
+        <div class="sp-grid-pattern"></div>
+        <div class="sp-orb sp-orb-1"></div>
+        <div class="sp-orb sp-orb-2"></div>
+        <div class="sp-orb sp-orb-3"></div>
+    </div>
+    <canvas class="sp-particles" id="sp-particles-canvas"></canvas>
+
+    <!-- Back to Home -->
+    <a href="/" class="sp-back-home" id="back-home-btn">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <!-- Theme Toggle -->
+    <button class="sp-theme-toggle" id="sp-theme-toggle" title="Toggle theme">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </button>
+
+    <!-- Login Container -->
+    <div class="sp-login-page">
+        <div class="sp-login-container">
+            <div class="sp-auth-card">
+                <!-- Logo -->
+                <div class="sp-auth-logo">
+                    <img src="{{ url_for('static', filename='images/school_logo.png') }}" 
+                         alt="VVM Logo" class="sp-auth-logo-img"/>
+                    <h1 class="sp-auth-title">Student Portal</h1>
+                    <p class="sp-auth-subtitle">{{ cfg.get('school_name', 'Vivekanand Vidya Mandir Dharampur') }}</p>
+                </div>
+
+                <!-- Tab Selector -->
+                <div class="sp-auth-tabs" id="auth-tabs">
+                    <button class="sp-auth-tab-btn active" data-view="login" id="tab-login">
+                        <i class="fas fa-sign-in-alt"></i>&nbsp; Login
+                    </button>
+                    <button class="sp-auth-tab-btn" data-view="register" id="tab-register">
+                        <i class="fas fa-user-plus"></i>&nbsp; Register
+                    </button>
+                    <button class="sp-auth-tab-btn" data-view="forgot" id="tab-forgot">
+                        <i class="fas fa-key"></i>&nbsp; Reset
+                    </button>
+                </div>
+
+                <!-- ═══ LOGIN VIEW ═══ -->
+                <div class="sp-auth-view active" id="view-login">
+                    <div class="sp-alert sp-alert-error" id="login-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="login-error-text">Error</span>
+                    </div>
+                    <div class="sp-alert sp-alert-success" id="login-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="login-success-text">Success</span>
+                    </div>
+
+                    <form id="login-form" autocomplete="on">
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Login ID</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="text" class="sp-form-input" id="login-id" 
+                                       placeholder="Admission No / Email / Mobile" 
+                                       required autocomplete="username"/>
+                                <i class="fas fa-user sp-form-input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Password</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="password" class="sp-form-input" id="login-password" 
+                                       placeholder="Enter your password" 
+                                       required autocomplete="current-password"/>
+                                <i class="fas fa-lock sp-form-input-icon"></i>
+                                <button type="button" class="sp-pwd-toggle" id="login-pwd-toggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-check">
+                            <input type="checkbox" id="login-remember"/>
+                            <label for="login-remember">Remember me</label>
+                        </div>
+
+                        <button type="submit" class="sp-btn-primary" id="login-submit-btn">
+                            <i class="fas fa-sign-in-alt"></i> Sign In
+                        </button>
+                    </form>
+
+                    <div class="sp-auth-links">
+                        <button class="sp-auth-link muted" onclick="switchView('register')">
+                            New student? Register
+                        </button>
+                        <button class="sp-auth-link" onclick="switchView('forgot')">
+                            Forgot Password?
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ═══ REGISTER VIEW ═══ -->
+                <div class="sp-auth-view" id="view-register">
+                    <div class="sp-alert sp-alert-error" id="reg-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="reg-error-text">Error</span>
+                    </div>
+                    <div class="sp-alert sp-alert-success" id="reg-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="reg-success-text">Success</span>
+                    </div>
+
+                    <form id="register-form" autocomplete="off">
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Admission Number *</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="text" class="sp-form-input" id="reg-admission" 
+                                       placeholder="Enter your admission number" required/>
+                                <i class="fas fa-id-card sp-form-input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Full Name *</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="text" class="sp-form-input" id="reg-name" 
+                                       placeholder="Enter your full name" required/>
+                                <i class="fas fa-user sp-form-input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-row">
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">Email Address *</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="email" class="sp-form-input" id="reg-email" 
+                                           placeholder="your@email.com" required/>
+                                    <i class="fas fa-envelope sp-form-input-icon"></i>
+                                </div>
+                            </div>
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">Mobile Number</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="tel" class="sp-form-input" id="reg-mobile" 
+                                           placeholder="10-digit mobile" maxlength="10"/>
+                                    <i class="fas fa-phone sp-form-input-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Date of Birth</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="date" class="sp-form-input" id="reg-dob" 
+                                       style="padding-left:40px;"/>
+                                <i class="fas fa-calendar sp-form-input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Password *</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="password" class="sp-form-input" id="reg-password" 
+                                       placeholder="Min 8 chars, upper+lower+digit" required
+                                       autocomplete="new-password"/>
+                                <i class="fas fa-lock sp-form-input-icon"></i>
+                                <button type="button" class="sp-pwd-toggle" id="reg-pwd-toggle">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="sp-pwd-strength">
+                                <div class="sp-pwd-strength-bar" id="reg-pwd-bar"></div>
+                            </div>
+                            <div class="sp-pwd-strength-text" id="reg-pwd-text" style="color:var(--sp-t3)"></div>
+                        </div>
+
+                        <div class="sp-form-group">
+                            <label class="sp-form-label">Confirm Password *</label>
+                            <div class="sp-form-input-wrap">
+                                <input type="password" class="sp-form-input" id="reg-confirm" 
+                                       placeholder="Repeat your password" required
+                                       autocomplete="new-password"/>
+                                <i class="fas fa-lock sp-form-input-icon"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="sp-btn-primary" id="reg-submit-btn">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="sp-auth-links">
+                        <button class="sp-auth-link" onclick="switchView('login')">
+                            <i class="fas fa-arrow-left"></i> Back to Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ═══ FORGOT PASSWORD VIEW ═══ -->
+                <div class="sp-auth-view" id="view-forgot">
+                    <div class="sp-alert sp-alert-error" id="forgot-error">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="forgot-error-text">Error</span>
+                    </div>
+                    <div class="sp-alert sp-alert-success" id="forgot-success">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="forgot-success-text">Success</span>
+                    </div>
+
+                    <!-- Step 1: Request Reset -->
+                    <div id="forgot-step1">
+                        <p style="font-size:13px; color:var(--sp-t2); margin-bottom:20px; line-height:1.7;">
+                            Enter your admission number or email address. If an account is found, a reset token will be generated.
+                        </p>
+                        <form id="forgot-form">
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">Admission Number / Email</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="text" class="sp-form-input" id="forgot-identifier" 
+                                           placeholder="Enter admission no or email" required/>
+                                    <i class="fas fa-search sp-form-input-icon"></i>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="sp-btn-primary" id="forgot-submit-btn">
+                                <i class="fas fa-paper-plane"></i> Request Reset
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Step 2: Enter Token + New Password -->
+                    <div id="forgot-step2" style="display:none;">
+                        <p style="font-size:13px; color:var(--sp-t2); margin-bottom:20px; line-height:1.7;">
+                            Enter the reset token you received (via email or from school admin) and set your new password.
+                        </p>
+                        <form id="reset-form">
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">Reset Token</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="text" class="sp-form-input" id="reset-token" 
+                                           placeholder="Paste your reset token" required/>
+                                    <i class="fas fa-key sp-form-input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">New Password</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="password" class="sp-form-input" id="reset-password" 
+                                           placeholder="Min 8 characters" required/>
+                                    <i class="fas fa-lock sp-form-input-icon"></i>
+                                    <button type="button" class="sp-pwd-toggle" id="reset-pwd-toggle">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="sp-form-group">
+                                <label class="sp-form-label">Confirm Password</label>
+                                <div class="sp-form-input-wrap">
+                                    <input type="password" class="sp-form-input" id="reset-confirm" 
+                                           placeholder="Repeat new password" required/>
+                                    <i class="fas fa-lock sp-form-input-icon"></i>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="sp-btn-primary" id="reset-submit-btn">
+                                <i class="fas fa-check"></i> Reset Password
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="sp-auth-links">
+                        <button class="sp-auth-link" onclick="switchView('login')">
+                            <i class="fas fa-arrow-left"></i> Back to Login
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════
+    //  VIEW SWITCHING
+    // ═══════════════════════════════════════════════════════════
+    function switchView(viewName) {
+        document.querySelectorAll('.sp-auth-view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.sp-auth-tab-btn').forEach(b => b.classList.remove('active'));
+        
+        const view = document.getElementById(`view-${viewName}`);
+        const tab = document.getElementById(`tab-${viewName}`);
+        if (view) view.classList.add('active');
+        if (tab) tab.classList.add('active');
+        
+        // Clear alerts
+        document.querySelectorAll('.sp-alert').forEach(a => a.classList.remove('active'));
+    }
+
+    document.querySelectorAll('.sp-auth-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
+
+    // Check URL for reset token
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('reset_token')) {
+        switchView('forgot');
+        document.getElementById('forgot-step1').style.display = 'none';
+        document.getElementById('forgot-step2').style.display = 'block';
+        document.getElementById('reset-token').value = urlParams.get('reset_token');
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  PASSWORD TOGGLE
+    // ═══════════════════════════════════════════════════════════
+    function setupPwdToggle(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if (!toggle || !input) return;
+        toggle.addEventListener('click', () => {
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            toggle.querySelector('i').className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+    }
+    setupPwdToggle('login-pwd-toggle', 'login-password');
+    setupPwdToggle('reg-pwd-toggle', 'reg-password');
+    setupPwdToggle('reset-pwd-toggle', 'reset-password');
+
+    // ═══════════════════════════════════════════════════════════
+    //  PASSWORD STRENGTH METER
+    // ═══════════════════════════════════════════════════════════
+    const regPwdInput = document.getElementById('reg-password');
+    const pwdBar = document.getElementById('reg-pwd-bar');
+    const pwdText = document.getElementById('reg-pwd-text');
+
+    regPwdInput.addEventListener('input', () => {
+        const pw = regPwdInput.value;
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[a-z]/.test(pw)) score++;
+        if (/\d/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+        pwdBar.className = 'sp-pwd-strength-bar';
+        if (score <= 1) { pwdBar.classList.add('weak'); pwdText.textContent = 'Weak'; pwdText.style.color = '#ff4444'; }
+        else if (score === 2) { pwdBar.classList.add('fair'); pwdText.textContent = 'Fair'; pwdText.style.color = '#ff6b1a'; }
+        else if (score === 3) { pwdBar.classList.add('good'); pwdText.textContent = 'Good'; pwdText.style.color = '#ffbd2e'; }
+        else { pwdBar.classList.add('strong'); pwdText.textContent = 'Strong'; pwdText.style.color = '#90f50b'; }
+
+        if (!pw) { pwdText.textContent = ''; pwdBar.className = 'sp-pwd-strength-bar'; }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  HELPER: Show alert
+    // ═══════════════════════════════════════════════════════════
+    function showAlert(id, textId, message) {
+        const el = document.getElementById(id);
+        const textEl = document.getElementById(textId);
+        if (el && textEl) {
+            textEl.textContent = message;
+            el.classList.add('active');
+        }
+    }
+    function hideAlerts(prefix) {
+        ['error', 'success', 'info'].forEach(type => {
+            const el = document.getElementById(`${prefix}-${type}`);
+            if (el) el.classList.remove('active');
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  LOGIN FORM
+    // ═══════════════════════════════════════════════════════════
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlerts('login');
+
+        const btn = document.getElementById('login-submit-btn');
+        const loginId = document.getElementById('login-id').value.trim();
+        const password = document.getElementById('login-password').value;
+        const remember = document.getElementById('login-remember').checked;
+
+        if (!loginId || !password) {
+            showAlert('login-error', 'login-error-text', 'Please fill in all fields.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sp-spinner"></span> Signing in...';
+
+        try {
+            const response = await fetch('/student-portal/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login_id: loginId, password, remember })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                showAlert('login-success', 'login-success-text', data.message);
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/student-portal/dashboard';
+                }, 800);
+            } else {
+                showAlert('login-error', 'login-error-text', data.message || 'Login failed.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+            }
+        } catch (err) {
+            showAlert('login-error', 'login-error-text', 'Connection error. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  REGISTER FORM
+    // ═══════════════════════════════════════════════════════════
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlerts('reg');
+
+        const btn = document.getElementById('reg-submit-btn');
+        const formData = {
+            admission_number: document.getElementById('reg-admission').value.trim(),
+            full_name: document.getElementById('reg-name').value.trim(),
+            email: document.getElementById('reg-email').value.trim(),
+            mobile: document.getElementById('reg-mobile').value.trim(),
+            date_of_birth: document.getElementById('reg-dob').value,
+            password: document.getElementById('reg-password').value,
+            confirm_password: document.getElementById('reg-confirm').value,
+        };
+
+        if (!formData.admission_number || !formData.full_name || !formData.email || !formData.password) {
+            showAlert('reg-error', 'reg-error-text', 'Please fill in all required fields (*).');
+            return;
+        }
+
+        if (formData.password !== formData.confirm_password) {
+            showAlert('reg-error', 'reg-error-text', 'Passwords do not match.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sp-spinner"></span> Creating account...';
+
+        try {
+            const response = await fetch('/student-portal/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                showAlert('reg-success', 'reg-success-text', data.message);
+                btn.innerHTML = '<i class="fas fa-check"></i> Registered!';
+                document.getElementById('register-form').reset();
+                document.getElementById('reg-pwd-bar').className = 'sp-pwd-strength-bar';
+                document.getElementById('reg-pwd-text').textContent = '';
+                
+                // Switch to login after delay
+                setTimeout(() => switchView('login'), 2500);
+            } else {
+                showAlert('reg-error', 'reg-error-text', data.message || 'Registration failed.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            }
+        } catch (err) {
+            showAlert('reg-error', 'reg-error-text', 'Connection error. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  FORGOT PASSWORD FORM
+    // ═══════════════════════════════════════════════════════════
+    document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlerts('forgot');
+
+        const btn = document.getElementById('forgot-submit-btn');
+        const identifier = document.getElementById('forgot-identifier').value.trim();
+
+        if (!identifier) {
+            showAlert('forgot-error', 'forgot-error-text', 'Please enter your admission number or email.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sp-spinner"></span> Sending...';
+
+        try {
+            const response = await fetch('/student-portal/api/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ identifier })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showAlert('forgot-success', 'forgot-success-text', data.message);
+                if (data.show_reset_form) {
+                    document.getElementById('forgot-step1').style.display = 'none';
+                    document.getElementById('forgot-step2').style.display = 'block';
+                }
+            } else {
+                showAlert('forgot-error', 'forgot-error-text', data.message || 'Request failed.');
+            }
+        } catch (err) {
+            showAlert('forgot-error', 'forgot-error-text', 'Connection error.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Reset';
+        }
+    });
+
+    // RESET PASSWORD FORM
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideAlerts('forgot');
+
+        const btn = document.getElementById('reset-submit-btn');
+        const token = document.getElementById('reset-token').value.trim();
+        const newPw = document.getElementById('reset-password').value;
+        const confirmPw = document.getElementById('reset-confirm').value;
+
+        if (!token || !newPw) {
+            showAlert('forgot-error', 'forgot-error-text', 'All fields are required.');
+            return;
+        }
+        if (newPw !== confirmPw) {
+            showAlert('forgot-error', 'forgot-error-text', 'Passwords do not match.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="sp-spinner"></span> Resetting...';
+
+        try {
+            const response = await fetch('/student-portal/api/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, new_password: newPw, confirm_password: confirmPw })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                showAlert('forgot-success', 'forgot-success-text', data.message);
+                btn.innerHTML = '<i class="fas fa-check"></i> Done!';
+                setTimeout(() => switchView('login'), 2500);
+            } else {
+                showAlert('forgot-error', 'forgot-error-text', data.message || 'Reset failed.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check"></i> Reset Password';
+            }
+        } catch (err) {
+            showAlert('forgot-error', 'forgot-error-text', 'Connection error.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> Reset Password';
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  THEME TOGGLE
+    // ═══════════════════════════════════════════════════════════
+    const themeToggle = document.getElementById('sp-theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function applyTheme(mode) {
+        if (mode === 'light') {
+            document.body.classList.add('lm');
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            document.body.classList.remove('lm');
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('vvm_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.contains('lm');
+        const newTheme = isLight ? 'dark' : 'light';
+        applyTheme(newTheme);
+        localStorage.setItem('vvm_theme', newTheme);
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  PARTICLE SYSTEM
+    // ═══════════════════════════════════════════════════════════
+    (function initParticles() {
+        const canvas = document.getElementById('sp-particles-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 50;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(144, 245, 11, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+
+            // Draw connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(144, 245, 11, ${0.06 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+    </script>
+</body>
+</html>

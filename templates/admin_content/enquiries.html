@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}Admission Enquiries — VVM ERP{% endblock %}
+{% block page_title %}Admission Enquiries{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4><i class="fas fa-user-plus me-2" style="color:var(--green);"></i>Admission Enquiries</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Enquiries</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-3">
+  {% set total = (counts.get('New',0) + counts.get('Contacted',0) + counts.get('Accepted',0) + counts.get('Rejected',0) + counts.get('Admitted',0) + counts.get('Not Interested',0)) %}
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="padding:16px;border-color:rgba(255,77,109,.2) !important;">
+      <div style="font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--rose);">{{ counts.get('New',0) }}</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);">New</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="padding:16px;border-color:rgba(245,200,66,.2) !important;">
+      <div style="font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--gold);">{{ counts.get('Contacted',0) }}</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);">Contacted</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="padding:16px;border-color:rgba(16,232,123,.2) !important;">
+      <div style="font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--green);">{{ counts.get('Admitted',0) }}</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);">Admitted</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="padding:16px;">
+      <div style="font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--cyan);">{{ total }}</div>
+      <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);">Total</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filter -->
+<div class="card mb-3">
+  <div class="card-body" style="padding:12px 16px;">
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{{ url_for('admin_content.enquiries') }}"
+         class="btn btn-sm {{ 'btn-purple' if not status_filter else 'btn-light' }} px-3">All</a>
+      {% for s in ['New','Contacted','Accepted','Rejected','Admitted','Not Interested'] %}
+      <a href="{{ url_for('admin_content.enquiries', status=s) }}"
+         class="btn btn-sm {{ 'btn-purple' if status_filter==s else 'btn-light' }} px-3">
+        {{ s }} ({{ counts.get(s,0) }})
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr><th>#</th><th>Student</th><th>Class</th><th>Mobile</th><th>Date</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for e in enquiries %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:12px;">{{ loop.index }}</td>
+            <td>
+              <div style="font-weight:700;color:var(--text-primary);">{{ e.student_name }}</div>
+              {% if e.father_name %}
+              <div style="font-size:11px;color:var(--text-muted);">Father: {{ e.father_name }}</div>
+              {% endif %}
+              {% if e.email %}
+              <div style="font-size:11px;color:var(--text-muted);">{{ e.email }}</div>
+              {% endif %}
+            </td>
+            <td style="color:var(--text-secondary);">{{ e.class_applying or '—' }}</td>
+            <td>
+              <a href="tel:{{ e.mobile }}" style="color:var(--cyan);font-weight:600;">{{ e.mobile }}</a>
+            </td>
+            <td style="font-size:12px;color:var(--text-muted);">
+              {{ e.created_at.strftime('%d %b %Y') if e.created_at else '—' }}
+            </td>
+            <td>
+              {% if e.status == 'New' %}
+              <span class="badge badge-pill" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.2);">🔴 New</span>
+              {% elif e.status == 'Contacted' %}
+              <span class="badge badge-pill" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(245,200,66,.2);">🟡 Contacted</span>
+              {% elif e.status == 'Accepted' %}
+              <span class="badge badge-pill" style="background:rgba(16,232,123,.1);color:var(--green);border:1px solid rgba(16,232,123,.25);">🟢 Accepted</span>
+              {% elif e.status == 'Rejected' %}
+              <span class="badge badge-pill" style="background:var(--rose-dim);color:var(--rose);border:1px solid rgba(255,77,109,.2);">❌ Rejected</span>
+              {% elif e.status == 'Admitted' %}
+              <span class="badge badge-pill badge-active">✅ Admitted</span>
+              {% else %}
+              <span class="badge badge-pill badge-inactive">➖ Not Interested</span>
+              {% endif %}
+            </td>
+            <td>
+              <button type="button" class="btn btn-sm btn-purple"
+                      data-id="{{ e.id }}"
+                      data-status="{{ e.status }}"
+                      data-notes="{{ (e.notes or '') | forceescape }}"
+                      onclick="showUpdate(this)">
+                <i class="fas fa-edit me-1"></i>Update
+              </button>
+            </td>
+          </tr>
+          {% if e.message or e.notes %}
+          <tr style="background:var(--bg-card2);">
+            <td></td>
+            <td colspan="6" style="font-size:12.5px;color:var(--text-muted);padding-top:6px;padding-bottom:10px;">
+              {% if e.message %}<span style="color:var(--text-secondary);"><strong>Message:</strong> {{ e.message }}</span>{% endif %}
+              {% if e.notes %}<br><span><strong>Notes:</strong> {{ e.notes }}</span>{% endif %}
+            </td>
+          </tr>
+          {% endif %}
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-4" style="color:var(--text-muted);">
+              No enquiries found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="font-family:'Inter',sans-serif;font-weight:800;">Update Enquiry Status</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) opacity(.45);"></button>
+      </div>
+      <form method="POST" id="updateForm">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status" id="updStatus">
+                <option value="New">New</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Accepted">Accepted</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Admitted">Admitted</option>
+                <option value="Not Interested">Not Interested</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Internal Notes</label>
+              <textarea class="form-control" name="notes" id="updNotes" rows="3"
+                        placeholder="Add notes for internal reference..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success px-4">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showUpdate(btn) {
+  const id = btn.getAttribute('data-id');
+  const status = btn.getAttribute('data-status');
+  const notes = btn.getAttribute('data-notes');
+  
+  document.getElementById('updateForm').action = '/admin/enquiries/update/' + id;
+  document.getElementById('updStatus').value = status;
+  document.getElementById('updNotes').value = notes || '';
+  bootstrap.Modal.getOrCreateInstance(document.getElementById('updateModal')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}User Management — VVM ERP{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>User Management</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Users</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('users.audit_log') }}" class="btn btn-light btn-sm px-3">
+      <i class="fas fa-shield-alt me-1"></i> Audit Log
+    </a>
+    <a href="{{ url_for('users.add') }}" class="btn btn-purple px-4">
+      <i class="fas fa-plus me-1"></i> Add User
+    </a>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  {% set role_counts = {} %}
+  {% for u in users %}
+    {% if u.role not in role_counts %}{% set _ = role_counts.update({u.role: 0}) %}{% endif %}
+    {% set _ = role_counts.update({u.role: role_counts[u.role] + 1}) %}
+  {% endfor %}
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-cyan">
+      <div class="stat-top"><div class="stat-label">Total</div><div class="stat-icon-wrap"><i class="fas fa-users"></i></div></div>
+      <div class="stat-value">{{ users|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-violet">
+      <div class="stat-top"><div class="stat-label">Admins</div><div class="stat-icon-wrap"><i class="fas fa-crown"></i></div></div>
+      <div class="stat-value">{{ users|selectattr('role','eq','admin')|list|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-gold">
+      <div class="stat-top"><div class="stat-label">Accounts</div><div class="stat-icon-wrap"><i class="fas fa-calculator"></i></div></div>
+      <div class="stat-value">{{ users|selectattr('role','eq','accountant')|list|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-green">
+      <div class="stat-top"><div class="stat-label">Teachers</div><div class="stat-icon-wrap"><i class="fas fa-chalkboard-teacher"></i></div></div>
+      <div class="stat-value">{{ users|selectattr('role','eq','teacher')|list|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-violet">
+      <div class="stat-top"><div class="stat-label">Students</div><div class="stat-icon-wrap"><i class="fas fa-user-graduate"></i></div></div>
+      <div class="stat-value">{{ users|selectattr('role','eq','student')|list|length }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-2">
+    <div class="stat-card stat-rose">
+      <div class="stat-top"><div class="stat-label">Inactive</div><div class="stat-icon-wrap"><i class="fas fa-ban"></i></div></div>
+      <div class="stat-value">{{ users|selectattr('is_active','eq',0)|list|length }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);"><i class="fas fa-users-cog"></i></div>
+    <h5>All System Users</h5>
+    <span class="badge badge-pill badge-purple ms-auto">{{ users|length }} users</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Linked To</th>
+            <th>Status</th>
+            <th>Last Login</th>
+            <th>Login Stats</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          {% set role_colors = {'admin':'var(--cyan)','accountant':'var(--gold)','teacher':'var(--green)','student':'var(--violet)','parent':'var(--orange)'} %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:13px;">{{ loop.index }}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:var(--r-md);background:{{ role_colors.get(u.role,'var(--violet)') }}18;border:1px solid {{ role_colors.get(u.role,'var(--violet)') }}30;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:14px;color:{{ role_colors.get(u.role,'var(--violet)') }};">
+                  {{ u.full_name[0]|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:14px;">{{ u.full_name }}</div>
+                  <div style="font-size:12px;color:var(--text-muted);">@{{ u.username }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge-pill" style="background:{{ role_colors.get(u.role,'var(--violet)') }}15;color:{{ role_colors.get(u.role,'var(--violet)') }};border:1px solid {{ role_colors.get(u.role,'var(--violet)') }}30;font-size:12px;">
+                {{ u.role|capitalize }}
+              </span>
+            </td>
+            <td style="font-size:13px;color:var(--text-secondary);">
+              {% if u.student_name %}
+                <i class="fas fa-user-graduate me-1" style="color:var(--violet);"></i>{{ u.student_name }}
+              {% elif u.teacher_name %}
+                <i class="fas fa-chalkboard-teacher me-1" style="color:var(--green);"></i>{{ u.teacher_name }}
+              {% else %}—{% endif %}
+            </td>
+            <td>
+              <span class="badge badge-pill {{ 'badge-active' if u.is_active else 'badge-inactive' }}">
+                {{ 'Active' if u.is_active else 'Inactive' }}
+              </span>
+            </td>
+            <td style="font-size:12px;color:var(--text-muted);">
+              {{ u.last_login.strftime('%d %b %Y %I:%M %p') if u.last_login else 'Never' }}
+            </td>
+            <td>
+              {% set s = stats.get(u.username, {}) %}
+              <div style="font-size:12px;">
+                <span style="color:var(--green);">{{ s.get('total_logins', 0) }} logins</span>
+                {% if s.get('failed_logins', 0) > 0 %}
+                <span style="color:var(--rose);margin-left:6px;">{{ s.failed_logins }} failed</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('users.edit', uid=u.id) }}" class="btn btn-outline-purple btn-sm btn-icon" title="Edit">
+                  <i class="fas fa-pen"></i>
+                </a>
+                {% if u.id != current_user.id %}
+                <form method="POST" action="{{ url_for('users.toggle', uid=u.id) }}">
+                  <button type="submit" class="btn btn-sm btn-icon {{ 'btn-warning' if u.is_active else 'btn-success' }}" title="{{ 'Deactivate' if u.is_active else 'Activate' }}">
+                    <i class="fas fa-{{ 'ban' if u.is_active else 'check' }}"></i>
+                  </button>
+                </form>
+                <form method="POST" action="{{ url_for('users.delete', uid=u.id) }}" data-confirm="Delete user @{{ u.username }}?">
+                  <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

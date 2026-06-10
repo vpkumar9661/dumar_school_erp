@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% block title %}Salary Receipt — {{ record.teacher_name }}{% endblock %}
+{% block page_title %}Salary Receipt{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Print styles ── */
+@media print {
+  #sidebar, .topbar, .welcome-bar, .page-header,
+  .no-print { display: none !important; }
+  #main-content { margin-left: 0 !important; }
+  .page-content { padding: 0 !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .rcpt { box-shadow: none !important; border: 1.5px solid #999 !important; max-width: 100% !important; }
+  .rcpt-header { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rcpt-paid-stamp { background: #e8f5e9 !important; -webkit-print-color-adjust: exact; }
+}
+
+.rcpt {
+  max-width: 680px; margin: 0 auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-cyan);
+  border-radius: var(--r-2xl);
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,212,255,.15), 0 20px 50px rgba(0,0,0,.4);
+}
+
+/* Header */
+.rcpt-header {
+  background: linear-gradient(135deg, #0a1628, #0e1f38);
+  padding: 26px 30px 22px;
+  border-bottom: 2px solid rgba(0,212,255,.35);
+  position: relative; overflow: hidden;
+}
+.rcpt-header::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse 80% 100% at 100% 50%, rgba(0,212,255,.07), transparent);
+  pointer-events:none;
+}
+.rcpt-school { font-family:'Inter',sans-serif; font-size:19px; font-weight:800; color:#E8EDF5; }
+.rcpt-subtitle { font-size:11px; letter-spacing:3px; text-transform:uppercase; color:#00D4FF; margin-top:4px; }
+.rcpt-no { font-size:12px; color:#7A8BA8; margin-top:6px; }
+
+.rcpt-avatar {
+  width:52px; height:52px; border-radius:12px;
+  background:rgba(0,212,255,.12); border:2px solid rgba(0,212,255,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Inter',sans-serif; font-weight:800; font-size:20px; color:#00D4FF;
+}
+
+/* Body */
+.rcpt-body { padding:24px 30px; }
+
+.rcpt-sec-title {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.3px; color:var(--text-muted);
+  margin:18px 0 8px;
+  display:flex; align-items:center; gap:7px;
+}
+.rcpt-sec-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.rcpt-sec-title:first-child { margin-top:0; }
+
+.rcpt-row {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:8px 0; border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:14px;
+}
+.rcpt-row:last-child { border-bottom:none; }
+.rcpt-key { color:var(--text-secondary); font-weight:500; }
+.rcpt-val { color:var(--text-primary); font-weight:700; text-align:right; }
+.rcpt-val.money { font-family:'Inter',sans-serif; font-size:16px; color:var(--cyan); }
+.rcpt-val.ded   { color:var(--rose); }
+.rcpt-val.net   { font-family:'Inter',sans-serif; font-size:18px; color:var(--green); }
+
+/* Total box */
+.rcpt-total {
+  background: linear-gradient(135deg, rgba(16,232,123,.1), rgba(16,232,123,.04));
+  border: 1.5px solid rgba(16,232,123,.3);
+  border-radius: var(--r-lg);
+  padding: 16px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 18px;
+}
+.rcpt-total-lbl { font-size:14px; color:var(--text-secondary); font-weight:600; }
+.rcpt-total-amt { font-family:'Inter',sans-serif; font-size:34px; font-weight:800; color:var(--green); }
+
+/* Paid stamp */
+.rcpt-paid-stamp {
+  background: rgba(16,232,123,.08);
+  border-top: 2px solid rgba(16,232,123,.28);
+  text-align:center; padding:15px 20px;
+  font-family:'Inter',sans-serif; font-weight:800;
+  font-size:13px; letter-spacing:4px; color:var(--green);
+}
+
+/* Payment mode badge on receipt */
+.rcpt-pm {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12.5px; font-weight:700; padding:3px 11px;
+  border-radius:99px;
+}
+
+/* Light theme */
+body.theme-light .rcpt { border-color:rgba(0,145,220,.3); box-shadow:0 4px 30px rgba(0,0,0,.12); }
+body.theme-light .rcpt-header { background: linear-gradient(135deg,#1a237e,#0d47a1); }
+body.theme-light .rcpt-school { color:#fff; }
+body.theme-light .rcpt-val { color:#1A2535; }
+body.theme-light .rcpt-key { color:#4A5E78; }
+body.theme-light .rcpt-total { background:rgba(5,150,105,.08); border-color:rgba(5,150,105,.3); }
+body.theme-light .rcpt-total-amt { color:#059669; }
+body.theme-light .rcpt-paid-stamp { background:#e8f5e9; border-top-color:rgba(5,150,105,.4); color:#059669; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header bar -->
+<div class="page-header no-print">
+  <div>
+    <h4><i class="fas fa-receipt me-2" style="color:var(--green);"></i>Salary Receipt</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('teachers.salary') }}">Salary</a></li>
+      <li class="breadcrumb-item active">Receipt</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <button onclick="window.print()" class="btn btn-purple px-4">
+      <i class="fas fa-print me-2"></i>Print Receipt
+    </button>
+    <a href="{{ url_for('teachers.salary') }}" class="btn btn-light px-4">
+      <i class="fas fa-arrow-left me-2"></i>Back to Salary
+    </a>
+  </div>
+</div>
+
+<!-- Receipt -->
+<div class="rcpt">
+
+  <!-- Header -->
+  <div class="rcpt-header">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <div class="rcpt-school">&#127979; Vivekanand Vidya Mandir</div>
+        <div class="rcpt-subtitle">Salary Receipt / Pay Slip</div>
+        <div class="rcpt-no">
+          Receipt No: <strong style="color:#E8EDF5;">#SR-{{ '%05d' % record.id }}</strong>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          Issued: {{ now().strftime('%d %b %Y, %I:%M %p') }}
+        </div>
+      </div>
+      <div class="rcpt-avatar">{{ record.teacher_name[0]|upper }}</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="rcpt-body">
+
+    <!-- Employee -->
+    <div class="rcpt-sec-title"><i class="fas fa-user-tie" style="color:var(--cyan);font-size:10px;"></i> Employee Information</div>
+    <div class="rcpt-row">
+      <span class="rcpt-key">Name</span>
+      <span class="rcpt-val" style="font-size:16px;color:var(--text-primary);">{{ record.teacher_name }}</span>
+    </div>
+    {% if record.subject %}
+    <div class="rcpt-row">
+      <span class="rcpt-key">Subject / Department</span>
+      <span class="rcpt-val">{{ record.subject }}</span>
+    </div>
+    {% endif %}
+    {% if record.mobile_number %}
+    <div class="rcpt-row">
+      <span class="rcpt-key">Mobile</span>
+      <span class="rcpt-val">{{ record.mobile_number }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Period & Payment -->
+    <div class="rcpt-sec-title"><i class="fas fa-calendar-check" style="color:var(--gold);font-size:10px;"></i> Payment Details</div>
+    <div class="rcpt-row">
+      <span class="rcpt-key">Salary Period</span>
+      <span class="rcpt-val">{{ record.month }} {{ record.year }}</span>
+    </div>
+    <div class="rcpt-row">
+      <span class="rcpt-key">Payment Date</span>
+      <span class="rcpt-val">
+        {{ record.payment_date.strftime('%d %b %Y') if record.payment_date else '—' }}
+      </span>
+    </div>
+    <div class="rcpt-row">
+      <span class="rcpt-key">Payment Mode</span>
+      <span class="rcpt-val">
+        {% set pm = record.payment_mode|lower if record.payment_mode else '' %}
+        {% if 'cash' in pm %}💵{% elif 'upi' in pm %}📱{% elif 'cheque' in pm %}📄{% elif 'neft' in pm or 'rtgs' in pm %}🏦{% elif 'online' in pm %}🌐{% else %}💳{% endif %}
+        &nbsp;{{ record.payment_mode or 'Cash' }}
+      </span>
+    </div>
+    {% if record.payment_reference %}
+    <div class="rcpt-row">
+      <span class="rcpt-key">Transaction / Reference</span>
+      <span class="rcpt-val" style="font-family:monospace;">{{ record.payment_reference }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Earnings -->
+    <div class="rcpt-sec-title"><i class="fas fa-rupee-sign" style="color:var(--green);font-size:10px;"></i> Earnings & Deductions</div>
+    <div class="rcpt-row">
+      <span class="rcpt-key">Gross Salary</span>
+      <span class="rcpt-val money">&#8377;{{ "%.0f"|format(record.amount) }}</span>
+    </div>
+
+    {% if record.deductions and record.deductions > 0 %}
+    <div class="rcpt-row">
+      <span class="rcpt-key">
+        Deduction
+        {% if record.deduction_reason %}
+        <br><small style="font-size:11px;color:var(--text-muted);">{{ record.deduction_reason }}</small>
+        {% endif %}
+      </span>
+      <span class="rcpt-val ded">− &#8377;{{ "%.0f"|format(record.deductions) }}</span>
+    </div>
+    {% endif %}
+
+    {% if record.remarks %}
+    <div class="rcpt-row">
+      <span class="rcpt-key">Remarks</span>
+      <span class="rcpt-val" style="font-style:italic;font-weight:500;color:var(--text-secondary);">{{ record.remarks }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Total -->
+    <div class="rcpt-total">
+      <div>
+        <div class="rcpt-total-lbl">Net Amount Paid</div>
+        {% if record.deductions and record.deductions > 0 %}
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">
+          &#8377;{{ "%.0f"|format(record.amount) }} gross
+          &minus; &#8377;{{ "%.0f"|format(record.deductions) }} deduction
+        </div>
+        {% endif %}
+      </div>
+      <div class="rcpt-total-amt">&#8377;{{ "%.0f"|format(record.net_amount) }}</div>
+    </div>
+
+  </div>
+
+  <!-- Paid Stamp -->
+  <div class="rcpt-paid-stamp">
+    <i class="fas fa-check-circle me-2"></i>
+    SALARY PAID &nbsp;—&nbsp; {{ record.month|upper }} {{ record.year }}
+    <span style="opacity:.6;margin-left:18px;font-size:11px;letter-spacing:1px;">
+      VIVEKANAND VIDYA MANDIR DHARAMPUR
+    </span>
+  </div>
+
+</div>
+
+<!-- Print hint -->
+<div class="text-center no-print mt-3" style="font-size:13px;color:var(--text-muted);">
+  <i class="fas fa-info-circle me-1"></i>
+  Click <strong>Print Receipt</strong> to save as PDF or print on paper.
+</div>
+{% endblock %}

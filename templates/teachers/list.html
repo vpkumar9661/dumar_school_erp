@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% block title %}Teachers — VVM ERP{% endblock %}
+{% block page_title %}Teacher Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.t-stat { background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;text-align:center;transition:border-color .2s; }
+.t-stat:hover { border-color:var(--border-cyan); }
+.t-stat-val { font-family:'Inter',sans-serif;font-size:26px;font-weight:800;line-height:1; }
+.t-stat-lbl { font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-top:5px; }
+.btn-tbl { width:32px;height:32px;padding:0;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;background:transparent;border:1px solid;transition:all .15s;text-decoration:none;cursor:pointer; }
+.btn-tbl-green{color:var(--green);border-color:rgba(16,232,123,.28);}
+.btn-tbl-green:hover{background:rgba(16,232,123,.08);}
+.btn-tbl-blue{color:var(--cyan);border-color:rgba(0,212,255,.28);}
+.btn-tbl-blue:hover{background:var(--cyan-dim);}
+.btn-tbl-red{color:var(--rose);border-color:rgba(255,77,109,.28);}
+.btn-tbl-red:hover{background:rgba(255,77,109,.08);}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4>All Teachers</h4>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+      <li class="breadcrumb-item active">Teachers</li>
+    </ol>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('teachers.salary') }}" class="btn btn-success px-4">
+      <i class="fas fa-money-check-alt me-2"></i>Salary
+    </a>
+    <button type="button" class="btn btn-purple px-4"
+            data-bs-toggle="modal" data-bs-target="#modalAddTeacher">
+      <i class="fas fa-plus me-2"></i>Add Teacher
+    </button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-3">
+    <div class="t-stat">
+      <div class="t-stat-val" style="color:var(--cyan);">{{ teachers|length }}</div>
+      <div class="t-stat-lbl">Total Teachers</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="t-stat">
+      <div class="t-stat-val" style="color:var(--green);">
+        {{ teachers|selectattr('status','equalto','Active')|list|length }}
+      </div>
+      <div class="t-stat-lbl">Active</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="t-stat">
+      <div class="t-stat-val" style="color:var(--gold);">
+        &#8377;{{ "%.0f"|format(teachers|sum(attribute='salary')) }}
+      </div>
+      <div class="t-stat-lbl">Monthly Payroll</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="t-stat">
+      <div class="t-stat-val" style="color:var(--violet);">
+        {{ teachers|selectattr('status','equalto','Active')|list|length }}
+      </div>
+      <div class="t-stat-lbl">Subjects</div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(16,232,123,.2);">
+      <i class="fas fa-chalkboard-teacher"></i>
+    </div>
+    <h5>Teacher Records</h5>
+    <span class="badge badge-pill badge-purple ms-auto">{{ teachers|length }} teachers</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>#</th><th>Teacher</th><th>Subject</th>
+            <th>Mobile</th><th>Salary</th>
+            <th>Joining Date</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in teachers %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:12px;">{{ loop.index }}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:var(--r-md);background:var(--green-dim);border:1px solid rgba(16,232,123,.2);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;font-size:14px;color:var(--green);">
+                  {{ t.teacher_name[0]|upper }}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:14px;">{{ t.teacher_name }}</div>
+                  <div style="font-size:11px;color:var(--text-muted);">{{ t.email or '' }}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-pill badge-purple">{{ t.subject or '—' }}</span></td>
+            <td style="font-size:13.5px;color:var(--text-secondary);">{{ t.mobile_number or '—' }}</td>
+            <td>
+              <span style="font-family:'Inter',sans-serif;font-weight:700;font-size:15px;color:var(--cyan);">
+                &#8377;{{ "%.0f"|format(t.salary) }}
+              </span>
+            </td>
+            <td style="font-size:13px;color:var(--text-secondary);">{{ t.joining_date or '—' }}</td>
+            <td>
+              <span class="badge badge-pill {{ 'badge-active' if t.status == 'Active' else 'badge-inactive' }}">
+                {{ t.status }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('teachers.salary') }}"
+                   class="btn-tbl btn-tbl-green" title="View Salary">
+                  <i class="fas fa-rupee-sign"></i>
+                </a>
+                <a href="{{ url_for('teachers.edit', tid=t.id) }}"
+                   class="btn-tbl btn-tbl-blue" title="Edit Teacher">
+                  <i class="fas fa-pen"></i>
+                </a>
+                <form method="POST" action="{{ url_for('teachers.delete', tid=t.id) }}"
+                      data-confirm="Delete {{ t.teacher_name }}? This cannot be undone."
+                      style="display:inline;">
+                  <button type="submit" class="btn-tbl btn-tbl-red" title="Delete Teacher">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center py-5">
+              <i class="fas fa-chalkboard-teacher"
+                 style="font-size:42px;color:var(--border);display:block;margin-bottom:14px;"></i>
+              <div style="color:var(--text-muted);font-size:15px;margin-bottom:14px;">
+                No teachers added yet.
+              </div>
+              <button type="button" class="btn btn-purple px-5"
+                      data-bs-toggle="modal" data-bs-target="#modalAddTeacher">
+                <i class="fas fa-plus me-2"></i>Add First Teacher
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block modals %}
+<!-- ════════════════════════════════════════════════
+  ADD TEACHER MODAL
+  FIXED: z-index inline on every level so no overlay
+  can block it. pointer-events:auto on all inputs.
+  NO data-bs-dismiss on submit button.
+  Single submit listener — no disable, just spinner.
+════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalAddTeacher" tabindex="-1"
+     style="z-index:9050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered"
+       style="z-index:9051;">
+    <div class="modal-content"
+         style="position:relative;z-index:9052;">
+
+      <div class="modal-header">
+        <h5 class="modal-title"
+            style="display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;font-weight:800;">
+          <span style="width:30px;height:30px;border-radius:8px;background:var(--cyan-dim);
+                       border:1px solid rgba(0,212,255,.25);display:flex;align-items:center;
+                       justify-content:center;color:var(--cyan);">
+            <i class="fas fa-user-plus" style="font-size:12px;"></i>
+          </span>
+          Add New Teacher
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                style="filter:invert(1) opacity(.45);"></button>
+      </div>
+
+      <form method="POST" action="{{ url_for('teachers.add') }}" id="frmAddTeacher"
+            autocomplete="off">
+        <div class="modal-body" style="pointer-events:auto;">
+
+          <div style="background:var(--cyan-dim);border:1px solid rgba(0,212,255,.18);
+                      border-radius:var(--r-md);padding:10px 14px;margin-bottom:18px;
+                      font-size:13px;color:var(--text-secondary);">
+            <i class="fas fa-info-circle me-2" style="color:var(--cyan);"></i>
+            Fields marked with <span style="color:var(--rose);font-weight:700;">*</span> are required.
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Teacher Name *</label>
+              <input type="text" class="form-control" name="teacher_name"
+                     id="fld_tname" placeholder="Full name" required
+                     style="pointer-events:auto;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Subject</label>
+              <input type="text" class="form-control" name="subject"
+                     id="fld_subj" placeholder="e.g. Mathematics, Science"
+                     style="pointer-events:auto;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile Number</label>
+              <input type="tel" class="form-control" name="mobile_number"
+                     id="fld_mob" placeholder="10-digit mobile number" maxlength="10"
+                     style="pointer-events:auto;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" name="email"
+                     id="fld_email" placeholder="teacher@school.edu"
+                     style="pointer-events:auto;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Monthly Salary (&#8377;) *</label>
+              <input type="number" class="form-control" name="salary"
+                     id="fld_sal" placeholder="e.g. 25000" min="0" step="1" required
+                     style="pointer-events:auto;">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Joining Date</label>
+              <input type="date" class="form-control" name="joining_date"
+                     id="fld_date" value="{{ now().strftime('%Y-%m-%d') }}"
+                     style="pointer-events:auto;">
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="pointer-events:auto;">
+          <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">
+            <i class="fas fa-times me-1"></i>Cancel
+          </button>
+          <button type="submit" class="btn btn-purple px-5" id="btnAddTeacher"
+                  style="pointer-events:auto;">
+            <i class="fas fa-save me-2"></i>Save Teacher
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+(function(){
+  var modal = document.getElementById('modalAddTeacher');
+  if (!modal) return;
+
+  /* Focus first input when modal opens */
+  modal.addEventListener('shown.bs.modal', function() {
+    var inp = document.getElementById('fld_tname');
+    if (inp) setTimeout(function(){ inp.focus(); }, 100);
+  });
+
+  /* Validate + show spinner on submit
+     KEY: button is NOT disabled — just shows spinner.
+     Disabling the button before submit cancels the POST in some browsers. */
+  document.getElementById('frmAddTeacher').addEventListener('submit', function(e) {
+    var name = (document.getElementById('fld_tname').value || '').trim();
+    var sal  = (document.getElementById('fld_sal').value  || '').trim();
+
+    if (!name) {
+      e.preventDefault();
+      var n = document.getElementById('fld_tname');
+      n.style.borderColor = '#FF4D6D';
+      n.focus();
+      return;
+    }
+    if (!sal || parseFloat(sal) < 0) {
+      e.preventDefault();
+      var s = document.getElementById('fld_sal');
+      s.style.borderColor = '#FF4D6D';
+      s.focus();
+      return;
+    }
+
+    /* Show spinner — intentionally NOT disabling button */
+    var btn = document.getElementById('btnAddTeacher');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+  });
+})();
+</script>
+{% endblock %}

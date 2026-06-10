@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vvm login</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/school_logo.png') }}?v=3" type="image/png"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --neon-green: #90f50b;
+            --neon-green-glow: rgba(144, 245, 11, 0.4);
+            --bg-glass: rgba(10, 10, 15, 0.6);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050508;
+            font-family: 'Inter', sans-serif;
+            color: white;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            /* Let clicks pass through except for the card */
+        }
+
+        .glass-card {
+            pointer-events: auto;
+            background: var(--bg-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(144, 245, 11, 0.05);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, var(--neon-green-glow) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        .glass-card:hover::before {
+            opacity: 0.15;
+            animation: rotateGlow 10s linear infinite;
+        }
+
+        @keyframes rotateGlow {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .sci-fi-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sci-fi-input:focus {
+            outline: none;
+            border-color: var(--neon-green);
+            background: rgba(144, 245, 11, 0.05);
+            box-shadow: 0 0 15px rgba(144, 245, 11, 0.2);
+        }
+
+        .login-btn {
+            background: var(--neon-green);
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 0 30px var(--neon-green-glow);
+            transform: translateY(-2px);
+        }
+
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .login-btn:hover::after {
+            transform: rotate(45deg) translateX(100%);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .font-space {
+            font-family: 'Inter', sans-serif;
+        }
+
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-green);
+            font-family: 'Inter', sans-serif;
+            font-size: 24px;
+            letter-spacing: 4px;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loading-overlay">INITIALIZING SYSTEM...</div>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div class="glass-card" id="login-card">
+            <!-- Flash messages area (now handled via JS) -->
+            <div id="error-msg"
+                class="hidden mb-4 p-3 rounded-lg bg-red-900/40 border border-red-500/50 text-red-400 text-sm"></div>
+
+            <div class="text-center mb-8">
+                <div
+                    class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 shadow-[0_0_20px_rgba(144,245,11,0.15)] mb-4 backdrop-blur-md">
+                    <i class="fas fa-fingerprint text-3xl" style="color: var(--neon-green);"></i>
+                </div>
+                <h1 class="font-space text-2xl font-bold text-white text-glow">VVM SYSTEM</h1>
+                <p class="text-xs text-gray-400 mt-1 tracking-widest uppercase">Secure Authorization Protocol</p>
+            </div>
+
+            <form id="login-form" autocomplete="off">
+                <div class="mb-5 relative group">
+                    <label
+                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 group-focus-within:text-[#90f50b] transition-colors">Identification</label>
+                    <div class="relative">
+                        <i
+                            class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#90f50b] transition-colors"></i>
+                        <input type="text" name="username" id="username"
+                            class="sci-fi-input w-full rounded-xl py-3 pl-10 pr-4 text-sm" placeholder="Enter Username"
+                            required>
+                    </div>
+                </div>
+
+                <div class="mb-6 relative group">
+                    <label
+                        class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 group-focus-within:text-[#90f50b] transition-colors">Passcode</label>
+                    <div class="relative">
+                        <i
+                            class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#90f50b] transition-colors"></i>
+                        <input type="password" name="password" id="password"
+                            class="sci-fi-input w-full rounded-xl py-3 pl-10 pr-10 text-sm" placeholder="••••••••"
+                            required>
+                        <i class="fas fa-eye absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer hover:text-[#90f50b] transition-colors"
+                            id="toggle-pw"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mb-8">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" name="remember" class="sr-only peer">
+                        <div
+                            class="w-4 h-4 rounded border border-gray-600 bg-white/5 peer-checked:bg-[#90f50b] peer-checked:border-[#90f50b] transition-all flex items-center justify-center">
+                            <i class="fas fa-check text-black text-[10px] opacity-0 peer-checked:opacity-100"></i>
+                        </div>
+                        <span class="ml-2 text-xs text-gray-400">Remember Me</span>
+                    </label>
+                    <a href="{{ url_for('auth.change_password') }}"
+                        class="text-xs text-[#90f50b] hover:text-white transition-colors">Reset Access</a>
+                </div>
+
+                <button type="submit" id="submit-btn"
+                    class="login-btn w-full py-4 rounded-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-power-off"></i>
+                    <span>Initialize Sequence</span>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-4 border-t border-white/10 flex flex-wrap gap-2 justify-center">
+                <span
+                    class="text-[9px] px-2 py-1 rounded-full border border-blue-500/30 text-blue-400 bg-blue-500/10">ADMIN</span>
+                <span
+                    class="text-[9px] px-2 py-1 rounded-full border border-yellow-500/30 text-yellow-400 bg-yellow-500/10">ACCOUNTANT</span>
+                <span
+                    class="text-[9px] px-2 py-1 rounded-full border border-green-500/30 text-green-400 bg-green-500/10">TEACHER</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ES Module Import for Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+        // --- Audio System (Web Audio API) ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        // --- Speech Synthesis (Voice) ---
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+        window.speechSynthesis.getVoices(); // Trigger once early
+        
+        function playGreetingVoice(role) {
+            // Speech synthesis greeting disabled per user request
+            return { onend: null };
+        }
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'click') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } else if (type === 'success') {
+                // Futuristic energy charge up
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(50, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 2);
+
+                // Filter for whoosh
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(100, now);
+                filter.frequency.exponentialRampToValueAtTime(5000, now + 2);
+
+                osc.disconnect();
+                osc.connect(filter);
+                filter.connect(gain);
+
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 1);
+                gain.gain.linearRampToValueAtTime(0, now + 3);
+
+                osc.start(now);
+                osc.stop(now + 3);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
+        // --- Three.js Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050508, 0.001);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.z = 400;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // --- Post Processing (Bloom) ---
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0.1;
+        bloomPass.strength = 0.8;
+        bloomPass.radius = 0.5;
+
+        const composer = new EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // --- Particles ---
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 4000;
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+
+        const color1 = new THREE.Color(0x90f50b); // Neon Green
+        const color2 = new THREE.Color(0x00e5ff); // Cyan
+        const tempColor = new THREE.Color();
+
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 2000;
+            posArray[i + 1] = (Math.random() - 0.5) * 2000;
+            posArray[i + 2] = (Math.random() - 0.5) * 2000;
+
+            const mixRatio = Math.random();
+            tempColor.lerpColors(color1, color2, mixRatio);
+
+            colorsArray[i] = tempColor.r;
+            colorsArray[i + 1] = tempColor.g;
+            colorsArray[i + 2] = tempColor.b;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        // Create a circular texture for particles programmatically
+        const createCircleTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 32, 32);
+            return new THREE.CanvasTexture(canvas);
+        };
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 3,
+            vertexColors: true,
+            map: createCircleTexture(),
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0x90f50b, 2, 1000);
+        pointLight.position.set(0, 0, 200);
+        scene.add(pointLight);
+
+        // --- Interactivity ---
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - window.innerWidth / 2);
+            mouseY = (event.clientY - window.innerHeight / 2);
+        });
+
+        // --- Text Setup ---
+        let textGroup;
+        const fontLoader = new FontLoader();
+        // Load a clean, modern, professional sans-serif font
+        fontLoader.load('https://unpkg.com/three@0.160.0/examples/fonts/droid/droid_sans_bold.typeface.json', function (font) {
+            window.loadedFont = font;
+        });
+
+        function create3DText(message) {
+            if (!window.loadedFont) return;
+
+            if (textGroup) scene.remove(textGroup);
+            textGroup = new THREE.Group();
+
+            const textMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                metalness: 0.9,     // Highly polished premium metal look
+                roughness: 0.1,     // Very smooth reflections
+                emissive: 0xffffff, // Pure white
+                emissiveIntensity: 0.8 // Bright, clean professional white
+            });
+
+            const lines = message.split('\n');
+            const lineHeight = 25; // Vertical spacing between lines
+            let currentY = (lines.length - 1) * lineHeight / 2;
+
+            lines.forEach((line) => {
+                const textGeo = new TextGeometry(line, {
+                    font: window.loadedFont,
+                    size: 14,
+                    height: 1.5,        // Thinner, sleeker depth
+                    curveSegments: 16,  // Higher resolution curves
+                    bevelEnabled: true,
+                    bevelThickness: 0.3, // Much sharper, cleaner bevels
+                    bevelSize: 0.15,
+                    bevelOffset: 0,
+                    bevelSegments: 4
+                });
+
+                textGeo.computeBoundingBox();
+                const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+
+                const mesh = new THREE.Mesh(textGeo, textMaterial);
+                mesh.position.x = centerOffset;
+                mesh.position.y = currentY;
+                textGroup.add(mesh);
+
+                currentY -= lineHeight;
+            });
+
+            // Lock position and only use scale to zoom
+            textGroup.position.z = 150;
+            scene.add(textGroup);
+
+            gsap.fromTo(textGroup.scale,
+                { x: 0.001, y: 0.001, z: 0.001 },
+                { x: 1, y: 1, z: 1, duration: 0.5, ease: "power2.out" }
+            );
+
+            gsap.to(pointLight.position, {
+                z: 150,
+                duration: 0.5
+            });
+
+            // Soft bloom, no longer blinding
+            gsap.to(bloomPass, {
+                strength: 0.5,
+                duration: 0.5,
+                yoyo: true,
+                repeat: 1,
+                ease: "power2.out"
+            });
+        }
+
+        // --- Animation Loop ---
+        const clock = new THREE.Clock();
+        let isHyperspace = false;
+        let hyperspaceSpeed = 1;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+
+            if (!isHyperspace) {
+                particlesMesh.rotation.y += 0.001;
+                particlesMesh.rotation.x += 0.0005;
+
+                // Parallax effect
+                camera.position.x += (mouseX * 0.1 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 0.1 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+            } else {
+                // Hyperspace effect
+                const positions = particlesGeometry.attributes.position.array;
+                for (let i = 2; i < particlesCount * 3; i += 3) {
+                    positions[i] += hyperspaceSpeed;
+                    if (positions[i] > 400) {
+                        positions[i] = -1000;
+                    }
+                }
+                particlesGeometry.attributes.position.needsUpdate = true;
+
+                hyperspaceSpeed += 0.8; // Accelerate much faster
+                if (hyperspaceSpeed > 100) hyperspaceSpeed = 100; // Max speed higher
+
+                // Keep FOV stable so the text doesn't appear to shrink
+
+                // Keep camera perfectly straight and locked in the center
+                camera.rotation.set(0, 0, 0);
+                camera.position.set(0, 0, 400);
+            }
+
+            composer.render();
+        }
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- UI Interactions & Logic ---
+
+        // Remove loading overlay
+        window.addEventListener('load', () => {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                // Entrance animation
+                gsap.fromTo('#login-card',
+                    { y: 50, opacity: 0, scale: 0.9 },
+                    { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: "expo.out" }
+                );
+            }, 500);
+        });
+
+        // Audio on hovers
+        const inputs = document.querySelectorAll('input, button');
+        inputs.forEach(el => {
+            el.addEventListener('mouseenter', () => playSound('hover'));
+        });
+
+        // Password toggle
+        document.getElementById('toggle-pw').addEventListener('click', function () {
+            const pwInput = document.getElementById('password');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                this.classList.remove('fa-eye');
+                this.classList.add('fa-eye-slash');
+            } else {
+                pwInput.type = 'password';
+                this.classList.remove('fa-eye-slash');
+                this.classList.add('fa-eye');
+            }
+        });
+
+        // Form Submission via AJAX
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submit-btn');
+            const errorMsg = document.getElementById('error-msg');
+            const originalText = btn.innerHTML;
+
+            playSound('click');
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i><span>Authenticating...</span>';
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch("{{ url_for('auth.login') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === 'success') {
+                    window.location.href = data.redirect;
+
+                } else {
+                    // Error
+                    playSound('error');
+                    errorMsg.textContent = data.message || 'Authentication failed.';
+                    errorMsg.classList.remove('hidden');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+
+                    // Error shake animation
+                    gsap.fromTo('#login-card',
+                        { x: -10 },
+                        {
+                            x: 10, duration: 0.1, yoyo: true, repeat: 3, onComplete: () => {
+                                gsap.set('#login-card', { x: 0 });
+                            }
+                        }
+                    );
+                }
+            } catch (err) {
+                playSound('error');
+                errorMsg.textContent = 'Network error occurred.';
+                errorMsg.classList.remove('hidden');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

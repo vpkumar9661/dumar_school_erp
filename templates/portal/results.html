@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}My Results — VVM ERP{% endblock %}
+{% block page_title %}My Results{% endblock %}
+{% block content %}
+<div class="page-header"><div><h4>Exam Results</h4></div></div>
+{% if results %}
+<div style="background:var(--cyan-dim);border:1px solid rgba(0,212,255,.2);border-radius:var(--r-lg);padding:14px 18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+  <span style="font-size:14px;color:var(--text-secondary);">Overall Performance</span>
+  <span style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:var(--cyan);">{{ overall_pct }}%</span>
+</div>
+{% endif %}
+<div class="card">
+  <div class="card-header"><h5>All Results</h5></div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>Exam</th><th>Subject</th><th>Date</th><th>Obtained</th><th>Max</th><th>Grade</th></tr></thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td style="font-weight:600;">{{ r.exam_name }}</td>
+            <td>{{ r.subject }}</td>
+            <td style="font-size:13px;">{{ r.exam_date }}</td>
+            <td><strong style="color:var(--cyan);">{{ r.marks_obtained }}</strong></td>
+            <td style="color:var(--text-muted);">{{ r.max_marks }}</td>
+            <td>
+              <span class="badge badge-pill" style="background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(0,212,255,.2);font-size:13px;">{{ r.grade }}</span>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center py-4 text-muted">No results available yet</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
