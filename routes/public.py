@@ -82,36 +82,55 @@ def get_all_settings():
 
 @public_bp.route('/')
 def index():
-    ensure_public_tables()
-    cfg = get_all_settings()
-    cur = db.connection.cursor()
-    cur.execute("SELECT COUNT(*) AS c FROM students WHERE status='Active'")
-    total_students = cur.fetchone()['c']
-    cfg['total_students'] = str(total_students)
-    cur.execute("SELECT COUNT(*) AS c FROM teachers WHERE status='Active'")
-    total_teachers = cur.fetchone()['c']
-    cfg['total_teachers'] = str(total_teachers)
-    # Public notices
-    cur.execute("""SELECT id, title, content, category, priority, created_at
-                   FROM notices WHERE is_public=true
-                   AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)
-                   ORDER BY array_position(ARRAY['Urgent','Important','Normal'], priority),
-                            created_at DESC LIMIT 5""")
-    notices = cur.fetchall()
-    # All notices for marquee
-    cur.execute("""SELECT id, title, category, priority FROM notices
-                   WHERE is_public=true
-                   AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)
-                   ORDER BY array_position(ARRAY['Urgent','Important','Normal'], priority),
-                            created_at DESC LIMIT 10""")
-    all_notices = cur.fetchall()
-    # Gallery
-    cur.execute("SELECT * FROM gallery_photos WHERE is_active=true ORDER BY created_at DESC LIMIT 8")
-    photos = cur.fetchall()
-    # Downloads
-    cur.execute("SELECT * FROM public_downloads WHERE is_active=true ORDER BY created_at DESC LIMIT 6")
-    downloads = cur.fetchall()
-    cur.close()
+    # Default values when DB is unavailable
+    cfg = {}
+    total_students = 0
+    total_teachers = 0
+    notices = []
+    all_notices = []
+    photos = []
+    downloads = []
+
+    try:
+        ensure_public_tables()
+        cfg = get_all_settings()
+        cur = db.connection.cursor()
+        cur.execute("SELECT COUNT(*) AS c FROM students WHERE status='Active'")
+        total_students = cur.fetchone()['c']
+        cfg['total_students'] = str(total_students)
+        cur.execute("SELECT COUNT(*) AS c FROM teachers WHERE status='Active'")
+        total_teachers = cur.fetchone()['c']
+        cfg['total_teachers'] = str(total_teachers)
+        # Public notices
+        cur.execute("""SELECT id, title, content, category, priority, created_at
+                       FROM notices WHERE is_public=true
+                       AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)
+                       ORDER BY array_position(ARRAY['Urgent','Important','Normal'], priority),
+                                created_at DESC LIMIT 5""")
+        notices = cur.fetchall()
+        # All notices for marquee
+        cur.execute("""SELECT id, title, category, priority FROM notices
+                       WHERE is_public=true
+                       AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)
+                       ORDER BY array_position(ARRAY['Urgent','Important','Normal'], priority),
+                                created_at DESC LIMIT 10""")
+        all_notices = cur.fetchall()
+        # Gallery
+        cur.execute("SELECT * FROM gallery_photos WHERE is_active=true ORDER BY created_at DESC LIMIT 8")
+        photos = cur.fetchall()
+        # Downloads
+        cur.execute("SELECT * FROM public_downloads WHERE is_active=true ORDER BY created_at DESC LIMIT 6")
+        downloads = cur.fetchall()
+        cur.close()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on public index: {e}")
+        # Rollback any failed transaction
+        try:
+            db.connection.rollback()
+        except Exception:
+            pass
+
     return render_template('public/index.html',
         cfg=cfg,
         school_name=cfg.get('school_name','Vivekanand Vidya Mandir Dharampur'),
@@ -122,17 +141,26 @@ def index():
         notices=notices, all_notices=all_notices,
         gallery=photos, photos=photos, downloads=downloads)
 
+
 @public_bp.route('/gallery')
 def gallery():
-    ensure_public_tables()
-    cfg = get_all_settings()
+    cfg = {}
+    photos = []
     cat = request.args.get('category','')
-    cur = db.connection.cursor()
-    if cat:
-        cur.execute("SELECT * FROM gallery_photos WHERE is_active=true AND category=%s ORDER BY created_at DESC",(cat,))
-    else:
-        cur.execute("SELECT * FROM gallery_photos WHERE is_active=true ORDER BY created_at DESC")
-    photos = cur.fetchall(); cur.close()
+    try:
+        ensure_public_tables()
+        cfg = get_all_settings()
+        cur = db.connection.cursor()
+        if cat:
+            cur.execute("SELECT * FROM gallery_photos WHERE is_active=true AND category=%s ORDER BY created_at DESC",(cat,))
+        else:
+            cur.execute("SELECT * FROM gallery_photos WHERE is_active=true ORDER BY created_at DESC")
+        photos = cur.fetchall(); cur.close()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on gallery: {e}")
+        try: db.connection.rollback()
+        except: pass
     cats = ['Event','Sports','Classroom','Cultural','Achievement','Other']
     return render_template('public/gallery.html',
         photos=photos, categories=cats, sel_category=cat,
@@ -141,60 +169,88 @@ def gallery():
 
 @public_bp.route('/downloads')
 def downloads():
-    ensure_public_tables()
-    cfg = get_all_settings()
-    cur = db.connection.cursor()
-    cur.execute("SELECT * FROM public_downloads WHERE is_active=true ORDER BY created_at DESC")
-    downloads = cur.fetchall(); cur.close()
-    return render_template('public/downloads.html', downloads=downloads,
+    cfg = {}
+    dl_list = []
+    try:
+        ensure_public_tables()
+        cfg = get_all_settings()
+        cur = db.connection.cursor()
+        cur.execute("SELECT * FROM public_downloads WHERE is_active=true ORDER BY created_at DESC")
+        dl_list = cur.fetchall(); cur.close()
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on downloads: {e}")
+        try: db.connection.rollback()
+        except: pass
+    return render_template('public/downloads.html', downloads=dl_list,
         school_name=cfg.get('school_name','VVM Dharampur'),
         cfg=cfg)
 
 @public_bp.route('/download_file/<int:did>')
 def download_file(did):
-    ensure_public_tables()
-    cur = db.connection.cursor()
-    cur.execute("UPDATE public_downloads SET download_count = download_count + 1 WHERE id=%s",(did,))
-    cur.execute("SELECT filename FROM public_downloads WHERE id=%s",(did,))
-    row = cur.fetchone()
-    db.connection.commit(); cur.close()
-    if row:
-        from utils.storage import get_public_url
-        return redirect(get_public_url('downloads', row['filename']))
+    try:
+        ensure_public_tables()
+        cur = db.connection.cursor()
+        cur.execute("UPDATE public_downloads SET download_count = download_count + 1 WHERE id=%s",(did,))
+        cur.execute("SELECT filename FROM public_downloads WHERE id=%s",(did,))
+        row = cur.fetchone()
+        db.connection.commit(); cur.close()
+        if row:
+            from utils.storage import get_public_url
+            return redirect(get_public_url('downloads', row['filename']))
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on download_file: {e}")
+        try: db.connection.rollback()
+        except: pass
     flash('File not found.','danger')
     return redirect(url_for('public.downloads'))
 
 @public_bp.route('/enquiry', methods=['POST'])
 def enquiry():
-    ensure_public_tables()
-    f = request.form
-    cur = db.connection.cursor()
-    cur.execute("""INSERT INTO admission_enquiries
-                   (student_name,father_name,mobile,email,class_applying,current_school,message)
-                   VALUES (%s,%s,%s,%s,%s,%s,%s)""",
-        (f.get('student_name',''), f.get('father_name',''),
-         f.get('mobile',''), f.get('email',''),
-         f.get('class_applying',''), f.get('current_school',''),
-         f.get('message','')))
-    db.connection.commit(); cur.close()
-    flash('Enquiry submitted successfully! We will contact you soon.','success')
+    try:
+        ensure_public_tables()
+        f = request.form
+        cur = db.connection.cursor()
+        cur.execute("""INSERT INTO admission_enquiries
+                       (student_name,father_name,mobile,email,class_applying,current_school,message)
+                       VALUES (%s,%s,%s,%s,%s,%s,%s)""",
+            (f.get('student_name',''), f.get('father_name',''),
+             f.get('mobile',''), f.get('email',''),
+             f.get('class_applying',''), f.get('current_school',''),
+             f.get('message','')))
+        db.connection.commit(); cur.close()
+        flash('Enquiry submitted successfully! We will contact you soon.','success')
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on enquiry: {e}")
+        try: db.connection.rollback()
+        except: pass
+        flash('Sorry, there was an error submitting your enquiry. Please try again or call us directly.','danger')
     return redirect(url_for('public.index'))
 
 @public_bp.route('/notice/<int:nid>')
 def notice_detail(nid):
-    ensure_public_tables()
-    cfg = get_all_settings()
-    cur = db.connection.cursor()
-    cur.execute("""SELECT * FROM notices WHERE id=%s
-                   AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)""", (nid,))
-    notice = cur.fetchone(); cur.close()
-    if not notice:
-        flash('Notice not found.','danger')
-        return redirect(url_for('public.index'))
-    return render_template('public/notice_detail.html',
-        notice=notice,
-        school_name=cfg.get('school_name','VVM Dharampur'),
-        cfg=cfg)
+    cfg = {}
+    try:
+        ensure_public_tables()
+        cfg = get_all_settings()
+        cur = db.connection.cursor()
+        cur.execute("""SELECT * FROM notices WHERE id=%s
+                       AND (expires_at IS NULL OR expires_at >= CURRENT_DATE)""", (nid,))
+        notice = cur.fetchone(); cur.close()
+        if notice:
+            return render_template('public/notice_detail.html',
+                notice=notice,
+                school_name=cfg.get('school_name','VVM Dharampur'),
+                cfg=cfg)
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Database error on notice_detail: {e}")
+        try: db.connection.rollback()
+        except: pass
+    flash('Notice not found.','danger')
+    return redirect(url_for('public.index'))
 
 @public_bp.route('/student-hub')
 def student_hub():
