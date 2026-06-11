@@ -1,31 +1,66 @@
+# ── Render Blueprint (Infrastructure as Code) ──────────────────
+# Docs: https://docs.render.com/blueprint-spec
+# Push this file to your repo. On Render Dashboard → "New → Blueprint"
+# and connect your GitHub repo. Render auto-detects this file.
+
 services:
   - type: web
-    name: school-erp-v2
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    name: vvm-school-erp
+    runtime: python
+    region: singapore           # closest to India — change if needed
+    plan: free                  # free tier; upgrade to "starter" for always-on
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 --access-logfile -
+    healthCheckPath: /
+    autoDeploy: true
+
     envVars:
+      # ── Flask ─────────────────────────────────────────────
       - key: FLASK_APP
         value: app.py
       - key: FLASK_ENV
         value: production
       - key: SECRET_KEY
         generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.6
+
+      # ── Supabase / PostgreSQL ─────────────────────────────
       - key: DATABASE_URL
-        sync: false
+        sync: false             # set manually in Render dashboard
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+
+      # ── School Info ───────────────────────────────────────
       - key: SCHOOL_NAME
         value: Vivekanand Vidya Mandir Dharampur
       - key: SCHOOL_ADDRESS
-        value: Dharampur, Tatijhariya Hazaribagh, Jharkhand
+        value: "Dharampur, Tatijhariya Hazaribagh, Jharkhand"
       - key: SCHOOL_PHONE
         value: "7070373801"
       - key: SCHOOL_EMAIL
-        value: deepak7070@gmail.com
+        value: demoa4447@gmail.com
+
+      # ── Rate Limiting ─────────────────────────────────────
       - key: RATELIMIT_STORAGE_URL
         value: memory://
+
+      # ── SMTP (Email) — set manually in dashboard ──────────
+      - key: SMTP_SERVER
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+
+      # ── AI Keys (optional) ────────────────────────────────
+      - key: GEMINI_API_KEY
+        sync: false

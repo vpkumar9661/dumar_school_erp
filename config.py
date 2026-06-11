@@ -21,10 +21,15 @@ class Config:
 
     # ── File Upload ──────────────────────────────────────────
     BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
-    if os.environ.get('VERCEL') == '1':
+    # Render & Vercel use ephemeral filesystems — write to /tmp
+    if os.environ.get('RENDER') or os.environ.get('VERCEL') == '1':
         UPLOAD_FOLDER = os.path.join('/tmp', 'uploads', 'students')
     else:
         UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads', 'students')
+
+    # ── Production detection (Render sets RENDER=true automatically) ──
+    IS_PRODUCTION = bool(os.environ.get('RENDER') or os.environ.get('PORT'))
+    SESSION_COOKIE_SECURE = IS_PRODUCTION  # True on Render (HTTPS)
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 

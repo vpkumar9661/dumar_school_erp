@@ -6,5 +6,5 @@ python-dotenv==1.0.1
 Werkzeug==3.0.3
 psycopg2-binary==2.9.9
 google-generativeai
-gunicorn
+gunicorn==22.0.0
 requests
